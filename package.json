@@ -1,0 +1,29 @@
+{
+  "name": "jinbe-for-railway",
+  "version": "1.0.0",
+  "description": "This is jinbe BOT's program for railway.app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node discordbot.js",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DiscordBotPortalJP/discordjs-startup.git"
+  },
+  "author": "Hoshimikan6490",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^18.0.6",
+    "date-fns-timezone": "^0.1.4",
+    "discord.js": "^14.7.0",
+    "mongoose": "^6.8.0",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "eslint": "^8.17.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0"
+  }
+}

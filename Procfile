@@ -1,0 +1,1 @@
+discordbot: node index.js
