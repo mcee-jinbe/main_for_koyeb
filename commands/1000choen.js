@@ -1,30 +1,29 @@
 const {
-  SlashCommandBuilder,
   ModalBuilder,
   TextInputBuilder,
   ActionRowBuilder,
   TextInputStyle,
-} = require("discord.js");
+} = require('discord.js');
 
 module.exports = {
   data: {
-    name: "1000choyen",
-    description: "1000兆円画像生成",
+    name: '1000choyen',
+    description: '1000兆円画像生成',
   },
 
   async execute(interaction) {
     const modal = new ModalBuilder()
-      .setCustomId("1000choyen")
-      .setTitle("1000兆円画像生成");
+      .setCustomId('1000choyen')
+      .setTitle('1000兆円画像生成');
 
     const topInput = new TextInputBuilder()
-      .setCustomId("topInput")
-      .setLabel("上部文字列")
+      .setCustomId('topInput')
+      .setLabel('上部文字列')
       .setStyle(TextInputStyle.Short);
 
     const bottomInput = new TextInputBuilder()
-      .setCustomId("bottomInput")
-      .setLabel("下部文字列")
+      .setCustomId('bottomInput')
+      .setLabel('下部文字列')
       .setStyle(TextInputStyle.Short);
 
     modal.addComponents(
@@ -33,12 +32,12 @@ module.exports = {
     );
 
     await interaction.showModal(modal);
-    const filter = (mInteraction) => mInteraction.customId === "1000choyen";
+    const filter = (mInteraction) => mInteraction.customId === '1000choyen';
     interaction
       .awaitModalSubmit({ filter, time: 360000 })
       .then(async (mInteraction) => {
-        const top = mInteraction.fields.getTextInputValue("topInput");
-        const bottom = mInteraction.fields.getTextInputValue("bottomInput");
+        const top = mInteraction.fields.getTextInputValue('topInput');
+        const bottom = mInteraction.fields.getTextInputValue('bottomInput');
         mInteraction.reply({
           embeds: [
             {

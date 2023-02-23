@@ -1,7 +1,7 @@
 module.exports = {
   data: {
-    name: "code",
-    description: "🧬このプログラムの内容を全公開！",
+    name: 'code',
+    description: '🧬このプログラムの内容を全公開！',
   },
   async execute(interaction) {
     interaction.reply({
@@ -12,7 +12,7 @@ module.exports = {
           description: '転用可',
           color: 0x227fff,
         },
-      ]
+      ],
     });
-  }
-}
+  },
+};
