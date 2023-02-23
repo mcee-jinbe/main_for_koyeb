@@ -1,29 +1,22 @@
+# パッケージに関して
+## 実行する際のnpmコマンド
+```
+npm i @types/node date-fns-timezone discord.js mongoose node-cron
+```
+## 各パッケージの使用用途
+- `@types/node`　：node.jsを書きやすくするやつらしい
+- `date-fns-timezone`　：日本時間の月・日を取得するため
+- `discord.js`　：Discord BOTに接続し、操作するため
+- `mongoose` ：MongoDBの操作を簡単に行うため
+- `node-cron` ：毎日決まった時間に処理を行うため
+
 ---
-title: Discord bot
-description: A Discord bot written in JavaScript
-tags:
-  - discord.js
-  - javascript
----
+# その他メモ
+## 定期実行
+参考サイト：　[指定した時刻ごとに処理を実行したい](https://scrapbox.io/discordjs-japan/%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%9F%E6%99%82%E5%88%BB%E3%81%94%E3%81%A8%E3%81%AB%E5%87%A6%E7%90%86%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%97%E3%81%9F%E3%81%84)
 
-# Discord.js Example
+## 画像を生成
+参考サイト：　[Discord.jsと@napi-rs/canvasでおみくじ画像を生成して投稿する](https://qiita.com/Fuses-Garage/items/d5c1e1d1d0366474c318)
 
-This example starts a Discord bot using [discord.js](https://discord.js.org/#/).
-
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/jX0xQo)
-
-## ✨ Features
-
-- Discord.js
-- JavaScript
-
-## 💁‍♀️ How to use
-
-- Install dependencies `yarn`
-- Connect to your Railway project `railway link`
-- Start the bot `railway run yarn dev`
-
-## 📝 Notes
-
-- To create a new command, just create a file in the `Commands` directory. You can take a look at the `Template.js` file for an example of what commands should look like. For any additional help see the [discord.js guide](https://discordjs.guide).
-- If you need any additional help with this, join our [Discord server](https://discord.gg/railway) and create a thread in the project help channel.
+## 危険なURLをブロック
+参考サイト：　[Discordに危険なURLが送られたら自動で削除](https://qiita.com/narikakun/items/794d9cf57bf6dd2eba46)
