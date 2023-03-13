@@ -195,20 +195,33 @@ mongoose //mongooseについて
 client.on('guildMemberAdd', async (member) => {
   const user_id = member.id;
   //先ほど作成したスキーマを参照
-  const profileData = await profileModel.findOne({
-    user_id: user_id,
+  await profileModel.findOne({ _id: user_id }, async (err, user) => {
+    if (err) {
+      console.log(err);
+      client.channels.cache
+        .get('889478088486948925')
+        .send(
+          '<@728495196303523900> じんべえBOTの誕生日登録処理を実行する際に、エラーが発生しました。ログを確認してください。'
+        );
+    } else if (!user) {
+      const user_name = (await client.users.fetch(user_id)).username;
+      const profile = await profileModel.create({
+        _id: user_id, //ユーザーID
+        user_name: user_name, //ユーザーネーム
+        birthday_month: 'no_data',
+        birthday_day: 'no_data',
+        status: 'yet',
+      });
+      profile.save();
+      console.log('新規参加者をデータベースに登録したよ！');
+    } else {
+      client.channels.cache
+        .get('889478088486948925')
+        .send(
+          `<@728495196303523900> マイクラ班discordに新規参加したユーザー（ユーザーID: \`${user_id}\`）は、すでにデータが存在したため、登録処理をスキップしました。`
+        );
+    }
   });
-  if (!profileData) {
-    const user_name = (await client.users.fetch(user_id)).username;
-    const profile = await profileModel.create({
-      user_id: user_id, //ユーザーID
-      user_name: user_name, //ユーザーネーム
-      birthday_month: 'null',
-      birthday_day: 'null',
-    });
-    profile.save();
-    console.log('新規参加者をデータベースに登録したよ！');
-  }
 });
 
 //URLチェックの動作を指定
