@@ -75,7 +75,7 @@ function birthday_check() {
           return;
         } else {
           //誕生日を祝う
-          client.channels.cache.get('1037904694598713516').send({
+          client.channels.cache.get('835298730922999851').send({
             content: '<@' + birthday_man_id + '>',
             embeds: [
               {
@@ -101,7 +101,7 @@ function birthday_check() {
             if (err) {
               console.log(err.message);
               client.channels.cache
-                .get('1037904694598713516')
+                .get('835298730922999851')
                 .send(
                   '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。'
                 );
@@ -152,7 +152,7 @@ client.once('ready', async () => {
       if (err) {
         console.log(err.message);
         client.channels.cache
-          .get('1037904694598713516')
+          .get('835298730922999851')
           .send(
             '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。'
           );
@@ -165,7 +165,7 @@ client.once('ready', async () => {
         if (err) {
           console.log(err.message);
           client.channels.cache
-            .get('1037904694598713516')
+            .get('835298730922999851')
             .send(
               '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。'
             );
