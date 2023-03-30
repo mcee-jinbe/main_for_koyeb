@@ -60,11 +60,7 @@ function birthday_check() {
       for (key in model) {
         if (model[key] == null) {
           console.log(
-            '今日(' +
-              today_month +
-              '月' +
-              today_day +
-              '日)、誕生日の人は確認できませんでした。'
+            `今日(${today_month}月${today_day}日)、誕生日の人は確認できませんでした。`
           );
           return;
         } else {
@@ -73,11 +69,10 @@ function birthday_check() {
           let birthday_status = model[key].status;
 
           if (birthday_status == 'finished') {
-            return;
           } else {
             //誕生日を祝う
             client.channels.cache.get('835298730922999851').send({
-              content: '<@' + birthday_man_id + '>',
+              content: `<@${birthday_man_id}>`,
               embeds: [
                 {
                   title: 'お誕生日おめでとうございます！',
@@ -226,8 +221,7 @@ client.on('guildMemberAdd', async (member) => {
 //URLチェックの動作を指定
 async function getSafe(urls, message) {
   let request_url =
-    'https://safebrowsing.googleapis.com/v4/threatMatches:find?key=' +
-    url_check_api;
+    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${url_check_api}`;
 
   let data = {
     client: {
@@ -526,7 +520,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     await interaction.channel.send({
-      content: '<@' + interaction.user.id + '>',
+      content: `<@${interaction.user.id}>`,
       embeds: [
         {
           title: 'おみくじの結果！',
@@ -631,7 +625,7 @@ client.on('interactionCreate', async (interaction) => {
     }
     // 結果表示
     await interaction.channel.send({
-      content: '<@' + interaction.user.id + '>',
+      content: `<@${interaction.user.id}>`,
       embeds: [
         {
           title: 'じゃんけんの結果！',
