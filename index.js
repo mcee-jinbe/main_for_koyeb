@@ -49,7 +49,7 @@ function birthday_check() {
   let today = formatToTimeZone(now, FORMAT, { timeZone: 'Asia/Tokyo' });
   let today_month = today.split('-')[0];
   let today_day = String(parseInt(today.split('-')[1])); // 先頭の0を削除するためにString(parseInt())を入れている
-  profileModel.findOne(
+  profileModel.find(
     { birthday_month: today_month, birthday_day: today_day },
     function (err, model) {
       if (err) {
@@ -57,57 +57,59 @@ function birthday_check() {
         return;
       }
 
-      if (model == null) {
-        console.log(
-          '今日(' +
-            today_month +
-            '月' +
-            today_day +
-            '日)、誕生日の人は確認できませんでした。'
-        );
-        return;
-      } else {
-        // めでたい人の情報を取得して定義
-        let birthday_man_id = model._id;
-        let birthday_status = model.status;
-
-        if (birthday_status == 'finished') {
+      for (key in model) {
+        if (model[key] == null) {
+          console.log(
+            '今日(' +
+              today_month +
+              '月' +
+              today_day +
+              '日)、誕生日の人は確認できませんでした。'
+          );
           return;
         } else {
-          //誕生日を祝う
-          client.channels.cache.get('835298730922999851').send({
-            content: '<@' + birthday_man_id + '>',
-            embeds: [
-              {
-                title: 'お誕生日おめでとうございます！',
-                description: `今日は、<@${birthday_man_id}>さんのお誕生日です！`,
-                color: 0xff00ff,
-                thumbnail: {
-                  url: 'attachment://happy_birthday.png',
-                },
-              },
-            ],
-            files: [
-              {
-                attachment: './photos/jinbe_ome.png',
-                name: 'happy_birthday.png',
-              },
-            ],
-          });
+          // めでたい人の情報を取得して定義
+          let birthday_man_id = model[key]._id;
+          let birthday_status = model[key].status;
 
-          //status更新
-          model.status = 'finished';
-          model.save(function (err, model) {
-            if (err) {
-              console.log(err.message);
-              client.channels.cache
-                .get('835298730922999851')
-                .send(
-                  '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。'
-                );
-              return;
-            }
-          });
+          if (birthday_status == 'finished') {
+            return;
+          } else {
+            //誕生日を祝う
+            client.channels.cache.get('835298730922999851').send({
+              content: '<@' + birthday_man_id + '>',
+              embeds: [
+                {
+                  title: 'お誕生日おめでとうございます！',
+                  description: `今日は、<@${birthday_man_id}>さんのお誕生日です！`,
+                  color: 0xff00ff,
+                  thumbnail: {
+                    url: 'attachment://happy_birthday.png',
+                  },
+                },
+              ],
+              files: [
+                {
+                  attachment: './photos/jinbe_ome.png',
+                  name: 'happy_birthday.png',
+                },
+              ],
+            });
+
+            //status更新
+            model[key].status = 'finished';
+            model[key].save(function (err, model) {
+              if (err) {
+                console.log(err.message);
+                client.channels.cache
+                  .get('835298730922999851')
+                  .send(
+                    '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。'
+                  );
+                return;
+              }
+            });
+          }
         }
       }
     }
@@ -160,18 +162,20 @@ client.once('ready', async () => {
       }
 
       //status更新
-      model.status = 'yet';
-      model.save(function (err, model) {
-        if (err) {
-          console.log(err.message);
-          client.channels.cache
-            .get('835298730922999851')
-            .send(
-              '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。'
-            );
-          return;
-        }
-      });
+      for (key in model) {
+        model[key].status = 'yet';
+        model[key].save(function (err, model) {
+          if (err) {
+            console.log(err.message);
+            client.channels.cache
+              .get('835298730922999851')
+              .send(
+                '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。'
+              );
+            return;
+          }
+        });
+      }
     });
   });
 
@@ -180,7 +184,9 @@ client.once('ready', async () => {
     .send('railway.appで起動しました！');
 });
 
-mongoose //mongooseについて
+//mongooseについて
+mongoose.set('strictQuery', false);
+mongoose
   .connect(mong_db_info, {
     useNewUrlParser: true, //任意
   })
