@@ -37,78 +37,74 @@ const commands = {};
 const commandFiles = fs
   .readdirSync('./commands')
   .filter((file) => file.endsWith('.js'));
+
 for (const file of commandFiles) {
   const command = require(`./commands/${file}`);
   commands[command.data.name] = command;
 }
 
 // 誕生日チェック
-function birthday_check() {
+async function birthday_check() {
   const FORMAT = 'MM-DD';
   let now = new Date();
   let today = formatToTimeZone(now, FORMAT, { timeZone: 'Asia/Tokyo' });
   let today_month = today.split('-')[0];
   let today_day = String(parseInt(today.split('-')[1])); // 先頭の0を削除するためにString(parseInt())を入れている
-  profileModel.find(
-    { birthday_month: today_month, birthday_day: today_day },
-    function (err, model) {
-      if (err) {
-        console.log(err.message);
-        return;
-      }
+  let model = await profileModel.find({
+    birthday_month: today_month,
+    birthday_day: today_day,
+  });
 
-      for (key in model) {
-        if (model[key] == null) {
-          console.log(
-            `今日(${today_month}月${today_day}日)、誕生日の人は確認できませんでした。`
-          );
-          return;
-        } else {
-          // めでたい人の情報を取得して定義
-          let birthday_man_id = model[key]._id;
-          let birthday_status = model[key].status;
+  for (const key in model) {
+    if (model[key] == null) {
+      console.log(
+        `今日(${today_month}月${today_day}日)、誕生日の人は確認できませんでした。`
+      );
+      return;
+    } else {
+      // めでたい人の情報を取得して定義
+      let birthday_man_id = model[key]._id;
+      let birthday_status = model[key].status;
 
-          if (birthday_status == 'finished') {
-          } else {
-            //誕生日を祝う
-            client.channels.cache.get('835298730922999851').send({
-              content: `<@${birthday_man_id}>`,
-              embeds: [
-                {
-                  title: 'お誕生日おめでとうございます！',
-                  description: `今日は、<@${birthday_man_id}>さんのお誕生日です！`,
-                  color: 0xff00ff,
-                  thumbnail: {
-                    url: 'attachment://happy_birthday.png',
-                  },
-                },
-              ],
-              files: [
-                {
-                  attachment: './photos/jinbe_ome.png',
-                  name: 'happy_birthday.png',
-                },
-              ],
-            });
+      if (birthday_status == 'finished') {
+      } else {
+        //誕生日を祝う
+        client.channels.cache.get('835298730922999851').send({
+          content: `<@${birthday_man_id}>`,
+          embeds: [
+            {
+              title: 'お誕生日おめでとうございます！',
+              description: `今日は、<@${birthday_man_id}>さんのお誕生日です！`,
+              color: 0xff00ff,
+              thumbnail: {
+                url: 'attachment://happy_birthday.png',
+              },
+            },
+          ],
+          files: [
+            {
+              attachment: './photos/jinbe_ome.png',
+              name: 'happy_birthday.png',
+            },
+          ],
+        });
 
-            //status更新
-            model[key].status = 'finished';
-            model[key].save(function (err, model) {
-              if (err) {
-                console.log(err.message);
-                client.channels.cache
-                  .get('835298730922999851')
-                  .send(
-                    '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。'
-                  );
-                return;
-              }
-            });
+        //status更新
+        model[key].status = 'finished';
+        model[key].save(function (err, model) {
+          if (err) {
+            console.log(err.message);
+            client.channels.cache
+              .get('835298730922999851')
+              .send(
+                '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。'
+              );
+            return;
           }
-        }
+        });
       }
     }
-  );
+  }
 }
 
 // botが準備できれば発動され、 上から順に処理される。
@@ -157,7 +153,7 @@ client.once('ready', async () => {
       }
 
       //status更新
-      for (key in model) {
+      for (const key in model) {
         model[key].status = 'yet';
         model[key].save(function (err, model) {
           if (err) {
@@ -220,8 +216,7 @@ client.on('guildMemberAdd', async (member) => {
 
 //URLチェックの動作を指定
 async function getSafe(urls, message) {
-  let request_url =
-    `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${url_check_api}`;
+  let request_url = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${url_check_api}`;
 
   let data = {
     client: {
