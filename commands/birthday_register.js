@@ -90,26 +90,15 @@ module.exports = {
                 '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースのdayだけがno_dataでした。'
               );
             } else {
-              profileModel.findOne({ _id: user_id }, function (err, model) {
-                if (err) {
-                  console.log(err.message);
-                  return;
-                }
-
+              profileModel.findOne({ _id: user_id }).then((model) => {
                 // 古い情報を取得
                 let old_month = model.birthday_month;
                 let old_day = model.birthday_day;
                 // 内容を更新
                 model.birthday_month = new_birthday_month;
                 model.birthday_day = new_birthday_day;
-                model.save(async function (err, model) {
-                  if (err) {
-                    console.log(err.message);
-                    await interaction.reply(
-                      '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースの更新時にエラーが発生しました。\nコンソールを確認してください。'
-                    );
-                    return;
-                  } else {
+                model.save()
+                  .then(async () => {
                     await interaction.reply({
                       embeds: [
                         {
@@ -120,10 +109,9 @@ module.exports = {
                       ],
                     });
                     return;
-                  }
-                });
+                  });
               });
-            }
+            };
           }
         } else {
           await interaction.reply({
@@ -161,5 +149,5 @@ module.exports = {
         ephemeral: true,
       });
     }
-  },
-};
+  }
+}
