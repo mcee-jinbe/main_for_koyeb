@@ -7,7 +7,7 @@ module.exports = {
   },
   async execute(interaction) {
     if (interaction.user.id === '728495196303523900') {
-      if (interaction.guild.id === '768073209169444884') {
+      if (interaction.guild.id === '889474199704436776') {
         await interaction.deferReply();
         // サーバー内の全メンバーを取得する
         const members = await interaction.guild.members.fetch();
