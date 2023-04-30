@@ -186,28 +186,34 @@ mongoose
   });
 
 //　ユーザー参加時の処理
-client.on("guildMemberAdd", async (member) => {
-  const user_id = member.id;
-  //先ほど作成したスキーマを参照
-  let user = await profileModel.findOne({ _id: user_id });
+client.on('guildMemberAdd', async (member) => {
+  if (member.guild.id == '768073209169444884') {
+    const user_id = member.id;
+    //先ほど作成したスキーマを参照
+    let user = await profileModel.findOne({ _id: user_id });
 
-  if (!user) {
-    const user_name = (await client.users.fetch(user_id)).username;
-    const profile = await profileModel.create({
-      _id: user_id, //ユーザーID
-      user_name: user_name, //ユーザーネーム
-      birthday_month: "no_data",
-      birthday_day: "no_data",
-      status: "yet",
-    });
-    profile.save();
-    console.log("新規参加者をデータベースに登録したよ！");
+    if (!user) {
+      const user_name = (await client.users.fetch(user_id)).username;
+      const profile = await profileModel.create({
+        _id: user_id, //ユーザーID
+        user_name: user_name, //ユーザーネーム
+        birthday_month: 'no_data',
+        birthday_day: 'no_data',
+        status: 'yet',
+      });
+      profile.save();
+      console.log('新規参加者をデータベースに登録したよ！');
+    } else {
+      client.channels.cache
+        .get('889478088486948925')
+        .send(
+          `<@728495196303523900> マイクラ班discordに新規参加したユーザー（ユーザーID: \`${user_id}\`）は、すでにデータが存在したため、登録処理をスキップしました。`
+        );
+    }
   } else {
-    client.channels.cache
-      .get("889478088486948925")
-      .send(
-        `<@728495196303523900> マイクラ班discordに新規参加したユーザー（ユーザーID: \`${user_id}\`）は、すでにデータが存在したため、登録処理をスキップしました。`
-      );
+    console.log(
+      'マイクラ班サーバー以外への参加者のため、データベース登録をスキップしました。'
+    );
   }
 });
 
