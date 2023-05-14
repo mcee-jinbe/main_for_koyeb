@@ -69,7 +69,7 @@ async function birthday_check() {
 
     if (birthday_status !== "finished") {
       //誕生日を祝う
-      client.channels.cache.get("1037904694598713516").send({
+      client.channels.cache.get("835298730922999851").send({
         content: `<@${birthday_man_id}>`,
         embeds: [
           {
@@ -94,7 +94,7 @@ async function birthday_check() {
       model[key].save().catch(async (err) => {
         console.log(err);
         client.channels.cache
-          .get("1037904694598713516")
+          .get("835298730922999851")
           .send(
             "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。"
           );
@@ -142,9 +142,9 @@ client.once("ready", async () => {
       if (err) {
         console.log(err.message);
         client.channels.cache
-          .get('1037904694598713516')
+          .get("835298730922999851")
           .send(
-            '申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。'
+            "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。"
           );
         return;
       }
@@ -156,7 +156,7 @@ client.once("ready", async () => {
           if (err) {
             console.log(err.message);
             client.channels.cache
-              .get("1037904694598713516")
+              .get("835298730922999851")
               .send(
                 "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。"
               );
@@ -186,8 +186,8 @@ mongoose
   });
 
 //　ユーザー参加時の処理
-client.on('guildMemberAdd', async (member) => {
-  if (member.guild.id == '768073209169444884') {
+client.on("guildMemberAdd", async (member) => {
+  if (member.guild.id == "768073209169444884") {
     const user_id = member.id;
     //先ほど作成したスキーマを参照
     let user = await profileModel.findOne({ _id: user_id });
@@ -197,22 +197,22 @@ client.on('guildMemberAdd', async (member) => {
       const profile = await profileModel.create({
         _id: user_id, //ユーザーID
         user_name: user_name, //ユーザーネーム
-        birthday_month: 'no_data',
-        birthday_day: 'no_data',
-        status: 'yet',
+        birthday_month: "no_data",
+        birthday_day: "no_data",
+        status: "yet",
       });
       profile.save();
-      console.log('新規参加者をデータベースに登録したよ！');
+      console.log("新規参加者をデータベースに登録したよ！");
     } else {
       client.channels.cache
-        .get('889478088486948925')
+        .get("889478088486948925")
         .send(
           `<@728495196303523900> マイクラ班discordに新規参加したユーザー（ユーザーID: \`${user_id}\`）は、すでにデータが存在したため、登録処理をスキップしました。`
         );
     }
   } else {
     console.log(
-      'マイクラ班サーバー以外への参加者のため、データベース登録をスキップしました。'
+      "マイクラ班サーバー以外への参加者のため、データベース登録をスキップしました。"
     );
   }
 });
