@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); //mongoDBを使用するためのおまじない
+const mongoose = require("mongoose"); //mongoDBを使用するためのおまじない
 
 const profileSchema = new mongoose.Schema({
   _id: { type: String }, //ユーザーID
@@ -8,6 +8,6 @@ const profileSchema = new mongoose.Schema({
   status: { type: String },
 });
 
-const model = mongoose.model('birthday', profileSchema);
+const model = mongoose.model("birthday", profileSchema);
 
 module.exports = model;
