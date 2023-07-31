@@ -29,6 +29,7 @@ const util = require("util");
 const wait = util.promisify(setTimeout);
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
+require("dotenv").config();
 
 //機密情報取得
 const token = process.env["bot_token"];
