@@ -18,6 +18,8 @@ const client = new Client({
   ],
 });
 module.exports.client = client;
+const express = require("express");
+const app = express();
 const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
 const mongoose = require("mongoose");
@@ -32,6 +34,15 @@ const fetch = (...args) =>
 const token = process.env["bot_token"];
 const mong_db_info = process.env["mongodb_token"];
 const url_check_api = process.env["url_check_api"];
+const PORT = 8000;
+
+//サイト立ち上げ
+app.get("/", function (req, res) {
+  res.send("Hello world\n");
+});
+app.listen(PORT, () => {
+  console.log(`Running on https://jinbe-hoshimikan.koyeb.app:${PORT}`);
+});
 
 const commands = {};
 const commandFiles = fs
