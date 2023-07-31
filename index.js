@@ -18,20 +18,31 @@ const client = new Client({
   ],
 });
 module.exports.client = client;
-const cron = require('node-cron');
-const { formatToTimeZone } = require('date-fns-timezone');
-const mongoose = require('mongoose');
-const profileModel = require('./models/profileSchema');
-const prefix = 'mc!';
-const util = require('util');
+const express = require("express");
+const app = express();
+const cron = require("node-cron");
+const { formatToTimeZone } = require("date-fns-timezone");
+const mongoose = require("mongoose");
+const profileModel = require("./models/profileSchema");
+const prefix = "mc!";
+const util = require("util");
 const wait = util.promisify(setTimeout);
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 //機密情報取得
-const token = process.env['bot_token'];
-const mong_db_info = process.env['mongodb_token'];
-const url_check_api = process.env['url_check_api'];
+const token = process.env["bot_token"];
+const mong_db_info = process.env["mongodb_token"];
+const url_check_api = process.env["url_check_api"];
+const PORT = 8080;
+
+//サイト立ち上げ
+app.get("/", function (req, res) {
+  res.send("Hello world\n");
+});
+app.listen(PORT, HOST, () => {
+  console.log(`Running on http://${HOST}:${PORT}`);
+});
 
 const commands = {};
 const commandFiles = fs
