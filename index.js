@@ -18,6 +18,8 @@ const client = new Client({
   ],
 });
 module.exports.client = client;
+const express = require("express");
+const app = express();
 const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
 const mongoose = require("mongoose");
@@ -33,6 +35,15 @@ require("dotenv").config();
 const token = process.env["bot_token"];
 const mong_db_info = process.env["mongodb_token"];
 const url_check_api = process.env["url_check_api"];
+const PORT = 8000;
+
+//サイト立ち上げ
+app.get("/", function (req, res) {
+  res.send("Hello world\n");
+});
+app.listen(PORT, () => {
+  console.log(`Running on https://jinbe-hoshimikan.koyeb.app:${PORT}`);
+});
 
 const commands = {};
 const commandFiles = fs
@@ -70,7 +81,7 @@ async function birthday_check() {
 
     if (birthday_status !== "finished") {
       //誕生日を祝う
-      client.channels.cache.get("1037904694598713516").send({
+      client.channels.cache.get("835298730922999851").send({
         content: `<@${birthday_man_id}>`,
         embeds: [
           {
@@ -95,7 +106,7 @@ async function birthday_check() {
       model[key].save().catch(async (err) => {
         console.log(err);
         client.channels.cache
-          .get("1037904694598713516")
+          .get("835298730922999851")
           .send(
             "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。"
           );
@@ -143,7 +154,7 @@ client.once("ready", async () => {
       if (err) {
         console.log(err.message);
         client.channels.cache
-          .get("1037904694598713516")
+          .get("835298730922999851")
           .send(
             "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。"
           );
@@ -157,7 +168,7 @@ client.once("ready", async () => {
           if (err) {
             console.log(err.message);
             client.channels.cache
-              .get("1037904694598713516")
+              .get("835298730922999851")
               .send(
                 "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。"
               );
