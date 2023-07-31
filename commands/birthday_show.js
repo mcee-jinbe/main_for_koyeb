@@ -1,41 +1,41 @@
-const { ApplicationCommandOptionType } = require('discord.js');
-const { client } = require('../index.js');
+const { ApplicationCommandOptionType } = require("discord.js");
+const { client } = require("../index.js");
 
 module.exports = {
   data: {
-    name: 'birthday_show',
-    description: '🖥データベースに登録された情報を表示します',
+    name: "birthday_show",
+    description: "🖥データベースに登録された情報を表示します",
     options: [
       {
         type: ApplicationCommandOptionType.String,
-        name: 'type',
-        description: '何の情報を表示しますか',
+        name: "type",
+        description: "何の情報を表示しますか",
         required: true,
         choices: [
-          { name: '全体', value: 'all' },
-          { name: '個人', value: 'user' },
+          { name: "全体", value: "all" },
+          { name: "個人", value: "user" },
         ],
       },
       {
         type: ApplicationCommandOptionType.User,
-        name: 'user',
-        value: 'user',
+        name: "user",
+        value: "user",
         description:
-          '誰の情報を表示しますか？（「全体の情報を表示」を選んだ場合は、無効化されます）',
+          "誰の情報を表示しますか？（「全体の情報を表示」を選んだ場合は、無効化されます）",
         required: false,
       },
     ],
   },
   async execute(interaction) {
-    if (interaction.guild.id == '768073209169444884') {
+    if (interaction.guild.id == "768073209169444884") {
       await interaction.deferReply({
         ephemeral: true,
       });
-      const profileModel = require('../models/profileSchema.js');
-      let show_type = interaction.options.getString('type');
-      let show_user = interaction.options.getUser('user');
+      const profileModel = require("../models/profileSchema.js");
+      let show_type = interaction.options.getString("type");
+      let show_user = interaction.options.getUser("user");
 
-      if (show_type == 'all') {
+      if (show_type == "all") {
         let database_members = await profileModel.find({});
         let member_list = database_members.map(
           (database_members) => database_members.user_name
@@ -43,9 +43,9 @@ module.exports = {
         await interaction.editReply({
           embeds: [
             {
-              title: '現在、データベースに登録されているユーザー一覧',
+              title: "現在、データベースに登録されているユーザー一覧",
               description: `※誕生日が登録されていないユーザーも含みます。\n\`\`\`\n${member_list.join(
-                '\n'
+                "\n"
               )}\n\`\`\``,
               color: 0xaad0ff,
               timestamp: new Date(),
@@ -53,7 +53,7 @@ module.exports = {
           ],
           ephemeral: false,
         });
-      } else if (show_type == 'user') {
+      } else if (show_type == "user") {
         if (show_user !== null) {
           const isBot = (await client.users.fetch(show_user)).bot;
           if (!isBot) {
@@ -61,14 +61,14 @@ module.exports = {
             let database_month = database_data.birthday_month;
             let database_day = database_data.birthday_day;
 
-            if (database_month == 'no_data' || database_day == 'no_data') {
+            if (database_month == "no_data" || database_day == "no_data") {
               await interaction.editReply({
-                content: '誕生日が登録されていません。',
+                content: "誕生日が登録されていません。",
                 ephemeral: false,
               });
             } else {
               await interaction.editReply({
-                content: '',
+                content: "",
                 embeds: [
                   {
                     title: `${show_user.username}さんの情報`,
@@ -80,12 +80,12 @@ module.exports = {
             }
           } else {
             await interaction.editReply({
-              content: '',
+              content: "",
               embeds: [
                 {
-                  title: 'エラー！',
+                  title: "エラー！",
                   description:
-                    '指定された対象は「<:bot:1050345033305436170>」です。\n残念ながら、彼らに誕生日という概念を教えることが出来ません。対象には人を選んでください。',
+                    "指定された対象は「<:bot:1050345033305436170>」です。\n残念ながら、彼らに誕生日という概念を教えることが出来ません。対象には人を選んでください。",
                   color: 0xff0000,
                 },
               ],
@@ -93,12 +93,12 @@ module.exports = {
           }
         } else {
           await interaction.editReply({
-            content: '',
+            content: "",
             embeds: [
               {
-                title: 'エラー！',
+                title: "エラー！",
                 description:
-                  '誕生日の情報を表示する対象を指定してください。\n　例)　`/birthday_show [個人]　[@Hoshimikan6490]`',
+                  "誕生日の情報を表示する対象を指定してください。\n　例)　`/birthday_show [個人]　[@Hoshimikan6490]`",
                 color: 0xff0000,
               },
             ],
@@ -109,7 +109,7 @@ module.exports = {
       await interaction.reply({
         embeds: [
           {
-            title: 'エラー！',
+            title: "エラー！",
             description: `このサーバーでこのコマンドは実行できません。`,
             color: 0xff0000,
           },

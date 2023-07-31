@@ -1,20 +1,23 @@
 {
   "name": "jinbe-for-railway",
   "version": "1.0.0",
-  "description": "This is jinbe BOT's program for railway.app",
+  "description": "``` npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch util ``` ## 各パッケージの使用用途 - `@types/node`　：node.jsを書きやすくするやつらしい - `date-fns-timezone`　：日本時間の月・日を取得するため - `discord.js`　：Discord BOTに接続し、操作するため - `fs` :「commands」フォルダを読み取るため - `mongoose` ：MongoDBの操作を簡単に行うため - `node-cron` ：毎日決まった時間に処理を行うため - `node-fetch` :URLチェックのリクエストを送るため - `util` :○○ms待つを使用するため",
   "main": "index.js",
   "scripts": {
-    "start": "node discordbot.js",
-    "lint": "eslint ."
+    "test": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DiscordBotPortalJP/discordjs-startup.git"
+    "url": "git+https://github.com/mcee-jinbe/main_for_railway.git"
   },
   "author": "Hoshimikan6490",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mcee-jinbe/main_for_railway/issues"
+  },
+  "homepage": "https://github.com/mcee-jinbe/main_for_railway#readme",
   "dependencies": {
-    "@types/node": "^18.14.0",
+    "@types/node": "^20.4.5",
     "date-fns-timezone": "^0.1.4",
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
@@ -22,11 +25,7 @@
     "fs": "^0.0.1-security",
     "mongoose": "^7.4.1",
     "node-cron": "^3.0.2",
-    "node-fetch": "^3.3.1"
-  },
-  "devDependencies": {
-    "eslint": "^8.17.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.26.0"
+    "node-fetch": "^3.3.2",
+    "util": "^0.12.5"
   }
 }
