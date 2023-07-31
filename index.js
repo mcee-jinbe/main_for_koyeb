@@ -40,8 +40,8 @@ const PORT = 8000;
 app.get("/", function (req, res) {
   res.send("Hello world\n");
 });
-app.listen(PORT, HOST, () => {
-  console.log(`Running on http://${HOST}:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Running on http://0.0.0.0:${PORT}`);
 });
 
 const commands = {};
