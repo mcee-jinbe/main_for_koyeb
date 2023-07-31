@@ -34,7 +34,7 @@ const fetch = (...args) =>
 const token = process.env["bot_token"];
 const mong_db_info = process.env["mongodb_token"];
 const url_check_api = process.env["url_check_api"];
-const PORT = 8080;
+const PORT = 8000;
 
 //サイト立ち上げ
 app.get("/", function (req, res) {
