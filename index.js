@@ -288,6 +288,59 @@ client.on("messageCreate", async (message) => {
     getSafe(urls, message);
   }
 
+  //メッセージ展開
+  let GuildIds = [
+    "889474199704436776",   //planet-bot-support鯖
+    "913953017550745610",   //てきとー鯖
+    "768073209169444884",   //デジクリマイクラ鯖
+    "1102158301862559774",  //デジクリゲーム鯖
+  ];
+  if (GuildIds.includes(message.guild.id)) {
+    const MESSAGE_URL_REGEX =
+      /https?:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g;
+    const matches = MESSAGE_URL_REGEX.exec(message.content);
+    if (matches) {
+      const [url, guildId, channelId, messageId] = matches;
+      try {
+        const channel = await client.channels.fetch(channelId);
+        const fetchedMessage = await channel.messages.fetch(messageId);
+
+        let buttons = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setLabel("メッセージを見る")
+            .setURL(fetchedMessage.url)
+            .setStyle(ButtonStyle.Link),
+          new ButtonBuilder()
+            .setCustomId("cancel")
+            .setEmoji("🗑️")
+            .setStyle(ButtonStyle.Secondary)
+        );
+
+        message.channel.send({
+          embeds: [
+            {
+              description: fetchedMessage.content,
+              author: {
+                name: fetchedMessage.author.tag,
+                iconURL: fetchedMessage.author.displayAvatarURL(),
+              },
+              color: 0x4d4df7,
+              timestamp: new Date(fetchedMessage.createdTimestamp),
+            },
+          ],
+          components: [buttons],
+        });
+
+        //メッセージリンクだけが投稿された場合の処理
+        if (url == message.content) {
+          message.delete();
+        }
+      } catch (err) {
+        return;
+      }
+    }
+  }
+
   // プレフィクスが要らない系コマンド
   if (
     message.content.match(/jinbeおはよう/) ||
