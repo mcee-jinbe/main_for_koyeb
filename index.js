@@ -127,7 +127,7 @@ client.once("ready", async () => {
 
   setInterval(() => {
     client.user.setActivity({
-      name: `所属サーバー数は、${client.guilds.cache.size}サーバー｜Ping値は、${client.ws.ping}ms｜railway.appで起動中です`,
+      name: `所属サーバー数は、${client.guilds.cache.size}サーバー｜Ping値は、${client.ws.ping}ms｜koyeb.comで起動中です`,
     });
   }, 10000);
 
@@ -181,7 +181,7 @@ client.once("ready", async () => {
 
   client.channels.cache
     .get("889486664760721418")
-    .send("railway.appで起動しました！");
+    .send("koyeb.comで起動しました！");
 });
 
 //mongooseについて
