@@ -1,6 +1,7 @@
 const { PermissionsBitField } = require("discord.js");
 const { setTimeout } = require("node:timers/promises");
 
+//TODO => BOTにそれらのロールを編集する権限が無い時（順番がおかしい場合も含む）に、エラーを吐くように変更
 module.exports = {
   data: {
     name: "grade_role_update",
