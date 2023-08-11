@@ -1,5 +1,6 @@
 const { ApplicationCommandOptionType } = require("discord.js");
-const profileModel = require("../models/profileSchema.js");
+const userDB = require("../models/user_db.js");
+const serverDB = require("../models/server_db.js");
 
 module.exports = {
   data: {
@@ -23,49 +24,63 @@ module.exports = {
     ],
   },
   async execute(interaction) {
-    if (interaction.guild.id == "768073209169444884") {
-      // スラッシュコマンドの入力情報を取得
-      var new_birthday_month = interaction.options.getNumber("month");
-      var new_birthday_day = interaction.options.getNumber("day");
-      let lastday = new Date(2020, new_birthday_month, 0).getDate();
+    //誕生日を祝う機能が使えるか確認
+    serverDB
+      .findOne({ _id: interaction.guild.id })
+      .catch((err) => {
+        console.log(err.message);
+        return interaction.reply({
+          content:
+            "内部エラーが発生しました。\nサーバー用データベースが正常に作成されなかった可能性があります。",
+          ephemeral: true,
+        });
+      })
+      .then(async (model) => {
+        if (model.status == "false") {
+          return interaction.reply({
+            content:
+              "申し訳ございません。このサーバーでは誕生日を祝う機能が利用できません。\nあなたがサーバーの管理者である場合は、`/server_setting`コマンドから設定を有効にできます。",
+            ephemeral: true,
+          });
+        } else if (model.status == "true") {
+          // スラッシュコマンドの入力情報を取得
+          var new_birthday_month = interaction.options.getNumber("month");
+          var new_birthday_day = interaction.options.getNumber("day");
+          let lastday = new Date(2020, new_birthday_month, 0).getDate();
 
-      let user_id = interaction.user.id;
+          let user_id = interaction.user.id;
 
-      if (new_birthday_month >= 1 && new_birthday_month <= 12) {
-        if (new_birthday_day >= 1 && new_birthday_day <= lastday) {
-          if (new_birthday_month >= 1 && new_birthday_month <= 9) {
-            var new_birthday_month = "0" + new_birthday_month;
-          }
-          if (new_birthday_day >= 1 && new_birthday_day <= 9) {
-            var new_birthday_day = "0" + new_birthday_day;
-          }
-          let database_data = await profileModel.findById(user_id);
-          let database_month = database_data.birthday_month;
-          let database_day = database_data.birthday_day;
-          console.log(
-            `---データベースからのデータ---\nmonth: ${database_month}\nday: ${database_day}\n------`
-          );
-
-          if (database_month == "no_data") {
-            if (database_day == "no_data") {
-              profileModel.findOne({ _id: user_id }, function (err, model) {
-                if (err) {
-                  console.log(err.message);
-                  return;
-                }
-
-                // 内容を更新
-                model.birthday_month = new_birthday_month;
-                model.birthday_day = new_birthday_day;
-                model.status = "yet";
-                model.save(async function (err, model) {
-                  if (err) {
+          if (new_birthday_month >= 1 && new_birthday_month <= 12) {
+            if (new_birthday_day >= 1 && new_birthday_day <= lastday) {
+              if (new_birthday_month >= 1 && new_birthday_month <= 9) {
+                var new_birthday_month = "0" + new_birthday_month;
+              }
+              if (new_birthday_day >= 1 && new_birthday_day <= 9) {
+                var new_birthday_day = "0" + new_birthday_day;
+              }
+              let database_data = await userDB.find({
+                uid: user_id,
+                serverID: interaction.guild.id,
+              });
+              if (!database_data.length) {
+                const profile = await userDB.create({
+                  uid: user_id,
+                  serverID: interaction.guild.id,
+                  user_name: interaction.user.name,
+                  birthday_month: new_birthday_month,
+                  birthday_day: new_birthday_day,
+                  status: "yet",
+                });
+                profile
+                  .save()
+                  .catch(async (err) => {
                     console.log(err.message);
                     await interaction.reply(
                       "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースの更新時にエラーが発生しました。\nコンソールを確認してください。"
                     );
                     return;
-                  } else {
+                  })
+                  .then(async () => {
                     await interaction.reply({
                       embeds: [
                         {
@@ -76,77 +91,70 @@ module.exports = {
                       ],
                     });
                     return;
-                  }
-                });
-              });
+                  });
+              } else {
+                userDB
+                  .findOne({ uid: user_id, serverID: interaction.guild.id })
+                  .catch((err) => {
+                    console.log(err.message);
+                    return interaction.reply({
+                      content:
+                        "誕生日のデータを更新する際に、内部エラーが発生しました。\nサポートサーバーからエラーが発生した旨を伝えてください。",
+                      ephemeral: true,
+                    });
+                  })
+                  .then((model) => {
+                    // 古い情報を取得
+                    let old_month = model.birthday_month;
+                    let old_day = model.birthday_day;
+                    // 内容を更新
+                    model.birthday_month = new_birthday_month;
+                    model.birthday_day = new_birthday_day;
+                    model.save().then(async () => {
+                      await interaction.reply({
+                        embeds: [
+                          {
+                            title: "更新完了！",
+                            description: `あなたの誕生日を\`${old_month}月${old_day}日\`から\`${new_birthday_month}月${new_birthday_day}日\`に更新しました。`,
+                            color: 0x10ff00,
+                          },
+                        ],
+                      });
+                      return;
+                    });
+                  });
+              }
             } else {
-              await interaction.reply(
-                "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースのmonthだけがno_dataでした。"
-              );
+              await interaction.reply({
+                embeds: [
+                  {
+                    title: "エラー！",
+                    description: `${new_birthday_month}月には、最大で${lastday}日までしか存在しません。\n正しい月日使用して再度お試しください。`,
+                    color: 0xff0000,
+                  },
+                ],
+                ephemeral: true,
+              });
             }
           } else {
-            if (database_day == "no_data") {
-              await interaction.reply(
-                "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースのdayだけがno_dataでした。"
-              );
-            } else {
-              profileModel.findOne({ _id: user_id }).then((model) => {
-                // 古い情報を取得
-                let old_month = model.birthday_month;
-                let old_day = model.birthday_day;
-                // 内容を更新
-                model.birthday_month = new_birthday_month;
-                model.birthday_day = new_birthday_day;
-                model.save().then(async () => {
-                  await interaction.reply({
-                    embeds: [
-                      {
-                        title: "更新完了！",
-                        description: `あなたの誕生日を\`${old_month}月${old_day}日\`から\`${new_birthday_month}月${new_birthday_day}日\`に更新しました。`,
-                        color: 0x10ff00,
-                      },
-                    ],
-                  });
-                  return;
-                });
-              });
-            }
+            await interaction.reply({
+              embeds: [
+                {
+                  title: "エラー！",
+                  description: `1年は1～12月までしか存在しません。\n正しい月日を使用して再度お試しください。`,
+                  color: 0xff0000,
+                },
+              ],
+              ephemeral: true,
+            });
           }
         } else {
-          await interaction.reply({
-            embeds: [
-              {
-                title: "エラー！",
-                description: `${new_birthday_month}月には、最大で${lastday}日までしか存在しません。\n正しい月日使用して再度お試しください。`,
-                color: 0xff0000,
-              },
-            ],
+          return interaction.reply({
+            content:
+              "内部エラーが発生しました。\nサーバー用データベースのステータスの値が予期しない値であった可能性があります。",
             ephemeral: true,
           });
         }
-      } else {
-        await interaction.reply({
-          embeds: [
-            {
-              title: "エラー！",
-              description: `1年は1～12月までしか存在しません。\n正しい月日を使用して再度お試しください。`,
-              color: 0xff0000,
-            },
-          ],
-          ephemeral: true,
-        });
-      }
-    } else {
-      await interaction.reply({
-        embeds: [
-          {
-            title: "エラー！",
-            description: `このサーバーでこのコマンドは実行できません。`,
-            color: 0xff0000,
-          },
-        ],
-        ephemeral: true,
       });
-    }
   },
 };
