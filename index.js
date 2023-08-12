@@ -81,14 +81,11 @@ async function birthday_check() {
     let birthday_people_id = model[key].uid;
     let birthday_status = model[key].status;
 
-    let celebrate_channel_id = await serverDB.findById(celebrate_server_id)
-      .channelId;
-    
+    let server_info = await serverDB.findById(celebrate_server_id);
 
     if (birthday_status !== "finished") {
       //誕生日を祝う
-      //TODO  => send出来ない問題を修正
-      client.channels.cache.get(celebrate_channel_id).send({
+      client.channels.cache.get(server_info.channelID).send({
         content: `<@${birthday_people_id}>`,
         embeds: [
           {
@@ -145,51 +142,78 @@ client.once("ready", async () => {
 
   birthday_check(); //起動時に実行
 
-  cron.schedule("15 8 * * *", () => {
-    //8:15に実行
-    birthday_check();
-  });
+  cron.schedule(
+    "15 8 * * *",
+    () => {
+      //8:15に実行
+      birthday_check();
+    },
+    {
+      timezone: "Asia/Tokyo",
+    }
+  );
 
-  cron.schedule("15 13 * * *", () => {
-    //13:15に実行
-    birthday_check();
-  });
+  cron.schedule(
+    "15 13 * * *",
+    () => {
+      //13:15に実行
+      birthday_check();
+    },
+    {
+      timezone: "Asia/Tokyo",
+    }
+  );
 
-  cron.schedule("45 15 * * *", () => {
-    //15:45に実行
-    birthday_check();
-  });
-
-  cron.schedule("59 23 31 12 *", () => {
-    //12/31 23:59にリセット
-    userDB.find({}, function (err, model) {
-      if (err) {
-        console.log(err.message);
-        client.channels.cache
-          .get("889478088486948925")
-          .send(
-            "内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。"
-          );
-        return;
-      }
-
-      //status更新
-      for (const key in model) {
-        model[key].status = "yet";
-        model[key].save().catch(async (err) => {
-          if (err) {
-            console.log(err.message);
-            client.channels.cache
-              .get("889478088486948925")
-              .send(
-                "内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。"
-              );
-            return;
+  cron.schedule(
+    "45 15 * * *",
+    () => {
+      //15:45に実行
+      birthday_check();
+    },
+    {
+      timezone: "Asia/Tokyo",
+    }
+  );
+  cron.schedule(
+    "59 23 31 12 *",
+    async () => {
+      //12/31 23:59にリセット
+      await userDB
+        .find({ status: "finished" })
+        .catch((err) => {
+          console.log(err.message);
+          client.channels.cache
+            .get("889478088486948925")
+            .send(
+              "内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。"
+            );
+          return;
+        })
+        .then((model) => {
+          //status更新
+          for (const key in model) {
+            model[key].status = "yet";
+            model[key]
+              .save()
+              .catch(async (err) => {
+                if (err) {
+                  console.log(err.message);
+                  client.channels.cache
+                    .get("889478088486948925")
+                    .send(
+                      "内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。"
+                    );
+                  return;
+                }
+              })
+              .then(() => console.log("done"));
           }
         });
-      }
-    });
-  });
+    },
+    {
+      timezone: "Asia/Tokyo",
+    }
+  );
 
   client.channels.cache
     .get("889486664760721418")
