@@ -356,6 +356,9 @@ client.on("messageCreate", async (message) => {
     message.channel.send(
       "本BOTのバージョンアップに伴い、本BOTを再招待いただく必要があります。\nお手数おかけしますが、一度kickしてから再招待をお願い致します。\n　※その際に、現在私に割り当てられているロールは一度割り当てが解除されますので、再設定をお願い致します。"
     );
+    client.channels.cache
+      .get("889478088486948925")
+      .send(`残りの１つのサーバーに案内を送りました。`);
   }
 
   //危険なURLに警告
