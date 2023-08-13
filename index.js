@@ -354,7 +354,7 @@ client.on("messageCreate", async (message) => {
   let check = serverDB.findById(message.guild.id);
   if (!check) {
     message.channel.send(
-      "お伝えしたいことがございます。本サーバーのオーナー様はお手数ですが、<@728495196303523900> `(@hoshimikan6490)`までご連絡ください。\nよろしくお願いします。"
+      "本BOTのバージョンアップに伴い、本BOTを再招待いただく必要があります。\nお手数おかけしますが、一度kickしてから再招待をお願い致します。\n　※その際に、現在私に割り当てられているロールは一度割り当てが解除されますので、再設定をお願い致します。"
     );
   }
 
