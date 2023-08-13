@@ -36,7 +36,7 @@ require("dotenv").config();
 const token = process.env["bot_token"];
 const mong_db_info = process.env["mongodb_token"];
 const url_check_api = process.env["url_check_api"];
-const PORT = 8080;
+const PORT = 8000;
 
 //サイト立ち上げ
 app.get("/", function (req, res) {
@@ -278,6 +278,26 @@ client.on("guildCreate", async (guild) => {
 });
 
 //このBOTがサーバーから削除された時の動作
+client.on("guildDelete", async (guild) => {
+  const profile = await serverDB.findById(guild.id);
+
+  if (!profile) {
+    client.channels.cache
+      .get("889486664760721418")
+      .send(
+        `データベースに登録されていないサーバーから退出しました。オーナーIDは${guild.ownerId}、サーバーIDは${guild.id}`
+      );
+  } else {
+    serverDB
+      .deleteOne({ _id: guild.id })
+      .catch((err) => {
+        console.log(err.message);
+      })
+      .then(() => {
+        console.log("正常にサーバーから退出しました。");
+      });
+  }
+});
 
 //URLチェックの動作を指定
 async function getSafe(urls, message) {
@@ -329,6 +349,14 @@ async function getSafe(urls, message) {
 // botがメッセージを受信すると発動され、 上から順に処理される。
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
+
+  //一時的
+  let check = serverDB.findById(message.guild.id);
+  if (!check) {
+    message.channel.send(
+      "お伝えしたいことがございます。本サーバーのオーナー様はお手数ですが、<@728495196303523900> `(@hoshimikan6490)`までご連絡ください。\nよろしくお願いします。"
+    );
+  }
 
   //危険なURLに警告
   let urls = String(message.content).match(
