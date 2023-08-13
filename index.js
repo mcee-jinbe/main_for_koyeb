@@ -23,7 +23,8 @@ const app = express();
 const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
 const mongoose = require("mongoose");
-const profileModel = require("./models/profileSchema");
+const userDB = require("./models/user_db.js");
+const serverDB = require("./models/server_db.js");
 const prefix = "mc!";
 const util = require("util");
 const wait = util.promisify(setTimeout);
@@ -35,7 +36,7 @@ require("dotenv").config();
 const token = process.env["bot_token"];
 const mong_db_info = process.env["mongodb_token"];
 const url_check_api = process.env["url_check_api"];
-const PORT = 8000;
+const PORT = 8080;
 
 //サイト立ち上げ
 app.get("/", function (req, res) {
@@ -62,7 +63,7 @@ async function birthday_check() {
   let today = formatToTimeZone(now, FORMAT, { timeZone: "Asia/Tokyo" });
   let today_month = today.split("-")[0];
   let today_day = String(parseInt(today.split("-")[1])); // 先頭の0を削除するためにString(parseInt())を入れている
-  let model = await profileModel.find({
+  let model = await userDB.find({
     birthday_month: today_month,
     birthday_day: today_day,
   });
@@ -76,17 +77,20 @@ async function birthday_check() {
 
   for (const key in model) {
     // めでたい人の情報を取得して定義
-    let birthday_man_id = model[key]._id;
+    let celebrate_server_id = model[key].serverID;
+    let birthday_people_id = model[key].uid;
     let birthday_status = model[key].status;
+
+    let server_info = await serverDB.findById(celebrate_server_id);
 
     if (birthday_status !== "finished") {
       //誕生日を祝う
-      client.channels.cache.get("835298730922999851").send({
-        content: `<@${birthday_man_id}>`,
+      client.channels.cache.get(server_info.channelID).send({
+        content: `<@${birthday_people_id}>`,
         embeds: [
           {
             title: "お誕生日おめでとうございます！",
-            description: `今日は、<@${birthday_man_id}>さんのお誕生日です！`,
+            description: `今日は、<@${birthday_people_id}>さんのお誕生日です！`,
             color: 0xff00ff,
             thumbnail: {
               url: "attachment://happy_birthday.png",
@@ -106,9 +110,14 @@ async function birthday_check() {
       model[key].save().catch(async (err) => {
         console.log(err);
         client.channels.cache
-          .get("835298730922999851")
+          .get(celebrate_channel_id)
           .send(
-            "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。"
+            "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。"
+          );
+        client.channels.cache
+          .get("889478088486948925")
+          .send(
+            `<@728495196303523900>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報:　鯖ID: ${celebrate_server_id}、ユーザーID:　${birthday_people_id}`
           );
         return;
       });
@@ -133,51 +142,78 @@ client.once("ready", async () => {
 
   birthday_check(); //起動時に実行
 
-  cron.schedule("15 8 * * *", () => {
-    //8:15に実行
-    birthday_check();
-  });
+  cron.schedule(
+    "15 8 * * *",
+    () => {
+      //8:15に実行
+      birthday_check();
+    },
+    {
+      timezone: "Asia/Tokyo",
+    }
+  );
 
-  cron.schedule("15 13 * * *", () => {
-    //13:15に実行
-    birthday_check();
-  });
+  cron.schedule(
+    "15 13 * * *",
+    () => {
+      //13:15に実行
+      birthday_check();
+    },
+    {
+      timezone: "Asia/Tokyo",
+    }
+  );
 
-  cron.schedule("45 15 * * *", () => {
-    //15:45に実行
-    birthday_check();
-  });
-
-  cron.schedule("59 23 31 12 *", () => {
-    //12/31 23:59にリセット
-    profileModel.find({}, function (err, model) {
-      if (err) {
-        console.log(err.message);
-        client.channels.cache
-          .get("835298730922999851")
-          .send(
-            "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。"
-          );
-        return;
-      }
-
-      //status更新
-      for (const key in model) {
-        model[key].status = "yet";
-        model[key].save(function (err, model) {
-          if (err) {
-            console.log(err.message);
-            client.channels.cache
-              .get("835298730922999851")
-              .send(
-                "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\n誕生日statusの更新時にエラーが発生しました。\nコンソールを確認してください。"
-              );
-            return;
+  cron.schedule(
+    "45 15 * * *",
+    () => {
+      //15:45に実行
+      birthday_check();
+    },
+    {
+      timezone: "Asia/Tokyo",
+    }
+  );
+  cron.schedule(
+    "59 23 31 12 *",
+    async () => {
+      //12/31 23:59にリセット
+      await userDB
+        .find({ status: "finished" })
+        .catch((err) => {
+          console.log(err.message);
+          client.channels.cache
+            .get("889478088486948925")
+            .send(
+              "内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。"
+            );
+          return;
+        })
+        .then((model) => {
+          //status更新
+          for (const key in model) {
+            model[key].status = "yet";
+            model[key]
+              .save()
+              .catch(async (err) => {
+                if (err) {
+                  console.log(err.message);
+                  client.channels.cache
+                    .get("889478088486948925")
+                    .send(
+                      "内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。"
+                    );
+                  return;
+                }
+              })
+              .then(() => console.log("done"));
           }
         });
-      }
-    });
-  });
+    },
+    {
+      timezone: "Asia/Tokyo",
+    }
+  );
 
   client.channels.cache
     .get("889486664760721418")
@@ -197,37 +233,51 @@ mongoose
     console.log(error); //エラー出力
   });
 
-//　ユーザー参加時の処理
-client.on("guildMemberAdd", async (member) => {
-  if (member.guild.id == "768073209169444884") {
-    const user_id = member.id;
-    //先ほど作成したスキーマを参照
-    let user = await profileModel.findOne({ _id: user_id });
-
-    if (!user) {
-      const user_name = (await client.users.fetch(user_id)).username;
-      const profile = await profileModel.create({
-        _id: user_id, //ユーザーID
-        user_name: user_name, //ユーザーネーム
-        birthday_month: "no_data",
-        birthday_day: "no_data",
-        status: "yet",
-      });
-      profile.save();
-      console.log("新規参加者をデータベースに登録したよ！");
-    } else {
+//このBOTがサーバーに追加された時の動作
+client.on("guildCreate", async (guild) => {
+  const profile = await serverDB.create({
+    _id: guild.id,
+    channelID: null,
+    status: "false",
+  });
+  profile
+    .save()
+    .catch(async (err) => {
+      console.log(err.message);
       client.channels.cache
         .get("889478088486948925")
         .send(
-          `<@728495196303523900> マイクラ班discordに新規参加したユーザー（ユーザーID: \`${user_id}\`）は、すでにデータが存在したため、登録処理をスキップしました。`
+          "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
         );
-    }
-  } else {
-    console.log(
-      "マイクラ班サーバー以外への参加者のため、データベース登録をスキップしました。"
-    );
-  }
+      return;
+    })
+    .then(async () => {
+      const button = new ActionRowBuilder().setComponents(
+        new ButtonBuilder()
+          .setStyle(ButtonStyle.Link)
+          .setLabel("サポートサーバーに参加する")
+          .setURL("https://discord.gg/uYYaVRuUuJ")
+      );
+
+      let owner_id = guild.ownerId;
+      let owner = client.users.fetch(owner_id);
+      (await owner).send({
+        embeds: [
+          {
+            title: "お知らせ",
+            description: `本BOTをご利用いただき、ありがとうございます。\n本BOTに搭載されたサーバー内のユーザーの誕生日を祝う機能は、各サーバーの管理者様が「\`/server_settings\`」コマンドを利用して有効化の設定をしない限りは動作しない仕組みとなっております。お手数おかけしますが、ご利用の際は設定をお願い致します。\n\`※ご不明な点がございましたら、以下のボタンより、サポートサーバーでお尋ねください。\``,
+            color: 0xff0000,
+            footer: {
+              text: `DMで失礼します。`,
+            },
+          },
+        ],
+        components: [button],
+      });
+    });
 });
+
+//このBOTがサーバーから削除された時の動作
 
 //URLチェックの動作を指定
 async function getSafe(urls, message) {
@@ -290,10 +340,10 @@ client.on("messageCreate", async (message) => {
 
   //メッセージ展開
   let GuildIds = [
-    "889474199704436776",   //planet-bot-support鯖
-    "913953017550745610",   //てきとー鯖
-    "768073209169444884",   //デジクリマイクラ鯖
-    "1102158301862559774",  //デジクリゲーム鯖
+    "889474199704436776", //planet-bot-support鯖
+    "913953017550745610", //てきとー鯖
+    "768073209169444884", //デジクリマイクラ鯖
+    "1102158301862559774", //デジクリゲーム鯖
   ];
   if (GuildIds.includes(message.guild.id)) {
     const MESSAGE_URL_REGEX =
@@ -445,7 +495,7 @@ client.on("messageCreate", async (message) => {
       .setStyle(ButtonStyle.Secondary)
   );
 
-  if (command === "2022") {
+  if (command === "nendo_sakaime") {
     if (
       !message.member.permissions.has(PermissionsBitField.Flags.Administrator)
     ) {
@@ -458,10 +508,14 @@ client.on("messageCreate", async (message) => {
       await wait(1000);
       message.delete();
     } else {
+      let today = new Date();
+      let year = today.getFullYear();
+      let month = today.getMonth() + 1;
+      let nendo = month >= 4 ? year : year - 1;
       message.channel.send({
         embeds: [
           {
-            title: "これ以降は2022年度の情報です！",
+            title: `これ以降は${nendo}年度の情報です！`,
             color: 0xff0000,
             timestamp: new Date(),
           },
@@ -704,24 +758,6 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.customId === "cancel") {
-    interaction.message.delete();
-  }
-
-  if (interaction.customId === "delete_database_Yes") {
-    const model = require("./models/profileSchema");
-    model.deleteMany({}, function (err) {
-      if (err) {
-        interaction.reply(
-          "内部エラーが発生しました。\nコンソールを確認してください！"
-        );
-        console.error(err);
-      } else {
-        interaction.reply("✅削除しました！");
-      }
-    });
-    interaction.message.delete();
-  }
-  if (interaction.customId === "delete_database_No") {
     interaction.message.delete();
   }
 
