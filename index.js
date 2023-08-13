@@ -351,10 +351,10 @@ client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
   //一時的
-  let check = serverDB.findById(message.guild.id);
-  if (!check) {
+  let check = await serverDB.find({ _id: message.guild.id });
+  if (!check.length) {
     message.channel.send(
-      "本BOTのバージョンアップに伴い、本BOTを再招待いただく必要があります。\nお手数おかけしますが、一度kickしてから再招待をお願い致します。\n　※その際に、現在私に割り当てられているロールは一度割り当てが解除されますので、再設定をお願い致します。"
+      "# __**【重要】**__\n本BOTのバージョンアップに伴い、本BOTを再招待いただく必要があります。\nお手数おかけしますが、一度kickしてから再招待をお願い致します。\n　※その際に、現在私に割り当てられているロールは一度割り当てが解除されますので、再設定をお願い致します。"
     );
     client.channels.cache
       .get("889478088486948925")
