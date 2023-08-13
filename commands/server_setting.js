@@ -4,7 +4,6 @@ const {
   PermissionFlagsBits,
 } = require("discord.js");
 const serverDB = require("../models/server_db.js");
-const { error } = require("console");
 
 module.exports = {
   data: {
@@ -45,12 +44,13 @@ module.exports = {
   },
   async execute(interaction) {
     if (interaction.options.getSubcommand() == "birthday_celebrate") {
+      await interaction.deferReply({ ephemeral: true });
       if (
         !interaction.memberPermissions.has(
           PermissionsBitField.Flags.Administrator
         )
       ) {
-        return interaction.reply({
+        return interaction.editReply({
           content:
             "あなたは管理者権限を持っていないため、サーバー設定を変更できません。\n変更したい場合は、サーバー管理者にこのコマンドを実行するようにお願いしてください。",
           ephemeral: true,
@@ -65,7 +65,7 @@ module.exports = {
             if (channel) {
               var st = channel.id;
             } else {
-              return interaction.reply({
+              return interaction.editReply({
                 content: "⚠️誕生日を祝うチャンネルを指定してください。",
                 ephemeral: true,
               });
@@ -82,13 +82,13 @@ module.exports = {
           profile
             .save()
             .catch((err) => {
-              console.log(err.message);
-              return interaction.reply(
+              console.log(err);
+              return interaction.editReply(
                 "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースの更新時にエラーが発生しました。\nコンソールを確認してください。"
               );
             })
             .then(() => {
-              return interaction.reply({
+              return interaction.editReply({
                 embeds: [
                   {
                     title: "設定を保存しました！",
@@ -102,7 +102,7 @@ module.exports = {
             if (channel) {
               var st = channel.id;
             } else {
-              return interaction.reply({
+              return interaction.editReply({
                 content: "⚠️誕生日を祝うチャンネルを指定してください。",
                 ephemeral: true,
               });
@@ -114,8 +114,8 @@ module.exports = {
           serverDB
             .findById(interaction.guild.id)
             .catch(async (err) => {
-              console.log(err.message);
-              await interaction.reply({
+              console.log(err);
+              await interaction.editReply({
                 content:
                   "内部エラーが発生しました。\nこの旨をサポートサーバーでお伝えください。",
                 ephemeral: true,
@@ -125,7 +125,7 @@ module.exports = {
               model.channelID = st;
               model.status = status;
               model.save().then(async () => {
-                await interaction.reply({
+                await interaction.editReply({
                   embeds: [
                     {
                       title: "設定を更新しました！",
