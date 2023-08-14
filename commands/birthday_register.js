@@ -36,9 +36,7 @@ module.exports = {
         });
       })
       .then(async (model) => {
-        console.log("saving birthday");
         if (model.status == "false") {
-          console.log("regist_cannnot use error send");
           return interaction.reply({
             content:
               "申し訳ございません。このサーバーでは誕生日を祝う機能が利用できません。\nあなたがサーバーの管理者である場合は、`/server_setting`コマンドから設定を有効にできます。",
@@ -46,7 +44,6 @@ module.exports = {
           });
         } else if (model.status == "true") {
           // スラッシュコマンドの入力情報を取得
-          console.log("start birthday_regist");
           var new_birthday_month = interaction.options.getNumber("month");
           var new_birthday_day = interaction.options.getNumber("day");
           let lastday = new Date(2020, new_birthday_month, 0).getDate();
@@ -65,9 +62,7 @@ module.exports = {
                 uid: user_id,
                 serverID: interaction.guild.id,
               });
-              console.log("regist get userdb");
               if (!database_data.length) {
-                console.log("start userdb regist");
                 const profile = await userDB.create({
                   uid: user_id,
                   serverID: interaction.guild.id,
@@ -86,7 +81,6 @@ module.exports = {
                     return;
                   })
                   .then(async () => {
-                    console.log("regist done");
                     await interaction.reply({
                       embeds: [
                         {
@@ -99,7 +93,6 @@ module.exports = {
                     return;
                   });
               } else {
-                console.log("start get userdb regist_update");
                 userDB
                   .findOne({ uid: user_id, serverID: interaction.guild.id })
                   .catch((err) => {
@@ -111,7 +104,6 @@ module.exports = {
                     });
                   })
                   .then((model) => {
-                    console.log("start regist update");
                     // 古い情報を取得
                     let old_month = model.birthday_month;
                     let old_day = model.birthday_day;
@@ -119,7 +111,6 @@ module.exports = {
                     model.birthday_month = new_birthday_month;
                     model.birthday_day = new_birthday_day;
                     model.save().then(async () => {
-                      console.log("update done");
                       await interaction.reply({
                         embeds: [
                           {
@@ -134,7 +125,6 @@ module.exports = {
                   });
               }
             } else {
-              console.log("regist parameter error_day");
               await interaction.reply({
                 embeds: [
                   {
@@ -147,7 +137,6 @@ module.exports = {
               });
             }
           } else {
-            console.log("regist parameter error_month");
             await interaction.reply({
               embeds: [
                 {
@@ -160,7 +149,6 @@ module.exports = {
             });
           }
         } else {
-          console.log("regist unknown status error send");
           return interaction.reply({
             content:
               "内部エラーが発生しました。\nサーバー用データベースのステータスの値が予期しない値であった可能性があります。",
