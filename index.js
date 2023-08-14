@@ -54,12 +54,10 @@ const commandFiles = fs
 for (const file of commandFiles) {
   const command = require(`./commands/${file}`);
   commands[command.data.name] = command;
-  console.log(`${file} を設定`);
 }
 
 // 誕生日チェック
 async function birthday_check() {
-  console.log("誕生日チェック開始");
   const FORMAT = "MM-DD";
   let now = new Date();
   let today = formatToTimeZone(now, FORMAT, { timeZone: "Asia/Tokyo" });
@@ -77,7 +75,6 @@ async function birthday_check() {
     return;
   }
 
-  console.log("祝福開始");
   for (const key in model) {
     // めでたい人の情報を取得して定義
     let celebrate_server_id = model[key].serverID;
@@ -150,7 +147,6 @@ client.once("ready", async () => {
     () => {
       //8:15に実行
       birthday_check();
-      console.log("8:15");
     },
     {
       timezone: "Asia/Tokyo",
@@ -162,7 +158,6 @@ client.once("ready", async () => {
     () => {
       //13:15に実行
       birthday_check();
-      console.log("13:15");
     },
     {
       timezone: "Asia/Tokyo",
@@ -174,7 +169,6 @@ client.once("ready", async () => {
     () => {
       //15:45に実行
       birthday_check();
-      console.log("15:45");
     },
     {
       timezone: "Asia/Tokyo",
@@ -183,7 +177,6 @@ client.once("ready", async () => {
   cron.schedule(
     "59 23 31 12 *",
     async () => {
-      console.log("12/31 23:59");
       //12/31 23:59にリセット
       await userDB
         .find({ status: "finished" })
@@ -242,7 +235,6 @@ mongoose
 
 //このBOTがサーバーに追加された時の動作
 client.on("guildCreate", async (guild) => {
-  console.log("鯖に参加");
   const profile = await serverDB.create({
     _id: guild.id,
     channelID: null,
@@ -267,7 +259,6 @@ client.on("guildCreate", async (guild) => {
           .setURL("https://discord.gg/uYYaVRuUuJ")
       );
 
-      console.log("オーナーDM");
       let owner_id = guild.ownerId;
       let owner = client.users.fetch(owner_id);
       (await owner).send({
@@ -283,13 +274,11 @@ client.on("guildCreate", async (guild) => {
         ],
         components: [button],
       });
-      console.log("オーナーDM done");
     });
 });
 
 //このBOTがサーバーから削除された時の動作
 client.on("guildDelete", async (guild) => {
-  console.log("bot kick");
   const profile = await serverDB.findById(guild.id);
 
   if (!profile) {
@@ -298,7 +287,6 @@ client.on("guildDelete", async (guild) => {
       .send(
         `データベースに登録されていないサーバーから退出しました。オーナーIDは${guild.ownerId}、サーバーIDは${guild.id}`
       );
-    console.log("leaved");
   } else {
     serverDB
       .deleteOne({ _id: guild.id })
@@ -313,7 +301,6 @@ client.on("guildDelete", async (guild) => {
 
 //URLチェックの動作を指定
 async function getSafe(urls, message) {
-  console.log("url check start");
   let request_url = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${url_check_api}`;
 
   let data = {
@@ -341,7 +328,6 @@ async function getSafe(urls, message) {
     .then((response) => response.json())
     .then((data) => {
       if ("matches" in data) {
-        console.log("kiken");
         message.channel.send({
           embeds: [
             {
@@ -396,7 +382,6 @@ client.on("messageCreate", async (message) => {
     "1102158301862559774", //デジクリゲーム鯖
   ];
   if (GuildIds.includes(message.guild.id)) {
-    console.log("mes tenkai");
     const MESSAGE_URL_REGEX =
       /https?:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g;
     const matches = MESSAGE_URL_REGEX.exec(message.content);
@@ -447,32 +432,27 @@ client.on("messageCreate", async (message) => {
     message.content.match(/jinbeおはよう/) ||
     message.content.match(/おはようjinbe/)
   ) {
-    console.log("oha");
     message.channel.send("おはよう！");
   } else if (
     message.content.match(/jinbeこんにちは/) ||
     message.content.match(/こんにちはjinbe/)
   ) {
-    console.log("kontiwa");
     message.channel.send("こんにちわああああ！");
   } else if (
     message.content.match(/jinbeこんばんは/) ||
     message.content.match(/こんばんはjinbe/)
   ) {
-    console.log("konbanwa");
     message.channel.send("こんばんわ！！");
   } else if (
     message.content.match(/jinbeおやすみ/) ||
     message.content.match(/おやすみjinbe/)
   ) {
-    console.log("oyasumi");
     message.channel.send("おやすみ～\nいい夢見てね…");
   } else if (
     message.content === "omikuji" ||
     message.content === "jinbe" ||
     message.content === "omikujinbe"
   ) {
-    console.log("omikuji start");
     const omikuji_choice = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId("omi1")
@@ -506,7 +486,6 @@ client.on("messageCreate", async (message) => {
     await wait(6000);
     replay.delete();
   } else if (message.content === "janken") {
-    console.log("janken start");
     const janken_choice = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId("pa")
@@ -549,7 +528,6 @@ client.on("messageCreate", async (message) => {
     if (
       !message.member.permissions.has(PermissionsBitField.Flags.Administrator)
     ) {
-      console.log("nendo_parmisson error");
       let response = await message.channel.send({
         content:
           "あなたは、このサーバーの管理者権限を持っていません。\nこのコマンドの実行には管理者権限が必須です。",
@@ -559,7 +537,6 @@ client.on("messageCreate", async (message) => {
       await wait(1000);
       message.delete();
     } else {
-      console.log("nendo_send");
       let today = new Date();
       let year = today.getFullYear();
       let month = today.getMonth() + 1;
@@ -576,7 +553,6 @@ client.on("messageCreate", async (message) => {
       message.delete();
     }
   } else if (command === "about") {
-    console.log("about send");
     const tic4 = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setURL(
@@ -601,7 +577,6 @@ client.on("messageCreate", async (message) => {
       components: [tic4],
     });
   } else if (command === "ping") {
-    console.log("ping send");
     message.channel.send({
       embeds: [
         {
@@ -615,7 +590,6 @@ client.on("messageCreate", async (message) => {
       ],
     });
   } else if (command === "aisatu_list") {
-    console.log("aisatu_list send");
     message.channel.send({
       embeds: [
         {
@@ -628,7 +602,6 @@ client.on("messageCreate", async (message) => {
       ],
     });
   } else if (command === "help_omikuji") {
-    console.log("omikuji_help send");
     message.channel.send({
       embeds: [
         {
@@ -641,7 +614,6 @@ client.on("messageCreate", async (message) => {
       ],
     });
   } else {
-    console.log("unknown command error send");
     message.channel.send({
       embeds: [
         {
@@ -692,7 +664,6 @@ client.on("interactionCreate", async (interaction) => {
       var number = "3";
     }
 
-    console.log("send omikuji");
     await interaction.channel.send({
       content: `<@${interaction.user.id}>`,
       embeds: [
@@ -797,7 +768,6 @@ client.on("interactionCreate", async (interaction) => {
       var file_pas = "photos/lose.png";
     }
     // 結果表示
-    console.log("send janken");
     await interaction.channel.send({
       content: `<@${interaction.user.id}>`,
       embeds: [
@@ -815,7 +785,6 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.customId === "cancel") {
-    console.log("do cancel");
     interaction.message.delete();
   }
 

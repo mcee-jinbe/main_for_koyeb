@@ -4,7 +4,6 @@ module.exports = {
     description: "🧬このプログラムの内容を全公開！",
   },
   async execute(interaction) {
-    console.log("code");
     interaction.reply({
       embeds: [
         {

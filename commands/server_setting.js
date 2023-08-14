@@ -43,27 +43,23 @@ module.exports = {
   },
   async execute(interaction) {
     if (interaction.options.getSubcommand() == "birthday_celebrate") {
-      console.log("server_setting celebrate start");
       await interaction.deferReply({ ephemeral: true });
       if (
         !interaction.memberPermissions.has(
           PermissionsBitField.Flags.Administrator
         )
       ) {
-        console.log("serv_set permission tarinai");
         return interaction.editReply({
           content:
             "あなたは管理者権限を持っていないため、サーバー設定を変更できません。\n変更したい場合は、サーバー管理者にこのコマンドを実行するようにお願いしてください。",
           ephemeral: true,
         });
       } else {
-        console.log("serv_set start");
         let status = interaction.options.getString("true_or_false");
         let channel = interaction.options.getChannel("channel");
 
         let data = serverDB.find({ _id: interaction.guild.id });
         if (!data) {
-          console.log("channel id set");
           if (status == "true") {
             if (channel) {
               var st = channel.id;
@@ -77,7 +73,6 @@ module.exports = {
             var st = null;
           }
 
-          console.log("serverdb create");
           const profile = await serverDB.create({
             _id: interaction.guild.id,
             channelID: st,
@@ -92,7 +87,6 @@ module.exports = {
               );
             })
             .then(() => {
-              console.log("serverdb saved");
               return interaction.editReply({
                 embeds: [
                   {
@@ -103,9 +97,7 @@ module.exports = {
               });
             });
         } else {
-          console.log("serverdb updatastart");
           if (status == "true") {
-            console.log("channel id set");
             if (channel) {
               var st = channel.id;
             } else {
@@ -118,12 +110,10 @@ module.exports = {
             var st = null;
           }
 
-          console.log("serverdb update");
           serverDB
             .findById(interaction.guild.id)
             .catch(async (err) => {
               console.log(err);
-              console.log("serverdb update error");
               await interaction.editReply({
                 content:
                   "内部エラーが発生しました。\nこの旨をサポートサーバーでお伝えください。",
@@ -134,7 +124,6 @@ module.exports = {
               model.channelID = st;
               model.status = status;
               model.save().then(async () => {
-                console.log("serverdb update finished");
                 await interaction.editReply({
                   embeds: [
                     {
