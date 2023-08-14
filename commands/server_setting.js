@@ -149,7 +149,6 @@ module.exports = {
         }
       }
     } else if (interaction.options.getSubcommand() == "show") {
-      console.log("server_setting show start");
       serverDB
         .findById(interaction.guild.id)
         .catch((err) => {
@@ -157,7 +156,6 @@ module.exports = {
         })
         .then((model) => {
           if (model.status == "true") {
-            console.log("show start");
             var status = "有効(true)";
             var channel = interaction.guild.channels.cache.find(
               (ch) => ch.id === model.channelID
@@ -170,7 +168,6 @@ module.exports = {
             var channel = "`(機能が無効のため、この項目は無効化されています)`";
           }
 
-          console.log("server setting show send");
           return interaction.reply({
             embeds: [
               {

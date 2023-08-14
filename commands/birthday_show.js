@@ -35,7 +35,6 @@ module.exports = {
       .findOne({ _id: interaction.guild.id })
       .catch((err) => {
         console.log(err);
-        console.log("birthday show_dbdata_no_error");
         return interaction.reply({
           content:
             "内部エラーが発生しました。\nサーバー用データベースが正常に作成されなかった可能性があります。",

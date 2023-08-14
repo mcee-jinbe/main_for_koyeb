@@ -80,7 +80,6 @@ module.exports = {
                   .save()
                   .catch(async (err) => {
                     console.log(err);
-                    console.log("regist error");
                     await interaction.reply(
                       "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースの更新時にエラーが発生しました。\nコンソールを確認してください。"
                     );
@@ -104,7 +103,6 @@ module.exports = {
                 userDB
                   .findOne({ uid: user_id, serverID: interaction.guild.id })
                   .catch((err) => {
-                    console.log("regist update error");
                     console.log(err);
                     return interaction.reply({
                       content:

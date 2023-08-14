@@ -662,7 +662,6 @@ client.on("interactionCreate", async (interaction) => {
     interaction.customId === "omi2" ||
     interaction.customId === "omi3"
   ) {
-    console.log("start omikuji");
     const arr = [
       "大吉",
       "中吉",
@@ -715,7 +714,6 @@ client.on("interactionCreate", async (interaction) => {
     interaction.customId === "cho" ||
     interaction.customId === "gu"
   ) {
-    console.log("start janken");
     // じんべえの手を決める
     const arr = ["pa", "cho", "gu"];
     const random = Math.floor(Math.random() * arr.length);
