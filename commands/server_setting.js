@@ -1,7 +1,6 @@
 const {
   ApplicationCommandOptionType,
   PermissionsBitField,
-  PermissionFlagsBits,
 } = require("discord.js");
 const serverDB = require("../models/server_db.js");
 
@@ -139,29 +138,34 @@ module.exports = {
         }
       }
     } else if (interaction.options.getSubcommand() == "show") {
-      serverDB.findById(interaction.guild.id).then((model) => {
-        if (model.status == "true") {
-          var status = "有効(true)";
-          var channel = interaction.guild.channels.cache.find(
-            (ch) => ch.id === model.channelID
-          );
-          if (!channel) {
-            var channel = "`見つかりませんでした！`";
+      serverDB
+        .findById(interaction.guild.id)
+        .catch((err) => {
+          console.log(err);
+        })
+        .then((model) => {
+          if (model.status == "true") {
+            var status = "有効(true)";
+            var channel = interaction.guild.channels.cache.find(
+              (ch) => ch.id === model.channelID
+            );
+            if (!channel) {
+              var channel = "`見つかりませんでした！`";
+            }
+          } else if (model.status == "false") {
+            var status = "無効(false)";
+            var channel = "`(機能が無効のため、この項目は無効化されています)`";
           }
-        } else if (model.status == "false") {
-          var status = "無効(false)";
-          var channel = "`(機能が無効のため、この項目は無効化されています)`"
-        }
 
-        return interaction.reply({
-          embeds: [
-            {
-              title: `${interaction.guild.name}の設定`,
-              description: `- 誕生日を祝う機能：　${status}\n- 誕生日を祝うチャンネル:　${channel}`,
-            },
-          ],
+          return interaction.reply({
+            embeds: [
+              {
+                title: `${interaction.guild.name}の設定`,
+                description: `- 誕生日を祝う機能：　${status}\n- 誕生日を祝うチャンネル:　${channel}`,
+              },
+            ],
+          });
         });
-      });
     }
   },
 };

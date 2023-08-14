@@ -33,7 +33,7 @@ module.exports = {
     serverDB
       .findOne({ _id: interaction.guild.id })
       .catch((err) => {
-        console.log(err.message);
+        console.log(err);
         return interaction.reply({
           content:
             "内部エラーが発生しました。\nサーバー用データベースが正常に作成されなかった可能性があります。",
@@ -103,6 +103,7 @@ module.exports = {
                     } else {
                       let database_month = model.birthday_month;
                       let database_day = model.birthday_day;
+
                       await interaction.editReply({
                         content: "",
                         embeds: [

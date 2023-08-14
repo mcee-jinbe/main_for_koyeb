@@ -40,7 +40,7 @@ const PORT = 8000;
 
 //サイト立ち上げ
 app.get("/", function (req, res) {
-  res.send("Hello world\n");
+  res.sendStatus(200);
 });
 app.listen(PORT, () => {
   console.log(`Running on https://jinbe-hoshimikan.koyeb.app:${PORT}`);
@@ -181,7 +181,7 @@ client.once("ready", async () => {
       await userDB
         .find({ status: "finished" })
         .catch((err) => {
-          console.log(err.message);
+          console.log(err);
           client.channels.cache
             .get("889478088486948925")
             .send(
@@ -197,7 +197,7 @@ client.once("ready", async () => {
               .save()
               .catch(async (err) => {
                 if (err) {
-                  console.log(err.message);
+                  console.log(err);
                   client.channels.cache
                     .get("889478088486948925")
                     .send(
@@ -216,7 +216,7 @@ client.once("ready", async () => {
   );
 
   client.channels.cache
-    .get("889486664760721418")
+  .get("889486664760721418")
     .send("koyeb.comで起動しました！");
 });
 
@@ -243,7 +243,7 @@ client.on("guildCreate", async (guild) => {
   profile
     .save()
     .catch(async (err) => {
-      console.log(err.message);
+      console.log(err);
       client.channels.cache
         .get("889478088486948925")
         .send(
@@ -291,7 +291,7 @@ client.on("guildDelete", async (guild) => {
     serverDB
       .deleteOne({ _id: guild.id })
       .catch((err) => {
-        console.log(err.message);
+        console.log(err);
       })
       .then(() => {
         console.log("正常にサーバーから退出しました。");
@@ -350,17 +350,20 @@ async function getSafe(urls, message) {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
-  //一時的
-  let check = await serverDB.find({ _id: message.guild.id });
-  if (!check.length) {
-    let user_id = message.member.id;
-    let user = client.users.fetch(user_id);
-    (await user).send(
-      "# __**【重要】**__\n本BOTのバージョンアップに伴い、本BOTを再招待いただく必要があります。\nお手数おかけしますが、一度kickしてから再招待をお願い致します。\n　※その際に、現在私に割り当てられているロールは一度割り当てが解除されますので、再設定をお願い致します。\n\nもし、あなたにその権限が無い場合は、サーバー管理者にこの旨をお伝えください。"
-    );
-    client.channels.cache
-      .get("889478088486948925")
-      .send(`残りの１つのサーバーに案内を送りました。`);
+  let myPermissons = message.guild.members.me
+    .permissionsIn(message.channel)
+    .toArray();
+  let joken = [
+    "ViewChannel",
+    "SendMessages",
+    "ManageMessages",
+    "EmbedLinks",
+    "AttachFiles",
+  ];
+  for (const key in joken) {
+    if (!myPermissons.includes(joken[key])) {
+      return;
+    }
   }
 
   //危険なURLに警告
@@ -521,13 +524,6 @@ client.on("messageCreate", async (message) => {
   const args = message.content.slice(prefix.length).trim().split(" ");
   const command = args.shift().toLowerCase();
 
-  let cancel_button = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId("cancel")
-      .setLabel("このメッセージを削除する")
-      .setStyle(ButtonStyle.Secondary)
-  );
-
   if (command === "nendo_sakaime") {
     if (
       !message.member.permissions.has(PermissionsBitField.Flags.Administrator)
@@ -638,7 +634,6 @@ client.on("interactionCreate", async (interaction) => {
     interaction.customId === "omi2" ||
     interaction.customId === "omi3"
   ) {
-    const wait = require("node:timers/promises").setTimeout;
     const arr = [
       "大吉",
       "中吉",
@@ -690,7 +685,6 @@ client.on("interactionCreate", async (interaction) => {
     interaction.customId === "cho" ||
     interaction.customId === "gu"
   ) {
-    const wait = require("node:timers/promises").setTimeout;
     // じんべえの手を決める
     const arr = ["pa", "cho", "gu"];
     const random = Math.floor(Math.random() * arr.length);
