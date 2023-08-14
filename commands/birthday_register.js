@@ -24,9 +24,6 @@ module.exports = {
     ],
   },
   async execute(interaction) {
-
-
-    
     //誕生日を祝う機能が使えるか確認
     serverDB
       .findOne({ _id: interaction.guild.id })
@@ -70,7 +67,7 @@ module.exports = {
               });
               console.log("regist get userdb");
               if (!database_data.length) {
-                console.log("start userdb regist")
+                console.log("start userdb regist");
                 const profile = await userDB.create({
                   uid: user_id,
                   serverID: interaction.guild.id,

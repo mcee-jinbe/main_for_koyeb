@@ -223,7 +223,7 @@ client.once("ready", async () => {
   );
 
   //client.channels.cache
-    //.get("889486664760721418")
+  //.get("889486664760721418")
   //  .send("koyeb.comで起動しました！");
 });
 
@@ -297,7 +297,7 @@ client.on("guildDelete", async (guild) => {
       .get("889486664760721418")
       .send(
         `データベースに登録されていないサーバーから退出しました。オーナーIDは${guild.ownerId}、サーバーIDは${guild.id}`
-    );
+      );
     console.log("leaved");
   } else {
     serverDB
@@ -364,18 +364,9 @@ async function getSafe(urls, message) {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
-  //一時的
-  let check = await serverDB.find({ _id: message.guild.id });
-  if (!check.length) {
-    console.log("annnai send");
-    let user_id = message.member.id;
-    let user = client.users.fetch(user_id);
-    (await user).send(
-      "# __**【重要】**__\n本BOTのバージョンアップに伴い、本BOTを再招待いただく必要があります。\nお手数おかけしますが、一度kickしてから再招待をお願い致します。\n　※その際に、現在私に割り当てられているロールは一度割り当てが解除されますので、再設定をお願い致します。\n\nもし、あなたにその権限が無い場合は、サーバー管理者にこの旨をお伝えください。"
-    );
-    client.channels.cache
-      .get("889478088486948925")
-      .send(`残りの１つのサーバーに案内を送りました。`);
+  let guildMe = await interaction.guild.members.fetch(client.user.id);
+  if (!guildMe.permissions.has(PermissionsBitField.Flags.SendMessages)) {
+    console.log("permisson not enogh")
   }
 
   //危険なURLに警告
@@ -470,7 +461,6 @@ client.on("messageCreate", async (message) => {
     message.content === "jinbe" ||
     message.content === "omikujinbe"
   ) {
-
     console.log("omikuji start");
     const omikuji_choice = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
@@ -692,7 +682,7 @@ client.on("interactionCreate", async (interaction) => {
       var number = "3";
     }
 
-console.log("send omikuji");
+    console.log("send omikuji");
     await interaction.channel.send({
       content: `<@${interaction.user.id}>`,
       embeds: [

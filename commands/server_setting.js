@@ -1,7 +1,6 @@
 const {
   ApplicationCommandOptionType,
   PermissionsBitField,
-  PermissionFlagsBits,
 } = require("discord.js");
 const serverDB = require("../models/server_db.js");
 
