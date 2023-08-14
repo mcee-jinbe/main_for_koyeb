@@ -16,6 +16,7 @@ module.exports = {
     ],
   },
   async execute(interaction) {
+    console.log("everywhere happybirthday");
     const user = interaction.options.getUser("user");
     await interaction.reply({
       content: "<@" + user.id + ">",

@@ -14,12 +14,14 @@ module.exports = {
         PermissionsBitField.Flags.Administrator
       )
     ) {
+      console.log("grade is_not_admin");
       //エラーを投げる
       interaction.reply({
         content: "申し訳ございません。\nこのコマンドは管理者限定です",
         ephemeral: true,
       });
     } else {
+      console.log("grade update start");
       //時間かかるので、先にreply
       await interaction.deferReply({ ephemeral: true });
       let roles = [
@@ -35,6 +37,7 @@ module.exports = {
       let guildMe = await interaction.guild.members.fetch(client.user.id);
 
       //ロールがあるかチェック
+      console.log("grade role check");
       for (const key in roles) {
         let role = await interaction.guild.roles.cache.find((role) =>
           role.name.includes(roles[key])
@@ -55,6 +58,7 @@ module.exports = {
       }
 
       //botの権限チェック
+      console.log("grade bot permisson ckeck");
       for (const key in roles) {
         let otherRole = await interaction.guild.roles.cache.find((role) =>
           role.name.includes(roles[key])
@@ -86,6 +90,7 @@ module.exports = {
       ];
       const members = await interaction.guild.members.fetch();
       const tags = members.map((member) => member.user.id);
+      console.log("grade role update start");
       for (var key in tags) {
         const user_id = tags[key];
         const user = interaction.guild.members.cache.get(user_id);
@@ -99,11 +104,13 @@ module.exports = {
           (role) => role.name.includes("生徒")
         );
         if (user.roles.cache.has(grade_role_kou3.id)) {
+          console.log("grade ko3");
           // 高３だけ別処理
           user.roles.remove(grade_role_kou3);
           user.roles.add(grade_role_sotugyo);
           user.roles.remove(grade_role_student);
         } else {
+          console.log("grade update");
           // それ以外のロール処理
           for (var key in grade_role_names) {
             const grade_role_name = grade_role_names[key];
