@@ -364,14 +364,20 @@ async function getSafe(urls, message) {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
-  let guildMe = await message.guild.members.fetch(client.user.id);
-  console.log(
-    `---permisson---\n${guildMe}\n${guildMe.permissions.has(
-      PermissionsBitField.Flags.SendMessages
-    )}\n----------`
-  );
-  if (!guildMe.permissions.has(PermissionsBitField.Flags.SendMessages)) {
-    console.log("permisson not enogh");
+  let myPermissons = message.guild.members.me
+    .permissionsIn(message.channel)
+    .toArray();
+  let joken = [
+    "ViewChannel",
+    "SendMessages",
+    "ManageMessages",
+    "EmbedLinks",
+    "AttachFiles",
+  ];
+  for (const key in joken) {
+    if (!myPermissons.includes(joken[key])) {
+      return;
+    }
   }
 
   //危険なURLに警告
