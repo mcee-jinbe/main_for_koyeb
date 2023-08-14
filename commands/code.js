@@ -8,7 +8,7 @@ module.exports = {
       embeds: [
         {
           title: "このBOTのプログラムはこちら",
-          url: "https://github.com/mcee-jinbe/main_for_railway",
+          url: "https://github.com/mcee-jinbe/main_for_koyeb",
           description: "転用可",
           color: 0x227fff,
         },
