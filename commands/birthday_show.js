@@ -33,7 +33,7 @@ module.exports = {
     serverDB
       .findOne({ _id: interaction.guild.id })
       .catch((err) => {
-        console.log(err.message);
+        console.log(err);
         return interaction.reply({
           content:
             "内部エラーが発生しました。\nサーバー用データベースが正常に作成されなかった可能性があります。",

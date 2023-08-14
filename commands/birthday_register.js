@@ -28,7 +28,7 @@ module.exports = {
     serverDB
       .findOne({ _id: interaction.guild.id })
       .catch((err) => {
-        console.log(err.message);
+        console.log(err);
         return interaction.reply({
           content:
             "内部エラーが発生しました。\nサーバー用データベースが正常に作成されなかった可能性があります。",
@@ -74,7 +74,7 @@ module.exports = {
                 profile
                   .save()
                   .catch(async (err) => {
-                    console.log(err.message);
+                    console.log(err);
                     await interaction.reply(
                       "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースの更新時にエラーが発生しました。\nコンソールを確認してください。"
                     );
@@ -96,7 +96,7 @@ module.exports = {
                 userDB
                   .findOne({ uid: user_id, serverID: interaction.guild.id })
                   .catch((err) => {
-                    console.log(err.message);
+                    console.log(err);
                     return interaction.reply({
                       content:
                         "誕生日のデータを更新する際に、内部エラーが発生しました。\nサポートサーバーからエラーが発生した旨を伝えてください。",
