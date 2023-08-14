@@ -12,6 +12,7 @@ module.exports = {
   },
 
   async execute(interaction) {
+    console.log("start senchoen");
     const modal = new ModalBuilder()
       .setCustomId("1000choyen")
       .setTitle("1000兆円画像生成");
@@ -38,6 +39,7 @@ module.exports = {
       .then(async (mInteraction) => {
         const top = mInteraction.fields.getTextInputValue("topInput");
         const bottom = mInteraction.fields.getTextInputValue("bottomInput");
+        console.log("send senchoen");
         mInteraction.reply({
           embeds: [
             {

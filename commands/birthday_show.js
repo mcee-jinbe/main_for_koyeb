@@ -30,10 +30,12 @@ module.exports = {
   },
   async execute(interaction) {
     //誕生日を祝う機能が使えるか確認
+    console.log("birthday show");
     serverDB
       .findOne({ _id: interaction.guild.id })
       .catch((err) => {
-        console.log(err.message);
+        console.log(err);
+        console.log("birthday show_dbdata_no_error");
         return interaction.reply({
           content:
             "内部エラーが発生しました。\nサーバー用データベースが正常に作成されなかった可能性があります。",
@@ -42,18 +44,21 @@ module.exports = {
       })
       .then(async (model) => {
         if (model.status == "false") {
+          console.log("birth show_cannot use error send");
           return interaction.reply({
             content:
               "申し訳ございません。このサーバーでは誕生日を祝う機能が利用できません。\nあなたがサーバーの管理者である場合は、`/server_setting`コマンドから設定を有効にできます。",
             ephemeral: true,
           });
         } else if (model.status == "true") {
+    console.log("show start")
           await interaction.deferReply();
 
           let show_type = interaction.options.getString("type");
           let show_user = interaction.options.getUser("user");
 
           if (show_type == "all") {
+            console.log("all show");
             userDB
               .find({
                 serverID: interaction.guild.id,
@@ -69,6 +74,7 @@ module.exports = {
                     let push_text = `${display_name}(@${user_name})`;
                     member_list.push(push_text);
                   }
+                  console.log("all showed");
                   await interaction.editReply({
                     embeds: [
                       {
@@ -82,13 +88,16 @@ module.exports = {
                     ],
                   });
                 } else {
+                  console.log("show no_user_data_error");
                   await interaction.editReply("誰も誕生日を登録していません。");
                 }
               });
           } else if (show_type == "user") {
+            console.log("show user");
             if (show_user !== null) {
               const isBot = (await client.users.fetch(show_user)).bot;
               if (!isBot) {
+                console.log("show get userdb");
                 userDB
                   .findOne({
                     uid: interaction.user.id,
@@ -96,6 +105,7 @@ module.exports = {
                   })
                   .then(async (model) => {
                     if (!model) {
+                      console.log("show user_nodata");
                       await interaction.editReply({
                         content: "誕生日が登録されていません。",
                         ephemeral: false,
@@ -103,6 +113,8 @@ module.exports = {
                     } else {
                       let database_month = model.birthday_month;
                       let database_day = model.birthday_day;
+
+                      console.log("showed user data");
                       await interaction.editReply({
                         content: "",
                         embeds: [
@@ -116,6 +128,7 @@ module.exports = {
                     }
                   });
               } else {
+                console.log("show it_is_not_user");
                 await interaction.editReply({
                   content: "",
                   embeds: [
@@ -129,6 +142,7 @@ module.exports = {
                 });
               }
             } else {
+              console.log("show user no_user");
               await interaction.editReply({
                 content: "",
                 embeds: [
