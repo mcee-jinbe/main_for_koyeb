@@ -110,7 +110,7 @@ async function birthday_check() {
       model[key].save().catch(async (err) => {
         console.log(err);
         client.channels.cache
-          .get(celebrate_channel_id)
+          .get(server_info.channelID)
           .send(
             "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。"
           );
