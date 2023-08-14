@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 # 可能であれば (npm@5+)
 COPY package*.json ./
 
-RUN npm install --only=production
+RUN npm ci --only=production
 # 本番用にコードを作成している場合
 # RUN npm install --only=production
 
