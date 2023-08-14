@@ -365,8 +365,13 @@ client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
   let guildMe = await message.guild.members.fetch(client.user.id);
+  console.log(
+    `---permisson---\n${guildMe}\n${guildMe.permissions.has(
+      PermissionsBitField.Flags.SendMessages
+    )}\n----------`
+  );
   if (!guildMe.permissions.has(PermissionsBitField.Flags.SendMessages)) {
-    console.log("permisson not enogh")
+    console.log("permisson not enogh");
   }
 
   //危険なURLに警告
