@@ -364,7 +364,7 @@ async function getSafe(urls, message) {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
-  let guildMe = await interaction.guild.members.fetch(client.user.id);
+  let guildMe = await message.guild.members.fetch(client.user.id);
   if (!guildMe.permissions.has(PermissionsBitField.Flags.SendMessages)) {
     console.log("permisson not enogh")
   }
