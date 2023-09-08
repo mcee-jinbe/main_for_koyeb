@@ -43,7 +43,7 @@ app.get("/", function (req, res) {
   res.sendStatus(200);
 });
 app.listen(PORT, () => {
-  console.log(`Running on https://jinbe-hoshimikan.koyeb.app:${PORT}`);
+  console.log(`Running on https://jinbe-hoshimikan.koyeb.app`);
 });
 
 const commands = {};
