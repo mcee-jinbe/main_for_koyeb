@@ -216,7 +216,7 @@ client.once("ready", async () => {
   );
 
   client.channels.cache
-  .get("889486664760721418")
+    .get("889486664760721418")
     .send("koyeb.comで起動しました！");
 });
 
