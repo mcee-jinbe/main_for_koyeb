@@ -1,5 +1,4 @@
 const fs = require("fs");
-// Discord bot implements
 const {
   Client,
   GatewayIntentBits,
@@ -22,9 +21,11 @@ const express = require("express");
 const app = express();
 const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
+/*
 const mongoose = require("mongoose");
 const userDB = require("./models/user_db.js");
 const serverDB = require("./models/server_db.js");
+*/
 const prefix = "mc!";
 const util = require("util");
 const wait = util.promisify(setTimeout);
@@ -34,7 +35,7 @@ require("dotenv").config();
 
 //機密情報取得
 const token = process.env["bot_token"];
-const mong_db_info = process.env["mongodb_token"];
+//const mong_db_info = process.env["mongodb_token"];
 const url_check_api = process.env["url_check_api"];
 const PORT = 8000;
 
@@ -57,6 +58,7 @@ for (const file of commandFiles) {
 }
 
 // 誕生日チェック
+/*
 async function birthday_check() {
   const FORMAT = "MM-DD";
   let now = new Date();
@@ -124,6 +126,7 @@ async function birthday_check() {
     }
   }
 }
+*/
 
 // botが準備できれば発動され、 上から順に処理される。
 client.once("ready", async () => {
@@ -139,7 +142,7 @@ client.once("ready", async () => {
       name: `所属サーバー数は、${client.guilds.cache.size}サーバー｜Ping値は、${client.ws.ping}ms｜koyeb.comで起動中です`,
     });
   }, 10000);
-
+/*
   birthday_check(); //起動時に実行
 
   cron.schedule(
@@ -214,12 +217,14 @@ client.once("ready", async () => {
       timezone: "Asia/Tokyo",
     }
   );
+  */
 
   client.channels.cache
     .get("889486664760721418")
     .send("koyeb.comで起動しました！");
 });
 
+/*
 //mongooseについて
 mongoose.set("strictQuery", false);
 mongoose
@@ -298,6 +303,7 @@ client.on("guildDelete", async (guild) => {
       });
   }
 });
+*/
 
 //URLチェックの動作を指定
 async function getSafe(urls, message) {
