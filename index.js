@@ -43,7 +43,7 @@ app.get("/", function (req, res) {
   res.sendStatus(200);
 });
 app.listen(PORT, () => {
-  console.log(`Running on https://jinbe-hoshimikan.koyeb.app:${PORT}`);
+  console.log(`Running on https://jinbe2-hoshimikan.koyeb.app/`);
 });
 
 const commands = {};
@@ -216,7 +216,7 @@ client.once("ready", async () => {
   );
 
   client.channels.cache
-  .get("889486664760721418")
+    .get("889486664760721418")
     .send("koyeb.comで起動しました！");
 });
 
