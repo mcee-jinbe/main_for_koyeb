@@ -1,2 +1,6 @@
 node_modules
-npm-debug.log
+.gitignore
+.prettierrc.json
+package-lock.json
+README.md
+SECURITY.md
