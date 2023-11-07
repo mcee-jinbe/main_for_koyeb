@@ -53,7 +53,7 @@ const commandFiles = fs
 
 for (const file of commandFiles) {
   const command = require(`./commands/${file}`);
-  console.log(`コマンドの読み込みが完了: ${command.name}`);
+  console.log(`コマンドの読み込みが完了: ${command.data.name}`);
   commands[command.data.name] = command;
 }
 
