@@ -62,15 +62,16 @@ async function birthday_check() {
   let now = new Date();
   let today = formatToTimeZone(now, FORMAT, { timeZone: "Asia/Tokyo" });
   let today_month = today.split("-")[0];
-  let today_day = String(parseInt(today.split("-")[1])); // 先頭の0を削除するためにString(parseInt())を入れている
+  let today_day = String(today.split("-")[1]);
   let model = await userDB.find({
     birthday_month: today_month,
     birthday_day: today_day,
+    status: "yet",
   });
 
   if (!model.length) {
     console.log(
-      `今日(${today_month}月${today_day}日)、誕生日の人は確認できませんでした。`
+      `祝福されていない、今日(${today_month}月${today_day}日)誕生日の人は確認できませんでした。`
     );
     return;
   }
@@ -79,49 +80,46 @@ async function birthday_check() {
     // めでたい人の情報を取得して定義
     let celebrate_server_id = model[key].serverID;
     let birthday_people_id = model[key].uid;
-    let birthday_status = model[key].status;
 
     let server_info = await serverDB.findById(celebrate_server_id);
 
-    if (birthday_status !== "finished") {
-      //誕生日を祝う
-      client.channels.cache.get(server_info.channelID).send({
-        content: `<@${birthday_people_id}>`,
-        embeds: [
-          {
-            title: "お誕生日おめでとうございます！",
-            description: `今日は、<@${birthday_people_id}>さんのお誕生日です！`,
-            color: 0xff00ff,
-            thumbnail: {
-              url: "attachment://happy_birthday.png",
-            },
+    //誕生日を祝う
+    client.channels.cache.get(server_info.channelID).send({
+      content: `<@${birthday_people_id}>`,
+      embeds: [
+        {
+          title: "お誕生日おめでとうございます！",
+          description: `今日は、<@${birthday_people_id}>さんのお誕生日です！`,
+          color: 0xff00ff,
+          thumbnail: {
+            url: "attachment://happy_birthday.png",
           },
-        ],
-        files: [
-          {
-            attachment: "./photos/jinbe_ome.png",
-            name: "happy_birthday.png",
-          },
-        ],
-      });
+        },
+      ],
+      files: [
+        {
+          attachment: "./photos/jinbe_ome.png",
+          name: "happy_birthday.png",
+        },
+      ],
+    });
 
-      //status更新
-      model[key].status = "finished";
-      model[key].save().catch(async (err) => {
-        console.log(err);
-        client.channels.cache
-          .get(server_info.channelID)
-          .send(
-            "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。"
-          );
-        client.channels.cache
-          .get("889478088486948925")
-          .send(
-            `<@728495196303523900>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報:　鯖ID: ${celebrate_server_id}、ユーザーID:　${birthday_people_id}`
-          );
-        return;
-      });
-    }
+    //status更新
+    model[key].status = "finished";
+    model[key].save().catch(async (err) => {
+      console.log(err);
+      client.channels.cache
+        .get(server_info.channelID)
+        .send(
+          "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。"
+        );
+      client.channels.cache
+        .get("889478088486948925")
+        .send(
+          `<@728495196303523900>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報:　鯖ID: ${celebrate_server_id}、ユーザーID:　${birthday_people_id}`
+        );
+      return;
+    });
   }
 }
 
@@ -223,9 +221,7 @@ client.once("ready", async () => {
 //mongooseについて
 mongoose.set("strictQuery", false);
 mongoose
-  .connect(mong_db_info, {
-    useNewUrlParser: true, //任意
-  })
+  .connect(mong_db_info)
   .then(() => {
     console.log("データベースに接続したんだゾ");
   })

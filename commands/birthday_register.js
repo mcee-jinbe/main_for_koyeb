@@ -110,6 +110,7 @@ module.exports = {
                     // 内容を更新
                     model.birthday_month = new_birthday_month;
                     model.birthday_day = new_birthday_day;
+                    model.status = "yet";
                     model.save().then(async () => {
                       await interaction.reply({
                         embeds: [
