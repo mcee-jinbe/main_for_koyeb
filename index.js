@@ -552,7 +552,7 @@ client.on("messageCreate", async (message) => {
     const tic4 = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setURL(
-          "https://discord.com/api/oauth2/authorize?client_id=946587263691788399&permissions=274878000128&scope=bot"
+          "https://discord.com/api/oauth2/authorize?client_id=946587263691788399&permissions=274878000128&scope=bot%20applications.commands"
         )
         .setLabel("BOTを招待する")
         .setStyle(ButtonStyle.Link)
