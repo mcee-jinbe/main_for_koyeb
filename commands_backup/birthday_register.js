@@ -36,6 +36,14 @@ module.exports = {
         });
       })
       .then(async (model) => {
+        if (!model) {
+          return interaction.reply({
+            content:
+              "申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/api/oauth2/authorize?client_id=946587263691788399&permissions=274878000128&scope=bot%20applications.commands)から再招待をお願い致します。",
+            ephemeral: true,
+          });
+        }
+
         if (model.status == "false") {
           return interaction.reply({
             content:
@@ -110,6 +118,7 @@ module.exports = {
                     // 内容を更新
                     model.birthday_month = new_birthday_month;
                     model.birthday_day = new_birthday_day;
+                    model.status = "yet";
                     model.save().then(async () => {
                       await interaction.reply({
                         embeds: [
