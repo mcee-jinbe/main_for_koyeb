@@ -1,5 +1,4 @@
 const fs = require("fs");
-// Discord bot implements
 const {
   Client,
   GatewayIntentBits,
@@ -53,6 +52,7 @@ const commandFiles = fs
 
 for (const file of commandFiles) {
   const command = require(`./commands/${file}`);
+  console.log(`コマンドの読み込みが完了: ${command.data.name}`);
   commands[command.data.name] = command;
 }
 
@@ -137,7 +137,6 @@ client.once("ready", async () => {
       name: `所属サーバー数は、${client.guilds.cache.size}サーバー｜Ping値は、${client.ws.ping}ms｜koyeb.comで起動中です`,
     });
   }, 10000);
-
   birthday_check(); //起動時に実行
 
   cron.schedule(
@@ -218,6 +217,7 @@ client.once("ready", async () => {
     .send("koyeb.comで起動しました！");
 });
 
+
 //mongooseについて
 mongoose.set("strictQuery", false);
 mongoose
@@ -294,6 +294,7 @@ client.on("guildDelete", async (guild) => {
       });
   }
 });
+
 
 //URLチェックの動作を指定
 async function getSafe(urls, message) {
