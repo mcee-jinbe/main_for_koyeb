@@ -45,6 +45,7 @@ app.listen(PORT, () => {
   console.log(`Running on https://jinbe2-hoshimikan.koyeb.app/`);
 });
 
+//コマンドをBOTに適応させる準備
 const commands = {};
 const commandFiles = fs
   .readdirSync("./commands")
@@ -125,6 +126,7 @@ async function birthday_check() {
 
 // botが準備できれば発動され、 上から順に処理される。
 client.once("ready", async () => {
+  //コマンドをBOTに適応させて、Ready!とコンソールに出力
   const data = [];
   for (const commandName in commands) {
     data.push(commands[commandName].data);
@@ -217,7 +219,6 @@ client.once("ready", async () => {
     .send("koyeb.comで起動しました！");
 });
 
-
 //mongooseについて
 mongoose.set("strictQuery", false);
 mongoose
@@ -294,7 +295,6 @@ client.on("guildDelete", async (guild) => {
       });
   }
 });
-
 
 //URLチェックの動作を指定
 async function getSafe(urls, message) {
@@ -626,173 +626,174 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-  if (
-    interaction.customId === "omi1" ||
-    interaction.customId === "omi2" ||
-    interaction.customId === "omi3"
-  ) {
-    const arr = [
-      "大吉",
-      "中吉",
-      "小吉",
-      "吉",
-      "凶",
-      "大凶",
-      "じんべえ吉",
-      "じんべえ凶",
-    ];
-    const random = Math.floor(Math.random() * arr.length);
-    const result = arr[random];
+  if (interaction.isButton()) {
+    if (
+      interaction.customId === "omi1" ||
+      interaction.customId === "omi2" ||
+      interaction.customId === "omi3"
+    ) {
+      const arr = [
+        "大吉",
+        "中吉",
+        "小吉",
+        "吉",
+        "凶",
+        "大凶",
+        "じんべえ吉",
+        "じんべえ凶",
+      ];
+      const random = Math.floor(Math.random() * arr.length);
+      const result = arr[random];
 
-    if (random === 0) {
-      var file_pas = "photos/jinbe_daikiti.png";
-    } else if (random === 4 || random === 7) {
-      var file_pas = "photos/jinbe_pien.png";
-    } else if (random === 5) {
-      var file_pas = "photos/jinbe_pien2.png";
-    } else {
-      var file_pas = "photos/jinbe.png";
-    }
-    if (interaction.customId === "omi1") {
-      var number = "1";
-    } else if (interaction.customId === "omi2") {
-      var number = "2";
-    } else {
-      var number = "3";
-    }
+      if (random === 0) {
+        var file_pas = "photos/jinbe_daikiti.png";
+      } else if (random === 4 || random === 7) {
+        var file_pas = "photos/jinbe_pien.png";
+      } else if (random === 5) {
+        var file_pas = "photos/jinbe_pien2.png";
+      } else {
+        var file_pas = "photos/jinbe.png";
+      }
+      if (interaction.customId === "omi1") {
+        var number = "1";
+      } else if (interaction.customId === "omi2") {
+        var number = "2";
+      } else {
+        var number = "3";
+      }
 
-    await interaction.channel.send({
-      content: `<@${interaction.user.id}>`,
-      embeds: [
-        {
-          title: "おみくじの結果！",
-          description: `あなたは、${result}を引きました！\n\n||\`ここだけの話、\`<@${interaction.user.id}> \`さんは、${number}を押したらしいよ...\`||`,
-          color: 4817413,
-          thumbnail: {
-            url: "attachment://omi_kekka.png",
+      await interaction.channel.send({
+        content: `<@${interaction.user.id}>`,
+        embeds: [
+          {
+            title: "おみくじの結果！",
+            description: `あなたは、${result}を引きました！\n\n||\`ここだけの話、\`<@${interaction.user.id}> \`さんは、${number}を押したらしいよ...\`||`,
+            color: 4817413,
+            thumbnail: {
+              url: "attachment://omi_kekka.png",
+            },
           },
-        },
-      ],
-      files: [{ attachment: file_pas, name: "omi_kekka.png" }],
-    });
-  }
-  // じゃんけんの処理
-  if (
-    interaction.customId === "pa" ||
-    interaction.customId === "cho" ||
-    interaction.customId === "gu"
-  ) {
-    // じんべえの手を決める
-    const arr = ["pa", "cho", "gu"];
-    const random = Math.floor(Math.random() * arr.length);
-    const jinbe = arr[random];
-    // 自分の手を「me」に代入
-    if (interaction.customId === "pa") {
-      var me = "pa";
-    } else if (interaction.customId === "cho") {
-      var me = "cho";
-    } else if (interaction.customId === "gu") {
-      var me = "gu";
+        ],
+        files: [{ attachment: file_pas, name: "omi_kekka.png" }],
+      });
     }
-    // 結果判定
-    // 自分がパーの時
-    if (interaction.customId === "pa") {
-      if (jinbe === "pa") {
-        var jan_result = "aiko";
-      } else if (jinbe === "cho") {
-        var jan_result = "lose";
-      } else if (jinbe === "gu") {
-        var jan_result = "win";
+    // じゃんけんの処理
+    if (
+      interaction.customId === "pa" ||
+      interaction.customId === "cho" ||
+      interaction.customId === "gu"
+    ) {
+      // じんべえの手を決める
+      const arr = ["pa", "cho", "gu"];
+      const random = Math.floor(Math.random() * arr.length);
+      const jinbe = arr[random];
+      // 自分の手を「me」に代入
+      if (interaction.customId === "pa") {
+        var me = "pa";
+      } else if (interaction.customId === "cho") {
+        var me = "cho";
+      } else if (interaction.customId === "gu") {
+        var me = "gu";
       }
-      // 自分がチョキの時
-    } else if (interaction.customId === "cho") {
-      if (jinbe === "pa") {
-        var jan_result = "win";
-      } else if (jinbe === "cho") {
-        var jan_result = "aiko";
-      } else if (jinbe === "gu") {
-        var jan_result = "lose";
+      // 結果判定
+      // 自分がパーの時
+      if (interaction.customId === "pa") {
+        if (jinbe === "pa") {
+          var jan_result = "aiko";
+        } else if (jinbe === "cho") {
+          var jan_result = "lose";
+        } else if (jinbe === "gu") {
+          var jan_result = "win";
+        }
+        // 自分がチョキの時
+      } else if (interaction.customId === "cho") {
+        if (jinbe === "pa") {
+          var jan_result = "win";
+        } else if (jinbe === "cho") {
+          var jan_result = "aiko";
+        } else if (jinbe === "gu") {
+          var jan_result = "lose";
+        }
+      } else if (interaction.customId === "gu") {
+        // 自分がグーの時
+        if (jinbe === "pa") {
+          var jan_result = "lose";
+        } else if (jinbe === "cho") {
+          var jan_result = "win";
+        } else if (jinbe === "gu") {
+          var jan_result = "aiko";
+        }
       }
-    } else if (interaction.customId === "gu") {
-      // 自分がグーの時
-      if (jinbe === "pa") {
-        var jan_result = "lose";
-      } else if (jinbe === "cho") {
-        var jan_result = "win";
-      } else if (jinbe === "gu") {
-        var jan_result = "aiko";
+      // 変数調整
+      //me変数の日本語化
+      if (me === "pa") {
+        var result_me = "パー";
+      } else if (me === "cho") {
+        var result_me = "チョキ";
+      } else if (me === "gu") {
+        var result_me = "グー";
       }
-    }
-    // 変数調整
-    //me変数の日本語化
-    if (me === "pa") {
-      var result_me = "パー";
-    } else if (me === "cho") {
-      var result_me = "チョキ";
-    } else if (me === "gu") {
-      var result_me = "グー";
-    }
-    //jinbe変数の日本語化
-    if (jinbe === "pa") {
-      var result_jinbe = "パー";
-    } else if (jinbe === "cho") {
-      var result_jinbe = "チョキ";
-    } else if (jinbe === "gu") {
-      var result_jinbe = "グー";
-    }
-    //結果の日本語化
-    if (jan_result === "win") {
-      var result_jinbe_jp = "あなたの勝ち";
-    } else if (jan_result === "aiko") {
-      var result_jinbe_jp = "あいこ";
-    } else if (jan_result === "lose") {
-      var result_jinbe_jp = "あなたの負け";
-    }
-    // 色調整
-    if (jan_result === "win") {
-      var color = 0xff0000;
-    } else if (jan_result === "aiko") {
-      var color = 0xffff00;
-    } else if (jan_result === "lose") {
-      var color = 0x0000ff;
-    }
-    // file_pass設定
-    if (jan_result === "win") {
-      var file_pas = "photos/win.png";
-    } else if (jan_result === "aiko") {
-      var file_pas = "photos/aiko.png";
-    } else if (jan_result === "lose") {
-      var file_pas = "photos/lose.png";
-    }
-    // 結果表示
-    await interaction.channel.send({
-      content: `<@${interaction.user.id}>`,
-      embeds: [
-        {
-          title: "じゃんけんの結果！",
-          description: `あなたは ${result_me}を出して、\n私は　${result_jinbe}を出したので、\n\n__**${result_jinbe_jp}です！**__`,
-          color: color,
-          thumbnail: {
-            url: "attachment://omi_kekka.png",
+      //jinbe変数の日本語化
+      if (jinbe === "pa") {
+        var result_jinbe = "パー";
+      } else if (jinbe === "cho") {
+        var result_jinbe = "チョキ";
+      } else if (jinbe === "gu") {
+        var result_jinbe = "グー";
+      }
+      //結果の日本語化
+      if (jan_result === "win") {
+        var result_jinbe_jp = "あなたの勝ち";
+      } else if (jan_result === "aiko") {
+        var result_jinbe_jp = "あいこ";
+      } else if (jan_result === "lose") {
+        var result_jinbe_jp = "あなたの負け";
+      }
+      // 色調整
+      if (jan_result === "win") {
+        var color = 0xff0000;
+      } else if (jan_result === "aiko") {
+        var color = 0xffff00;
+      } else if (jan_result === "lose") {
+        var color = 0x0000ff;
+      }
+      // file_pass設定
+      if (jan_result === "win") {
+        var file_pas = "photos/win.png";
+      } else if (jan_result === "aiko") {
+        var file_pas = "photos/aiko.png";
+      } else if (jan_result === "lose") {
+        var file_pas = "photos/lose.png";
+      }
+      // 結果表示
+      await interaction.channel.send({
+        content: `<@${interaction.user.id}>`,
+        embeds: [
+          {
+            title: "じゃんけんの結果！",
+            description: `あなたは ${result_me}を出して、\n私は　${result_jinbe}を出したので、\n\n__**${result_jinbe_jp}です！**__`,
+            color: color,
+            thumbnail: {
+              url: "attachment://omi_kekka.png",
+            },
           },
-        },
-      ],
-      files: [{ attachment: file_pas, name: "omi_kekka.png" }],
-    });
-  }
+        ],
+        files: [{ attachment: file_pas, name: "omi_kekka.png" }],
+      });
+    }
 
-  if (interaction.customId === "cancel") {
-    interaction.message.delete();
-  }
-
-  if (!interaction.type === InteractionType.ApplicationCommand) {
+    if (interaction.customId === "cancel") {
+      interaction.message.delete();
+    }
+  } else if (interaction.type === InteractionType.ApplicationCommand) {
+    const command = commands[interaction.commandName];
+    try {
+      await command?.execute(interaction);
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
     return;
-  }
-  const command = commands[interaction.commandName];
-  try {
-    await command?.execute(interaction);
-  } catch (error) {
-    console.error(error);
   }
 });
 
