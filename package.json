@@ -1,7 +1,7 @@
 {
   "name": "jinbe-main_for_koyeb",
   "version": "1.0.0",
-  "description": "``` npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch util ``` ## 各パッケージの使用用途 - `@types/node`　：node.jsを書きやすくするやつらしい - `date-fns-timezone`　：日本時間の月・日を取得するため - `discord.js`　：Discord BOTに接続し、操作するため - `fs` :「commands」フォルダを読み取るため - `mongoose` ：MongoDBの操作を簡単に行うため - `node-cron` ：毎日決まった時間に処理を行うため - `node-fetch` :URLチェックのリクエストを送るため - `util` :○○ms待つを使用するため",
+  "description": "``` npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch ``` ## 各パッケージの使用用途 - `@types/node`　：node.jsを書きやすくするやつらしい - `date-fns-timezone`　：日本時間の月・日を取得するため - `discord.js`　：Discord BOTに接続し、操作するため - `fs` :「commands」フォルダを読み取るため - `mongoose` ：MongoDBの操作を簡単に行うため - `node-cron` ：毎日決まった時間に処理を行うため - `node-fetch` :URLチェックのリクエストを送るため",
   "main": "index.js",
   "scripts": {
     "test": "node index.js"
@@ -25,7 +25,6 @@
     "fs": "^0.0.1-security",
     "mongoose": "^8.0.4",
     "node-cron": "^3.0.3",
-    "node-fetch": "^3.3.2",
-    "util": "^0.12.5"
+    "node-fetch": "^3.3.2"
   }
 }

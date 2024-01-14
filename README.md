@@ -1,7 +1,7 @@
 # パッケージに関して
 ## 実行する際のnpmコマンド
 ```
-npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch util
+npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch
 ```
 ## 各パッケージの使用用途
 - `@types/node`　：node.jsを書きやすくするやつらしい
@@ -11,7 +11,6 @@ npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch 
 - `mongoose` ：MongoDBの操作を簡単に行うため
 - `node-cron` ：毎日決まった時間に処理を行うため
 - `node-fetch` :URLチェックのリクエストを送るため
-- `util` :○○ms待つを使用するため
 
 ---
 # その他メモ
