@@ -54,12 +54,12 @@ module.exports = {
             // スラッシュコマンドの入力情報を取得
             var new_birthday_month = interaction.options.getNumber("month");
             var new_birthday_day = interaction.options.getNumber("day");
-            let lastday = new Date(2020, new_birthday_month, 0).getDate();
+            let lastDay = new Date(2020, new_birthday_month, 0).getDate();
 
             let user_id = interaction.user.id;
 
             if (new_birthday_month >= 1 && new_birthday_month <= 12) {
-              if (new_birthday_day >= 1 && new_birthday_day <= lastday) {
+              if (new_birthday_day >= 1 && new_birthday_day <= lastDay) {
                 if (new_birthday_month >= 1 && new_birthday_month <= 9) {
                   var new_birthday_month = "0" + new_birthday_month;
                 }
@@ -138,7 +138,7 @@ module.exports = {
                   embeds: [
                     {
                       title: "エラー！",
-                      description: `${new_birthday_month}月には、最大で${lastday}日までしか存在しません。\n正しい月日使用して再度お試しください。`,
+                      description: `${new_birthday_month}月には、最大で${lastDay}日までしか存在しません。\n正しい月日使用して再度お試しください。`,
                       color: 0xff0000,
                     },
                   ],

@@ -15,8 +15,8 @@ module.exports = {
       description: "何の情報を表示しますか",
       required: false,
       choices: [
-        { name: "スラッシュコマンド系", value: "slashcommand" },
-        { name: "チャットコマンド系", value: "chatcommand" },
+        { name: "スラッシュコマンド系", value: "slashCommand" },
+        { name: "チャットコマンド系", value: "chatCommand" },
       ],
     },
   ],
@@ -26,18 +26,18 @@ module.exports = {
       await interaction.deferReply();
       let type = interaction.options.getString("type");
 
-      if (type == "slashcommand") {
+      if (type == "slashCommand") {
         let title = "スラッシュコマンド";
         let desc = `- \`/birthday_register\`：あなたの誕生日を登録して、<@988951430075396167>に祝ってもらう！！\n
         - \`/birthday_show < 全体か個人か > [個人の場合は、誰の誕生日を表示するか]\`：登録済みの誕生日の情報を表示します。\n
         - \`/happy_birthday < 誕生日を祝いたい相手を指定 > \`：いつでもどこでも、ハッピーバースデー！\n
-        - \`/1000choen\`：「1000兆円　欲しい！」の画像が作れます。\n
+        - \`/1000choyen\`：「1000兆円　欲しい！」の画像が作れます。\n
         - \`/server_settings\`：このサーバーで誕生日をお祝いする機能を有効にするか設定できます。
         __※管理者権限が必須です！__\n
         - \`/help\`：このメッセージを表示します。\n
         - \`/code\`：このBOTのプログラムを全公開！(笑)\n`;
         send(title, desc);
-      } else if (type == "chatcommand") {
+      } else if (type == "chatCommand") {
         let title = "チャットコマンド";
         let desc = `## 以下のメッセージが含まれるメッセージが送信された場合、それに返事をします。
         - \`jinbeおはよう\`
