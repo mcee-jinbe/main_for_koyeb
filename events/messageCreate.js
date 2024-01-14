@@ -91,7 +91,6 @@ module.exports = async (client, message) => {
       const MESSAGE_URL_REGEX =
         /https?:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g;
       const matches = MESSAGE_URL_REGEX.exec(message.content);
-      console.log(`match: ${matches}`);
       if (matches) {
         const [url, guildId, channelId, messageId] = matches;
         try {
