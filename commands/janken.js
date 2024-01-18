@@ -1,24 +1,44 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+  ApplicationCommandOptionType,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require("discord.js");
 
 module.exports = {
   name: "janken",
   description: "✊✌️🖐️じゃんけんをしよう！！",
+  options: [
+    {
+      type: ApplicationCommandOptionType.User,
+      name: "secret",
+      description: "非公開で送信したい場合は設定してください。",
+      value: "secret",
+      required: false,
+      choice: [{ name: "非公開にする", value: "true" }],
+    },
+  ],
 
   run: async (client, interaction) => {
     try {
+      var secret = interaction.options.getString("secret");
+
+      // String => Boolean
+      var secret = secret == "true";
+
       const janken_choice = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-          .setCustomId("pa")
+          .setCustomId(secret ? "secret_pa" : "pa")
           .setLabel("パー")
           .setStyle(ButtonStyle.Primary)
           .setEmoji("🖐"),
         new ButtonBuilder()
-          .setCustomId("cho")
+          .setCustomId(secret ? "secret_cho" : "cho")
           .setLabel("チョキ")
           .setStyle(ButtonStyle.Success)
           .setEmoji("✌"),
         new ButtonBuilder()
-          .setCustomId("gu")
+          .setCustomId(secret ? "secret_gu" : "gu")   //TODO　　この後のInteractionCreateの処理を書く。また、omikujiも同じ事する
           .setLabel("グー")
           .setStyle(ButtonStyle.Danger)
           .setEmoji("✊")

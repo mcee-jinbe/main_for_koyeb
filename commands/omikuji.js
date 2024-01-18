@@ -3,6 +3,15 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 module.exports = {
   name: "omikuji",
   description: "🥠おみくじを引こう！！",
+  options: [
+    {
+      type: ApplicationCommandOptionType.User,
+      name: "user",
+      description: "誰の誕生日を祝いますか？",
+      value: "user",
+      required: true,
+    },
+  ],
 
   run: async (client, interaction) => {
     try {
