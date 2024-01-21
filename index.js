@@ -67,7 +67,7 @@ mongoose
     console.log("データベースに接続したんだゾ");
   })
   .catch((err) => {
-    console.log(err); //エラー出力
+    console.log(err);
   });
 
 //Discordへの接続
