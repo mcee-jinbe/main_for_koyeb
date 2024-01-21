@@ -10,12 +10,11 @@ module.exports = {
   description: "✊✌️🖐️じゃんけんをしよう！！",
   options: [
     {
-      type: ApplicationCommandOptionType.User,
+      type: ApplicationCommandOptionType.String,
       name: "secret",
       description: "非公開で送信したい場合は設定してください。",
-      value: "secret",
       required: false,
-      choice: [{ name: "非公開にする", value: "true" }],
+      choices: [{ name: "非公開にする", value: "true" }],
     },
   ],
 
@@ -38,7 +37,7 @@ module.exports = {
           .setStyle(ButtonStyle.Success)
           .setEmoji("✌"),
         new ButtonBuilder()
-          .setCustomId(secret ? "secret_gu" : "gu")   //TODO　　この後のInteractionCreateの処理を書く。また、omikujiも同じ事する
+          .setCustomId(secret ? "secret_gu" : "gu") //TODO　　この後のInteractionCreateの処理を書く。また、omikujiも同じ事する
           .setLabel("グー")
           .setStyle(ButtonStyle.Danger)
           .setEmoji("✊")

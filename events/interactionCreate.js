@@ -30,13 +30,21 @@ module.exports = async (client, interaction) => {
       }
 
       if (interaction?.type == InteractionType.MessageComponent) {
+        let buttonId = interaction.customId;
+        var secret;
+        if (buttonId.includes("secret")) {
+          secret = true;
+        } else {
+          secret = false;
+        }
+
         if (
-          interaction.customId === "omi1" ||
-          interaction.customId === "omi2" ||
-          interaction.customId === "omi3"
+          buttonId.includes("omi1") ||
+          buttonId.includes("omi2") ||
+          buttonId.includes("omi3")
         ) {
           await interaction.deferReply({
-            ephemeral: true,
+            ephemeral: secret,
           });
 
           const arr = [
@@ -61,16 +69,15 @@ module.exports = async (client, interaction) => {
           } else {
             var file_pas = "images/jinbe.png";
           }
-          if (interaction.customId === "omi1") {
+          if (buttonId === "omi1") {
             var number = "1";
-          } else if (interaction.customId === "omi2") {
+          } else if (buttonId === "omi2") {
             var number = "2";
           } else {
             var number = "3";
           }
 
           await interaction.editReply({
-            content: `<@${interaction.user.id}>`,
             embeds: [
               {
                 title: "おみくじの結果！",
@@ -87,25 +94,29 @@ module.exports = async (client, interaction) => {
 
         // じゃんけんの処理
         if (
-          interaction.customId === "pa" ||
-          interaction.customId === "cho" ||
-          interaction.customId === "gu"
+          buttonId.includes("pa") ||
+          buttonId.includes("cho") ||
+          buttonId.includes("gu")
         ) {
+          await interaction.deferReply({
+            ephemeral: secret,
+          });
+
           // じんべえの手を決める
           const arr = ["pa", "cho", "gu"];
           const random = Math.floor(Math.random() * arr.length);
           const jinbe = arr[random];
           // 自分の手を「me」に代入
-          if (interaction.customId === "pa") {
+          if (buttonId.includes("pa")) {
             var me = "pa";
-          } else if (interaction.customId === "cho") {
+          } else if (buttonId.includes("cho")) {
             var me = "cho";
-          } else if (interaction.customId === "gu") {
+          } else if (buttonId.includes("gu")) {
             var me = "gu";
           }
           // 結果判定
           // 自分がパーの時
-          if (interaction.customId === "pa") {
+          if (buttonId.includes("pa")) {
             if (jinbe === "pa") {
               var jan_result = "aiko";
             } else if (jinbe === "cho") {
@@ -114,7 +125,7 @@ module.exports = async (client, interaction) => {
               var jan_result = "win";
             }
             // 自分がチョキの時
-          } else if (interaction.customId === "cho") {
+          } else if (buttonId.includes("cho")) {
             if (jinbe === "pa") {
               var jan_result = "win";
             } else if (jinbe === "cho") {
@@ -122,7 +133,7 @@ module.exports = async (client, interaction) => {
             } else if (jinbe === "gu") {
               var jan_result = "lose";
             }
-          } else if (interaction.customId === "gu") {
+          } else if (buttonId.includes("gu")) {
             // 自分がグーの時
             if (jinbe === "pa") {
               var jan_result = "lose";
@@ -174,8 +185,7 @@ module.exports = async (client, interaction) => {
             var file_pas = "images/lose.png";
           }
           // 結果表示
-          await interaction.channel.send({
-            content: `<@${interaction.user.id}>`,
+          await interaction.editReply({
             embeds: [
               {
                 title: "じゃんけんの結果！",
@@ -190,8 +200,8 @@ module.exports = async (client, interaction) => {
           });
         }
 
-        if (interaction.customId === "cancel") {
-          interaction.message.delete();
+        if (buttonId === "cancel") {
+          await interaction.message.delete();
         }
       }
     }

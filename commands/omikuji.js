@@ -1,33 +1,43 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+  ApplicationCommandOptionType,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require("discord.js");
 
 module.exports = {
   name: "omikuji",
   description: "🥠おみくじを引こう！！",
   options: [
     {
-      type: ApplicationCommandOptionType.User,
-      name: "user",
-      description: "誰の誕生日を祝いますか？",
-      value: "user",
-      required: true,
+      type: ApplicationCommandOptionType.String,
+      name: "secret",
+      description: "非公開で送信したい場合は設定してください。",
+      required: false,
+      choices: [{ name: "非公開にする", value: "true" }],
     },
   ],
 
   run: async (client, interaction) => {
     try {
+      var secret = interaction.options.getString("secret");
+
+      // String => Boolean
+      var secret = secret == "true";
+
       const omikuji_choice = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-          .setCustomId("omi1")
+          .setCustomId(secret ? "secret_omi1" : "omi1")
           .setLabel("を引く")
           .setStyle(ButtonStyle.Primary)
           .setEmoji("1️⃣"),
         new ButtonBuilder()
-          .setCustomId("omi2")
+          .setCustomId(secret ? "secret_omi2" : "omi2")
           .setLabel("を引く")
           .setStyle(ButtonStyle.Success)
           .setEmoji("2️⃣"),
         new ButtonBuilder()
-          .setCustomId("omi3")
+          .setCustomId(secret ? "secret_omi3" : "omi3")
           .setLabel("を引く")
           .setStyle(ButtonStyle.Danger)
           .setEmoji("3️⃣")
