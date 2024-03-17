@@ -170,10 +170,10 @@ module.exports = async (client) => {
   //////////////////////////////////////////////
 
   setInterval(() => {
-    client.user.setActivity({
-      name: `所属サーバー数は、${client.guilds.cache.size}サーバー｜Ping値は、${client.ws.ping}ms｜koyeb.comで起動中です`,
-      type: ActivityType.Listening,
-    });
+    client.user.setActivity(
+      `所属サーバー数は、${client.guilds.cache.size}サーバー｜Ping値は、${client.ws.ping}ms｜koyeb.comで起動中です`,
+      { type: ActivityType.Listening }
+    );
   }, 10000);
 
   client.channels.cache
