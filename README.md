@@ -1,7 +1,7 @@
 # パッケージに関して
 ## 実行する際のnpmコマンド
 ```
-npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch
+npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch dotenv express
 ```
 ## 各パッケージの使用用途
 - `@types/node`　：node.jsを書きやすくするやつらしい
@@ -11,6 +11,8 @@ npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch
 - `mongoose` ：MongoDBの操作を簡単に行うため
 - `node-cron` ：毎日決まった時間に処理を行うため
 - `node-fetch` :URLチェックのリクエストを送るため
+- `dotenv` :環境変数を取得するため
+- `express` :ステータスチェック用のwebサーバーを立ち上げるため。
 
 ---
 # その他メモ
