@@ -124,6 +124,48 @@ async function birthday_check() {
   }
 }
 
+//サーバーDBにないユーザーDBは削除する
+async function deleteUserDBWithoutServerDB(server_ID) {
+  if (!server_ID) {
+    //サーバーIDが提供されていないとき
+    let userDB = await userDB.find();
+
+    for (const key of userDB) {
+      await serverDB
+        .findById(key.serverID)
+        .catch((err) => {
+          console.log(err);
+        })
+        .then((model) => {
+          if (!model) {
+            userDB
+              .deleteOne({ uid: key.uid, serverID: key.serverID })
+              .catch((err) => {
+                console.log(err);
+              })
+              .then(() => {
+                console.log("正常にデータを削除しました");
+              });
+          }
+        });
+    }
+  } else {
+    //提供されたとき
+    let userDB = await userDB.find({ serverID: server_ID });
+
+    for (const key of userDB) {
+      userDB
+        .deleteOne({ _id: key._id, serverID: key.serverID })
+        .catch((err) => {
+          console.log(err);
+        })
+        .then(() => {
+          console.log("正常にデータを削除しました");
+        });
+    }
+  }
+}
+
 // botが準備できれば発動され、 上から順に処理される。
 client.once("ready", async () => {
   //コマンドをBOTに適応させて、Ready!とコンソールに出力
@@ -133,6 +175,9 @@ client.once("ready", async () => {
   }
   await client.application.commands.set(data);
   console.log("Ready!");
+
+  //サーバーDBにないユーザーDBは削除する
+  deleteUserDBWithoutServerDB();
 
   setInterval(() => {
     client.user.setActivity({
@@ -293,6 +338,9 @@ client.on("guildDelete", async (guild) => {
       .then(() => {
         console.log("正常にサーバーから退出しました。");
       });
+
+    //サーバーDBにないユーザーDBは削除する
+    deleteUserDBWithoutServerDB();
   }
 });
 
