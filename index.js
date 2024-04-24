@@ -128,9 +128,9 @@ async function birthday_check() {
 async function deleteUserDBWithoutServerDB(server_ID) {
   if (!server_ID) {
     //サーバーIDが提供されていないとき
-    let userDB = await userDB.find();
+    let users = await userDB.find();
 
-    for (const key of userDB) {
+    for (const key of users) {
       await serverDB
         .findById(key.serverID)
         .catch((err) => {
@@ -151,9 +151,9 @@ async function deleteUserDBWithoutServerDB(server_ID) {
     }
   } else {
     //提供されたとき
-    let userDB = await userDB.find({ serverID: server_ID });
+    let users = await userDB.find({ serverID: server_ID });
 
-    for (const key of userDB) {
+    for (const key of users) {
       userDB
         .deleteOne({ _id: key._id, serverID: key.serverID })
         .catch((err) => {
