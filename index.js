@@ -57,6 +57,52 @@ for (const file of commandFiles) {
   commands[command.data.name] = command;
 }
 
+//サーバーDBにないユーザーDBは削除する
+async function deleteUserDBWithoutServerDB(server_ID) {
+  if (!server_ID) {
+    //サーバーIDが提供されていないとき
+    let users = await userDB.find();
+
+    for (const key of users) {
+      await serverDB
+        .findById(key.serverID)
+        .catch((err) => {
+          console.log(err);
+        })
+        .then((model) => {
+          if (!model) {
+            userDB
+              .deleteOne({ uid: key.uid, serverID: key.serverID })
+              .catch((err) => {
+                console.log(err);
+              })
+              .then(() => {
+                console.log(
+                  `正常にサーバーID「${key.serverID}」のデータを削除しました`
+                );
+              });
+          }
+        });
+    }
+  } else {
+    //提供されたとき
+    let users = await userDB.find({ serverID: server_ID });
+
+    for (const key of users) {
+      userDB
+        .deleteOne({ _id: key._id, serverID: key.serverID })
+        .catch((err) => {
+          console.log(err);
+        })
+        .then(() => {
+          console.log(
+            `正常にサーバーID「${key.serverID}」のデータを削除しました`
+          );
+        });
+    }
+  }
+}
+
 // 誕生日チェック
 async function birthday_check() {
   const FORMAT = "MM-DD";
@@ -124,48 +170,6 @@ async function birthday_check() {
   }
 }
 
-//サーバーDBにないユーザーDBは削除する
-async function deleteUserDBWithoutServerDB(server_ID) {
-  if (!server_ID) {
-    //サーバーIDが提供されていないとき
-    let users = await userDB.find();
-
-    for (const key of users) {
-      await serverDB
-        .findById(key.serverID)
-        .catch((err) => {
-          console.log(err);
-        })
-        .then((model) => {
-          if (!model) {
-            userDB
-              .deleteOne({ uid: key.uid, serverID: key.serverID })
-              .catch((err) => {
-                console.log(err);
-              })
-              .then(() => {
-                console.log("正常にデータを削除しました");
-              });
-          }
-        });
-    }
-  } else {
-    //提供されたとき
-    let users = await userDB.find({ serverID: server_ID });
-
-    for (const key of users) {
-      userDB
-        .deleteOne({ _id: key._id, serverID: key.serverID })
-        .catch((err) => {
-          console.log(err);
-        })
-        .then(() => {
-          console.log("正常にデータを削除しました");
-        });
-    }
-  }
-}
-
 // botが準備できれば発動され、 上から順に処理される。
 client.once("ready", async () => {
   //コマンドをBOTに適応させて、Ready!とコンソールに出力
@@ -177,7 +181,7 @@ client.once("ready", async () => {
   console.log("Ready!");
 
   //サーバーDBにないユーザーDBは削除する
-  deleteUserDBWithoutServerDB();
+  await deleteUserDBWithoutServerDB();
 
   setInterval(() => {
     client.user.setActivity({
