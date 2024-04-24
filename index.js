@@ -130,9 +130,6 @@ async function birthday_check() {
 
     let server_info = await serverDB.findById(celebrate_server_id);
 
-    //デバッグ用一時的コンソール表示
-    console.log(`model: ${model}`);
-
     //誕生日を祝う
     client.channels.cache.get(server_info.channelID).send({
       content: `<@${birthday_people_id}>`,
