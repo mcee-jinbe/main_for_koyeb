@@ -156,7 +156,7 @@ module.exports = async (client, message) => {
       message.channel.send("おやすみ～\nいい夢見てね…");
     }
   } catch (err) {
-    const errorNotification = require("../functions.js");
+    const errorNotification = require("../errorFunction.js");
     errorNotification(client, message, err);
   }
 };

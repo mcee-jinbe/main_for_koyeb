@@ -51,7 +51,7 @@ module.exports = {
         })
         .catch(console.error);
     } catch (err) {
-      const errorNotification = require("../functions.js");
+      const errorNotification = require("../errorFunction.js");
       errorNotification(client, interaction, err);
     }
   },

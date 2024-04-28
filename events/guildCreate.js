@@ -44,7 +44,7 @@ module.exports = async (client, guild) => {
         });
       });
   } catch (err) {
-    const errorNotification = require("../functions.js");
+    const errorNotification = require("../errorFunction.js");
     errorNotification(client, guild, err);
   }
 };
