@@ -21,6 +21,10 @@ module.exports = async (client, guild) => {
         .then(() => {
           console.log("正常にサーバーから退出しました。");
         });
+
+      //サーバーDBにないユーザーDBは削除する
+      const deleteUserDBWithoutServerDB = require("../DBcleanupFunction.js");
+      await deleteUserDBWithoutServerDB();
     }
   } catch (err) {
     const errorNotification = require("../errorFunction.js");

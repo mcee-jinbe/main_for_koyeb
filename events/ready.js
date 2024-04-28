@@ -92,6 +92,10 @@ module.exports = async (client) => {
 
   console.log(`${client.user.username}への接続に成功しました。`);
 
+  //サーバーDBにないユーザーDBは削除する
+  const deleteUserDBWithoutServerDB = require("../DBcleanupFunction.js");
+  await deleteUserDBWithoutServerDB();
+
   //登録外のサーバーから退出する//////////////////
   birthday_check(); //起動時に実行
 
