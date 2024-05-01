@@ -81,7 +81,7 @@ module.exports = async (client, interaction) => {
             embeds: [
               {
                 title: "おみくじの結果！",
-                description: `あなたは、${result}を引きました！\n\n||\`ここだけの話、\`<@${interaction.user.id}> \`さんは、${number}を押したらしいよ...\`||`,
+                description: `<@${interaction.user.id}>さんは、${result}を引きました！\n\n||\`ここだけの話、\`<@${interaction.user.id}> \`さんは、${number}を押したらしいよ...\`||`,
                 color: 4817413,
                 thumbnail: {
                   url: "attachment://omi_kekka.png",
@@ -189,7 +189,7 @@ module.exports = async (client, interaction) => {
             embeds: [
               {
                 title: "じゃんけんの結果！",
-                description: `あなたは ${result_me}を出して、\n私は　${result_jinbe}を出したので、\n\n__**${result_ja}です！**__`,
+                description: `<@${interaction.user.id}>さんは ${result_me}を出して、\n私は　${result_jinbe}を出したので、\n\n__**${result_ja}です！**__`,
                 color: color,
                 thumbnail: {
                   url: "attachment://omi_kekka.png",
