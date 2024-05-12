@@ -3,6 +3,7 @@ const {
   PermissionsBitField,
 } = require("discord.js");
 const serverDB = require("../models/server_db.js");
+const userDB = require("../models/user_db.js");
 
 module.exports = {
   name: "server_setting",
@@ -77,6 +78,9 @@ module.exports = {
               }
             } else {
               var st = null;
+
+              //このサーバーに関連する誕生日データを削除
+              await userDB.deleteMany({ serverID: interaction.guild.id });
             }
 
             serverDB
