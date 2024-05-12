@@ -51,6 +51,8 @@ module.exports = {
             ephemeral: true,
           });
         } else if (model.status == "true") {
+          await interaction.deferReply({ ephemeral: true });
+
           // スラッシュコマンドの入力情報を取得
           var new_birthday_month = interaction.options.getNumber("month");
           var new_birthday_day = interaction.options.getNumber("day");
@@ -83,13 +85,12 @@ module.exports = {
                   .save()
                   .catch(async (err) => {
                     console.log(err);
-                    await interaction.reply(
+                    return interaction.editReply(
                       "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースの更新時にエラーが発生しました。\nコンソールを確認してください。"
                     );
-                    return;
                   })
                   .then(async () => {
-                    await interaction.reply({
+                    return interaction.editReply({
                       embeds: [
                         {
                           title: "新規登録完了！",
@@ -97,18 +98,17 @@ module.exports = {
                           color: 0x0000ff,
                         },
                       ],
+                      ephemeral: false,
                     });
-                    return;
                   });
               } else {
                 userDB
                   .findOne({ uid: user_id, serverID: interaction.guild.id })
                   .catch((err) => {
                     console.log(err);
-                    return interaction.reply({
+                    return interaction.editReply({
                       content:
                         "誕生日のデータを更新する際に、内部エラーが発生しました。\nサポートサーバーからエラーが発生した旨を伝えてください。",
-                      ephemeral: true,
                     });
                   })
                   .then((model) => {
@@ -120,7 +120,7 @@ module.exports = {
                     model.birthday_day = new_birthday_day;
                     model.status = "yet";
                     model.save().then(async () => {
-                      await interaction.reply({
+                      return interaction.editReply({
                         embeds: [
                           {
                             title: "更新完了！",
@@ -129,12 +129,11 @@ module.exports = {
                           },
                         ],
                       });
-                      return;
                     });
                   });
               }
             } else {
-              await interaction.reply({
+              await interaction.editReply({
                 embeds: [
                   {
                     title: "エラー！",
@@ -142,11 +141,10 @@ module.exports = {
                     color: 0xff0000,
                   },
                 ],
-                ephemeral: true,
               });
             }
           } else {
-            await interaction.reply({
+            await interaction.editReply({
               embeds: [
                 {
                   title: "エラー！",
@@ -154,14 +152,12 @@ module.exports = {
                   color: 0xff0000,
                 },
               ],
-              ephemeral: true,
             });
           }
         } else {
-          return interaction.reply({
+          return interaction.editReply({
             content:
               "内部エラーが発生しました。\nサーバー用データベースのステータスの値が予期しない値であった可能性があります。",
-            ephemeral: true,
           });
         }
       });
