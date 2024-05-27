@@ -14,7 +14,7 @@ module.exports = {
   async execute(interaction) {
     const modal = new ModalBuilder()
       .setCustomId("1000choyen")
-      .setTitle("1000兆円画像生成");
+      .setTitle("1000兆円画像生成(合計30文字以内で入力してください)");
 
     const topInput = new TextInputBuilder()
       .setCustomId("topInput")
@@ -38,6 +38,13 @@ module.exports = {
       .then(async (mInteraction) => {
         const top = mInteraction.fields.getTextInputValue("topInput");
         const bottom = mInteraction.fields.getTextInputValue("bottomInput");
+
+        if (top.length + bottom.length > 30)
+          return mInteraction.reply({
+            content: `上側と下側の合計で30文字以内で入力してください。\n\nあなたが入力した文字列は以下の通りでした。\n\`\`\`\n- 上側：　${top}\n- 下側：　${bottom}\n\`\`\``,
+            ephemeral: true,
+          });
+
         mInteraction.reply({
           embeds: [
             {
@@ -50,6 +57,8 @@ module.exports = {
           ],
         });
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.log(err);
+      });
   },
 };
