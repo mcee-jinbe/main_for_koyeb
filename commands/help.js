@@ -4,6 +4,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
 } = require("discord.js");
+const packageInfo = require("../package.json");
 
 module.exports = {
   name: "help",
@@ -82,6 +83,9 @@ module.exports = {
               timestamp: new Date(),
               thumbnail: {
                 url: "attachment://file.png",
+              },
+              footer: {
+                text: `バージョン： ${packageInfo.version}`,
               },
             },
           ],
