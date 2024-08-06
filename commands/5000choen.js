@@ -6,14 +6,14 @@ const {
 } = require("discord.js");
 
 module.exports = {
-  name: "1000choyen",
-  description: "1000兆円画像生成",
+  name: "5000choyen",
+  description: "5000兆円画像生成",
 
   run: async (client, interaction) => {
     try {
       const modal = new ModalBuilder()
-        .setCustomId("1000choyen")
-        .setTitle("1000兆円画像生成(合計30文字以内で入力してください)");
+        .setCustomId("5000choyen")
+        .setTitle("5000兆円画像生成(合計30文字以内で入力してください)");
 
       const topInput = new TextInputBuilder()
         .setCustomId("topInput")
@@ -31,7 +31,7 @@ module.exports = {
       );
 
       await interaction.showModal(modal);
-      const filter = (mInteraction) => mInteraction.customId === "1000choyen";
+      const filter = (mInteraction) => mInteraction.customId === "5000choyen";
       interaction
         .awaitModalSubmit({ filter, time: 360000 })
         .then(async (mInteraction) => {
