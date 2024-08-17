@@ -23,7 +23,7 @@ module.exports = {
           {
             title: "🎊たんおめ！🎊",
             description:
-              "<@" + user.id + ">さん　お誕生日おめでとうございます！",
+              `<@${user.id}>さん　お誕生日おめでとうございます！`,
             color: 0xff30ff,
             timestamp: new Date(),
           },

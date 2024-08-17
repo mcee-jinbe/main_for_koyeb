@@ -63,10 +63,10 @@ module.exports = {
             if (new_birthday_month >= 1 && new_birthday_month <= 12) {
               if (new_birthday_day >= 1 && new_birthday_day <= lastDay) {
                 if (new_birthday_month >= 1 && new_birthday_month <= 9) {
-                  var new_birthday_month = "0" + new_birthday_month;
+                  var new_birthday_month = `0${new_birthday_month}`;
                 }
                 if (new_birthday_day >= 1 && new_birthday_day <= 9) {
-                  var new_birthday_day = "0" + new_birthday_day;
+                  var new_birthday_day = `0${new_birthday_day}`;
                 }
                 let database_data = await userDB.find({
                   uid: user_id,
