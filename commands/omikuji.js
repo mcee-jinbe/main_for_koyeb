@@ -12,7 +12,7 @@ module.exports = {
     {
       type: ApplicationCommandOptionType.String,
       name: "secret",
-      description: "非公開で送信したい場合は設定してください。",
+      description: "結果を非公開で送信したい場合は設定してください。",
       required: false,
       choices: [{ name: "非公開にする", value: "true" }],
     },
