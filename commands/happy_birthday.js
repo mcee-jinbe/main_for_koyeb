@@ -18,7 +18,7 @@ module.exports = {
     try {
       const user = interaction.options.getUser("user");
       await interaction.reply({
-        content: "<@" + user.id + ">",
+        content: `<@${user.id}>`,
         embeds: [
           {
             title: "🎊たんおめ！🎊",
