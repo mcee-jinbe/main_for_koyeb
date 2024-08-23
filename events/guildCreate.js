@@ -1,4 +1,9 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  AuditLogEvent,
+} = require("discord.js");
 const serverDB = require("../models/server_db.js");
 
 module.exports = async (client, guild) => {
@@ -27,9 +32,14 @@ module.exports = async (client, guild) => {
             .setURL("https://discord.gg/uYYaVRuUuJ")
         );
 
-        let owner_id = guild.ownerId;
-        let owner = client.users.fetch(owner_id);
-        (await owner).send({
+        const fetchedLogs = await guild.fetchAuditLogs({
+          type: AuditLogEvent.BotAdd,
+          limit: 1,
+        });
+        const inviterInfo = fetchedLogs.entries.first().executor;
+        let inviterId = inviterInfo.id;
+        let inviter = client.users.fetch(inviterId);
+        (await inviter).send({
           embeds: [
             {
               title: "お知らせ",
