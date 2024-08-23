@@ -1,8 +1,8 @@
 # パッケージに関して
 ## 実行する際のnpmコマンド
 ```
-npm i date-fns-timezone discord.js mongoose node-cron node-fetch express
-npm i --save-dev @types/node dotenv fs
+npm i date-fns-timezone discord.js mongoose node-cron node-fetch express dotenv
+npm i --save-dev @types/node fs
 ```
 ## 各パッケージの使用用途
 - `@types/node`　：node.jsを書きやすくするやつらしい
