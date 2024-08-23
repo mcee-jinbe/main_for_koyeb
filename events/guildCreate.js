@@ -29,7 +29,12 @@ module.exports = async (client, guild) => {
           new ButtonBuilder()
             .setStyle(ButtonStyle.Link)
             .setLabel("サポートサーバーに参加する")
-            .setURL("https://discord.gg/uYYaVRuUuJ")
+            .setURL("https://discord.gg/uYYaVRuUuJ"),
+          new ButtonBuilder()
+            .setCustomId("noId")
+            .setStyle(ButtonStyle.Secondary)
+            .setLabel(`招待されたサーバー: ${guild.name}`)
+            .setDisabled(true)
         );
 
         const fetchedLogs = await guild.fetchAuditLogs({
@@ -46,7 +51,7 @@ module.exports = async (client, guild) => {
               description: `本BOTをご利用いただき、ありがとうございます。\n本BOTに搭載されたサーバー内のユーザーの誕生日を祝う機能は、各サーバーの管理者様が「\`/server_settings\`」コマンドを利用して有効化の設定をしない限りは動作しない仕組みとなっております。お手数おかけしますが、ご利用の際は設定をお願い致します。\n\`※ご不明な点がございましたら、以下のボタンより、サポートサーバーでお尋ねください。\``,
               color: 0xff0000,
               footer: {
-                text: `DMで失礼します。`,
+                text: `(DMで失礼します。)`,
               },
             },
           ],
