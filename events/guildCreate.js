@@ -37,14 +37,24 @@ module.exports = async (client, guild) => {
             .setDisabled(true)
         );
 
-        const fetchedLogs = await guild.fetchAuditLogs({
-          type: AuditLogEvent.BotAdd,
-          limit: 1,
-        });
-        const inviterInfo = fetchedLogs.entries.first().executor;
-        let inviterId = inviterInfo.id;
-        let inviter = client.users.fetch(inviterId);
-        (await inviter).send({
+        let DMuser;
+        if (
+          guild.members.me.permissions.has(
+            PermissionsBitField.Flags.ViewAuditLog
+          )
+        ) {
+          const fetchedLogs = await guild.fetchAuditLogs({
+            type: AuditLogEvent.BotAdd,
+            limit: 1,
+          });
+          const inviterInfo = fetchedLogs.entries.first().executor;
+          let inviterId = inviterInfo.id;
+          DMuser = await client.users.fetch(inviterId);
+        } else {
+          let owner_id = guild.ownerId;
+          DMuser = await client.users.fetch(owner_id);
+        }
+        (await DMuser).send({
           embeds: [
             {
               title: "お知らせ",
