@@ -18,10 +18,10 @@
   "homepage": "https://github.com/mcee-jinbe/main_for_koyeb#readme",
   "dependencies": {
     "date-fns-timezone": "^0.1.4",
-    "discord.js": "^14.16.1",
+    "discord.js": "^14.16.2",
     "dotenv": "^16.4.5",
-    "express": "^4.20.0",
-    "mongoose": "^8.6.1",
+    "express": "^4.21.0",
+    "mongoose": "^8.6.2",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2"
   },
