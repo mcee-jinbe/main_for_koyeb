@@ -21,12 +21,12 @@
     "discord.js": "^14.16.2",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
-    "mongoose": "^8.6.3",
+    "mongoose": "^8.7.0",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@types/node": "^22.7.0",
+    "@types/node": "^22.7.4",
     "fs": "^0.0.1-security"
   }
 }
