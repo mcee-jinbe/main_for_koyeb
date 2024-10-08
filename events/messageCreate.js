@@ -154,6 +154,12 @@ module.exports = async (client, message) => {
       message.content.match(/おやすみjinbe/)
     ) {
       message.channel.send("おやすみ～\nいい夢見てね…");
+    } else if (message.content.match(/omikuji|jinbe|omikujinbe|janken/i)) {
+      message.reply({
+        content:
+          "申し訳ございません。このコマンドはスラッシュコマンドに移行しました。\n`/omikuji`や`/janken`コマンドをご利用ください。",
+        ephemeral: true,
+      });
     }
   } catch (err) {
     const errorNotification = require("../errorFunction.js");
