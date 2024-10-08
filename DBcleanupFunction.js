@@ -2,7 +2,6 @@ async function deleteUserDBWithoutServerDB() {
   const userDB = require("./models/user_db.js");
   const serverDB = require("./models/server_db.js");
 
-  //サーバーIDが提供されていないとき
   let users = await userDB.find();
 
   for (const key of users) {
