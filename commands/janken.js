@@ -40,7 +40,6 @@ module.exports = {
           ],
           files: [{ attachment: "images/janken.png", name: "file.png" }],
           components: [janken_choice],
-          ephemeral: secret,
         })
         .then((buttonMessage) => {
           const filter = (i) => i.user.id == interaction.user.id;
