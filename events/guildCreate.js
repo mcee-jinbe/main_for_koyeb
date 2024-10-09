@@ -69,6 +69,7 @@ module.exports = async (client, guild) => {
         });
       });
   } catch (err) {
+    err.id = "guildCreate";
     const errorNotification = require("../errorFunction.js");
     errorNotification(client, guild, err);
   }

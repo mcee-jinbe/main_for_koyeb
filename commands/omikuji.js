@@ -60,6 +60,7 @@ module.exports = {
         ephemeral: true,
       });
     } catch (err) {
+      err.id = "omikuji";
       const errorNotification = require("../errorFunction.js");
       errorNotification(client, interaction, err);
     }

@@ -7,6 +7,7 @@ function errorNotification(client, interaction, e) {
     .addFields([
       { name: "コマンド", value: `${interaction?.commandName}` },
       { name: "エラー", value: `${e}` },
+      { name: "エラー箇所", value: `${e.id}` },
       {
         name: "ユーザー",
         value: `${interaction?.user?.tag} \`(${interaction?.user?.id})\``,

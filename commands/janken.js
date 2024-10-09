@@ -159,6 +159,7 @@ module.exports = {
           errorNotification(client, interaction, err);
         });
     } catch (err) {
+      err.id = "janken";
       const errorNotification = require("../errorFunction.js");
       errorNotification(client, interaction, err);
     }

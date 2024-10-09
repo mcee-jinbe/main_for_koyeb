@@ -99,6 +99,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      err.id = "help";
       const errorNotification = require("../errorFunction.js");
       errorNotification(client, interaction, err);
     }

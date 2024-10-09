@@ -60,6 +60,7 @@ module.exports = {
           console.log(err);
         });
     } catch (err) {
+      err.id = "5000choen";
       const errorNotification = require("../errorFunction.js");
       errorNotification(client, interaction, err);
     }

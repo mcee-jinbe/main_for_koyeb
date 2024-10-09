@@ -156,6 +156,7 @@ module.exports = {
           }
         });
     } catch (err) {
+      err.id = "birthday_show";
       const errorNotification = require("../errorFunction.js");
       errorNotification(client, interaction, err);
     }

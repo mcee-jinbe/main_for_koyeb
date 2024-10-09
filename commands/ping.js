@@ -16,6 +16,7 @@ module.exports = {
         }ms\`.`
       );
     } catch (err) {
+      err.id = "ping";
       const errorNotification = require("../errorFunction.js");
       errorNotification(client, interaction, err);
     }

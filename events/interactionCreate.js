@@ -98,6 +98,7 @@ module.exports = async (client, interaction) => {
       }
     }
   } catch (err) {
+    err.id = "interactionCreate";
     const errorNotification = require("../errorFunction.js");
     errorNotification(client, interaction, err);
   }

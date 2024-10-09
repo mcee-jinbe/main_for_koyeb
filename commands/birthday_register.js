@@ -162,6 +162,7 @@ module.exports = {
           }
         });
     } catch (err) {
+      err.id = "birthday_register";
       const errorNotification = require("../errorFunction.js");
       errorNotification(client, interaction, err);
     }

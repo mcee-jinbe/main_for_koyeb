@@ -30,6 +30,7 @@ module.exports = {
         ],
       });
     } catch (err) {
+      err.id = "happy_birthday";
       const errorNotification = require("../errorFunction.js");
       errorNotification(client, interaction, err);
     }

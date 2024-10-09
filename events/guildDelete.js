@@ -27,6 +27,7 @@ module.exports = async (client, guild) => {
       await deleteUserDBWithoutServerDB();
     }
   } catch (err) {
+    err.id = "guildDelete";
     const errorNotification = require("../errorFunction.js");
     errorNotification(client, guild, err);
   }

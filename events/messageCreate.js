@@ -162,6 +162,7 @@ module.exports = async (client, message) => {
       });
     }
   } catch (err) {
+    err.id = "messageCreate";
     const errorNotification = require("../errorFunction.js");
     errorNotification(client, message, err);
   }
