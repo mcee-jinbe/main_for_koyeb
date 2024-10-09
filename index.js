@@ -62,7 +62,7 @@ fs.readdir("./events", (_err, files) => {
 //mongooseについて
 mongoose.set("strictQuery", false);
 mongoose
-  .connect(mong_db_info)
+  .connect(mong_db_info, { dbName: "Database" })
   .then(() => {
     console.log("データベースに接続したんだゾ");
   })
