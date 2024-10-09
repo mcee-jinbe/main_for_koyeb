@@ -3,6 +3,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
   AuditLogEvent,
+  PermissionsBitField,
 } = require("discord.js");
 const serverDB = require("../models/server_db.js");
 
