@@ -62,8 +62,7 @@ module.exports = {
           let data = serverDB.find({ _id: interaction.guild.id });
           if (!data) {
             return interaction.reply({
-              content:
-                "申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/api/oauth2/authorize?client_id=946587263691788399&permissions=274878000128&scope=bot%20applications.commands)から再招待をお願い致します。",
+              content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
               ephemeral: true,
             });
           } else {
@@ -119,8 +118,7 @@ module.exports = {
           .then((model) => {
             if (!model) {
               return interaction.reply({
-                content:
-                  "申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/api/oauth2/authorize?client_id=946587263691788399&permissions=274878000128&scope=bot%20applications.commands)から再招待をお願い致します。",
+                content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
                 ephemeral: true,
               });
             }
