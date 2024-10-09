@@ -1,5 +1,6 @@
 const { ActivityType } = require("discord.js");
 const userDB = require("../models/user_db.js");
+const serverDB = require("../models/server_db.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v10");
 const cron = require("node-cron");
@@ -92,11 +93,70 @@ module.exports = async (client) => {
 
   console.log(`${client.user.username}への接続に成功しました。`);
 
+  //シャットダウン中に導入されたサーバーを登録
+  let allGuilds = await client.guilds.cache.map((guild) => guild.id);
+  await serverDB.find({}).then(async (all_data) => {
+    for (let guildId of allGuilds) {
+      //全DBのデータ内に参加中のサーバーIDが含まれない場合は登録処理を行う。
+      let count = 0;
+      for (let data of all_data) {
+        if (allGuilds.includes(data._id)) count++;
+      }
+      if (!count) {
+        const profile = await serverDB.create({
+          _id: guildId,
+          channelID: null,
+          status: "false",
+        });
+        profile.save().catch(async (err) => {
+          console.log(err);
+          client.channels.cache
+            .get("889478088486948925")
+            .send(
+              "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
+            );
+          return;
+        });
+        console.log(
+          "シャットダウン中に招待されたサーバーのデータを作成しました。"
+        );
+      }
+    }
+  });
+
+  //シャットダウン中に退出されたサーバーを登録
+  await serverDB.find({}).then(async (all_data) => {
+    for (let data of all_data) {
+      //全参加中のサーバーの中で、データベースに登録されていないサーバーIDが含まれる場合は登録削除処理を行う。
+      let count = 0;
+      for (let guildId of allGuilds) {
+        if (data._id == guildId) count++;
+      }
+
+      if (!count) {
+        serverDB
+          .deleteOne({ _id: data._id })
+          .then(() =>
+            console.log(
+              "シャットダウン中に退出したサーバーのデータを削除しました。"
+            )
+          )
+          .catch(async (err) => {
+            console.log(err);
+            client.channels.cache
+              .get("889478088486948925")
+              .send(
+                "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
+              );
+          });
+      }
+    }
+  });
+
   //サーバーDBにないユーザーDBは削除する
   const deleteUserDBWithoutServerDB = require("../DBcleanupFunction.js");
   await deleteUserDBWithoutServerDB();
 
-  //登録外のサーバーから退出する//////////////////
   birthday_check(); //起動時に実行
 
   cron.schedule(
@@ -180,7 +240,9 @@ module.exports = async (client) => {
     );
   }, 10000);
 
+  /*
   client.channels.cache
     .get("889486664760721418")
     .send("koyeb.comで起動しました！");
+    */
 };
