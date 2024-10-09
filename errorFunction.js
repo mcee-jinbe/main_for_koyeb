@@ -35,7 +35,7 @@ function errorNotification(client, interaction, e) {
       },
     ]);
   client.channels.cache
-    .get("980641967694311484")
+    .get("1037904694598713516")
     ?.send({ content: "<@728495196303523900>", embeds: [embed] })
     .catch((err) => {});
 
