@@ -156,6 +156,7 @@ module.exports = async (client, message) => {
       message.channel.send("おやすみ～\nいい夢見てね…");
     } else if (message.content.match(/omikuji|jinbe|omikujinbe|janken/i)) {
       // TODO スパム対策
+      // １ユーザーあたり、１日１回だけ返信するようにする。この変数は再起動時か深夜0時にリセットするようにする。
       let deleteButton = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setLabel("このメッセージを削除する")
@@ -165,7 +166,7 @@ module.exports = async (client, message) => {
       );
       message.reply({
         content:
-          "申し訳ございません。このコマンドはスラッシュコマンドに移行しました。\n`/omikuji`や`/janken`コマンドをご利用ください。",
+          "申し訳ございません。「omikuji」、「jinbe」、「omikujinbe」、「janken」を利用したおみくじやじゃんけんは、スラッシュコマンドに移行しました。\n`/omikuji`や`/janken`コマンドをご利用ください。",
         components: [deleteButton],
         ephemeral: true,
       });
