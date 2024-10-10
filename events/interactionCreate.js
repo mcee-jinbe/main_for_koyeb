@@ -92,7 +92,7 @@ module.exports = async (client, interaction) => {
           });
         }
 
-        if (buttonId === "cancel") {
+        if (buttonId == "cancel" || buttonId == "delete") {
           await interaction.message.delete();
         }
       }

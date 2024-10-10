@@ -155,9 +155,18 @@ module.exports = async (client, message) => {
     ) {
       message.channel.send("おやすみ～\nいい夢見てね…");
     } else if (message.content.match(/omikuji|jinbe|omikujinbe|janken/i)) {
+      // TODO スパム対策
+      let deleteButton = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setLabel("このメッセージを削除する")
+          .setEmoji("🗑️")
+          .setCustomId("delete")
+          .setStyle(ButtonStyle.Secondary)
+      );
       message.reply({
         content:
           "申し訳ございません。このコマンドはスラッシュコマンドに移行しました。\n`/omikuji`や`/janken`コマンドをご利用ください。",
+        components: [deleteButton],
         ephemeral: true,
       });
     }
