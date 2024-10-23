@@ -6,6 +6,7 @@ const { Routes } = require("discord-api-types/v10");
 const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
 require("dotenv").config();
+const fs = require("fs");
 
 const token = process.env["bot_token"];
 
@@ -191,6 +192,22 @@ module.exports = async (client) => {
       timezone: "Asia/Tokyo",
     }
   );
+
+  cron.schedule(
+    "59 23 * * *",
+    () => {
+      //23:59に、スパム対策のリセットを実行
+      let data = fs.readFileSync("./newCommandGuide_sentUser.json");
+      data = JSON.parse(data);
+
+      data.userId = [];
+      fs.writeFileSync("./newCommandGuide_sentUser.json", JSON.stringify(data));
+    },
+    {
+      timezone: "Asia/Tokyo",
+    }
+  );
+
   cron.schedule(
     "59 23 31 12 *",
     async () => {

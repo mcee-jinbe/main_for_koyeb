@@ -2,6 +2,7 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 require("dotenv").config();
+const fs = require("fs");
 
 const url_check_api = process.env["url_check_api"];
 
@@ -155,21 +156,32 @@ module.exports = async (client, message) => {
     ) {
       message.channel.send("おやすみ～\nいい夢見てね…");
     } else if (message.content.match(/omikuji|jinbe|omikujinbe|janken/i)) {
-      // TODO スパム対策
-      // １ユーザーあたり、１日１回だけ返信するようにする。この変数は再起動時か深夜0時にリセットするようにする。
-      let deleteButton = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setLabel("このメッセージを削除する")
-          .setEmoji("🗑️")
-          .setCustomId("delete")
-          .setStyle(ButtonStyle.Secondary)
-      );
-      message.reply({
-        content:
-          "申し訳ございません。「omikuji」、「jinbe」、「omikujinbe」、「janken」を利用したおみくじやじゃんけんは、スラッシュコマンドに移行しました。\n`/omikuji`や`/janken`コマンドをご利用ください。",
-        components: [deleteButton],
-        ephemeral: true,
-      });
+      // ここのコードは、チャット入力コマンドがスラッシュコマンドに仕様変更になったことによる案内文を表示するコード
+      // 一定期間して、このコードを消す場合は、ready.jsのcronで「newCommandGuide_sentUser.json」をリセットしている
+      // コードも削除する事。
+      let data = fs.readFileSync("./newCommandGuide_sentUser.json");
+      data = JSON.parse(data);
+      if (!data.userId.includes(message.author.id)) {
+        let deleteButton = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setLabel("このメッセージを削除する")
+            .setEmoji("🗑️")
+            .setCustomId("delete")
+            .setStyle(ButtonStyle.Secondary)
+        );
+        message.reply({
+          content:
+            "申し訳ございません。「omikuji」、「jinbe」、「omikujinbe」、「janken」を利用したおみくじやじゃんけんは、スラッシュコマンドに移行しました。\n`/omikuji`や`/janken`コマンドをご利用ください。",
+          components: [deleteButton],
+          ephemeral: true,
+        });
+
+        data.userId.push(message.author.id);
+        fs.writeFileSync(
+          "./newCommandGuide_sentUser.json",
+          JSON.stringify(data)
+        );
+      }
     }
   } catch (err) {
     err.id = "messageCreate";
