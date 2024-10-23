@@ -171,7 +171,7 @@ module.exports = async (client, message) => {
         );
         message.reply({
           content:
-            "申し訳ございません。「omikuji」、「jinbe」、「omikujinbe」、「janken」を利用したおみくじやじゃんけんは、スラッシュコマンドに移行しました。\n`/omikuji`や`/janken`コマンドをご利用ください。",
+            "申し訳ございません。「omikuji」、「jinbe」、「omikujinbe」、「janken」を利用したおみくじやじゃんけんは、スラッシュコマンドに移行しました。\n`/omikuji`や`/janken`、`/jinbe`コマンドをご利用ください。",
           components: [deleteButton],
           ephemeral: true,
         });
