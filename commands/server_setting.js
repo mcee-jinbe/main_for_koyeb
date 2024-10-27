@@ -11,24 +11,30 @@ module.exports = {
   options: [
     {
       name: "birthday_celebrate",
-      description:
-        "誕生日を祝う機能を有効にするか設定をします。(無効にした場合は、チャンネルの設定は無視されます。)",
+      description: "誕生日を祝う機能の設定をします。",
       type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
           name: "true_or_false",
-          description: "有効(true)か無効(false)か選択してください。",
+          description:
+            "登録して誕生日を祝う機能を有効にするか無効にするか選択してください。",
           type: ApplicationCommandOptionType.String,
           required: true,
           choices: [
-            { name: "有効(true)", value: "true" },
-            { name: "無効(false)", value: "false" },
+            {
+              name: "有効にする",
+              value: "true",
+            },
+            {
+              name: "無効にする",
+              value: "false",
+            },
           ],
         },
         {
           name: "channel",
           description:
-            "誕生日を祝うチャンネルを指定してください。(有効の場合のみ使用されます)",
+            "誕生日を祝うチャンネルを指定してください。(有効に設定する場合のみ使用されます)",
           type: ApplicationCommandOptionType.Channel,
           require: false,
         },

@@ -3,7 +3,7 @@ const { ApplicationCommandOptionType } = require("discord.js");
 module.exports = {
   name: "happy_birthday",
   description:
-    "🎊いつでもどこでもハッピーバースデー(相手にメンションがいきます)",
+    "🎊いつでもどこでもハッピーバースデー(相手にメンションが送られます)",
   options: [
     {
       type: ApplicationCommandOptionType.User,

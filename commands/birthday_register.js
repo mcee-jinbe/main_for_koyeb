@@ -9,14 +9,14 @@ module.exports = {
     {
       type: ApplicationCommandOptionType.Number,
       name: "month",
-      description: "誕生月を入力してください（半角数字で「1」~「12」を入力）",
+      description: "誕生月を入力してください（半角数字で入力）",
       value: "month",
       required: true,
     },
     {
       type: ApplicationCommandOptionType.Number,
       name: "day",
-      description: "誕生日を入力してください(半角数字で「1」~「31」を入力)",
+      description: "誕生日を入力してください(半角数字で入力)",
       value: "day",
       required: true,
     },
