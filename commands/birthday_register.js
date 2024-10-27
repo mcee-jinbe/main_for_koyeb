@@ -68,12 +68,12 @@ module.exports = {
                   var new_birthday_day = `0${new_birthday_day}`;
                 }
                 let database_data = await userDB.find({
-                  uid: user_id,
+                  _id: user_id,
                   serverID: interaction.guild.id,
                 });
                 if (!database_data.length) {
                   const profile = await userDB.create({
-                    uid: user_id,
+                    _id: user_id,
                     serverID: interaction.guild.id,
                     user_name: interaction.user.name,
                     birthday_month: new_birthday_month,
@@ -102,7 +102,7 @@ module.exports = {
                     });
                 } else {
                   userDB
-                    .findOne({ uid: user_id, serverID: interaction.guild.id })
+                    .findOne({ _id: user_id, serverID: interaction.guild.id })
                     .catch((err) => {
                       console.log(err);
                       return interaction.editReply({

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose"); //mongoDBを使用するためのおまじない
 
 const profileSchema = new mongoose.Schema({
-  uid: { type: String }, //ユーザーID
+  _id: { type: String }, //ユーザーID
   serverID: { type: String }, //サーバーID
   user_name: { type: String }, //ユーザーネーム
   birthday_month: { type: String },

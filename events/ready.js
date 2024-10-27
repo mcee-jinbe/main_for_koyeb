@@ -33,7 +33,7 @@ async function birthday_check() {
   for (const key in model) {
     // めでたい人の情報を取得して定義
     let celebrate_server_id = model[key].serverID;
-    let birthday_people_id = model[key].uid;
+    let birthday_people_id = model[key]._id;
 
     let server_info = await serverDB.findById(celebrate_server_id);
 

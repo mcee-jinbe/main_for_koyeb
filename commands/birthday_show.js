@@ -42,8 +42,7 @@ module.exports = {
         .then(async (model) => {
           if (!model) {
             return interaction.reply({
-              content:
-                `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
+              content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
               ephemeral: true,
             });
           }
@@ -69,7 +68,7 @@ module.exports = {
                   if (models.length) {
                     let member_list = [];
                     for (const key in models) {
-                      let user_id = models[key].uid;
+                      let user_id = models[key]._id;
                       let user = await client.users.fetch(user_id);
                       let user_name = user.username;
                       let display_name = user.globalName;
@@ -101,7 +100,7 @@ module.exports = {
                 if (!isBot) {
                   userDB
                     .findOne({
-                      uid: interaction.user.id,
+                      _id: interaction.user.id,
                       serverID: interaction.guild.id,
                     })
                     .then(async (model) => {

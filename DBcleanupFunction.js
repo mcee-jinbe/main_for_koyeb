@@ -14,7 +14,7 @@ async function deleteUserDBWithoutServerDB() {
         .then((model) => {
           if (!model) {
             userDB
-              .deleteOne({ uid: key.uid, serverID: key.serverID })
+              .deleteOne({ _id: key._id, serverID: key.serverID })
               .catch((err) => {
                 console.log(err);
               })
