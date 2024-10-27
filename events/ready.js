@@ -11,7 +11,7 @@ const fs = require("fs");
 const token = process.env["bot_token"];
 
 //誕生日チェック
-async function birthday_check() {
+async function birthday_check(client) {
   const FORMAT = "MM-DD";
   let now = new Date();
   let today = formatToTimeZone(now, FORMAT, { timeZone: "Asia/Tokyo" });
@@ -158,13 +158,13 @@ module.exports = async (client) => {
   const deleteUserDBWithoutServerDB = require("../DBcleanupFunction.js");
   await deleteUserDBWithoutServerDB();
 
-  birthday_check(); //起動時に実行
+  birthday_check(client); //起動時に実行
 
   cron.schedule(
     "15 8 * * *",
     () => {
       //8:15に実行
-      birthday_check();
+      birthday_check(client);
     },
     {
       timezone: "Asia/Tokyo",
@@ -175,7 +175,7 @@ module.exports = async (client) => {
     "15 13 * * *",
     () => {
       //13:15に実行
-      birthday_check();
+      birthday_check(client);
     },
     {
       timezone: "Asia/Tokyo",
@@ -186,7 +186,7 @@ module.exports = async (client) => {
     "45 15 * * *",
     () => {
       //15:45に実行
-      birthday_check();
+      birthday_check(client);
     },
     {
       timezone: "Asia/Tokyo",
