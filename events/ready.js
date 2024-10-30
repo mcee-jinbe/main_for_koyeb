@@ -194,9 +194,9 @@ module.exports = async (client) => {
   );
 
   cron.schedule(
-    "59 23 * * *",
+    "0 4 * * *",
     () => {
-      //23:59に、スパム対策のリセットを実行
+      //4:00に、スパム対策のリセットを実行
       let data = fs.readFileSync("./newCommandGuide_sentUser.json");
       data = JSON.parse(data);
 
