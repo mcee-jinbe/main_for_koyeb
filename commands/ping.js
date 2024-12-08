@@ -7,8 +7,6 @@ module.exports = {
   description: "BotのPingを測定します。",
   run: async (client, interaction) => {
     try {
-      ThisIsSentryTestingErrorGenerator();
-
       let sent = await interaction.reply({
         content: "🔄️　計測中…",
         fetchReply: true,
