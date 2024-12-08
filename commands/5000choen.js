@@ -63,7 +63,7 @@ module.exports = {
           Sentry.captureException(err);
         });
     } catch (err) {
-      err.id = "5000choen";
+      Sentry.setTag("Error Point", "5000choen");
       Sentry.captureException(err);
     }
   },

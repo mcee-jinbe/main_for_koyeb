@@ -63,7 +63,7 @@ module.exports = {
         });
       }
     } catch (err) {
-      err.id = "happy_birthday";
+      Sentry.setTag("Error Point", "happy_birthday");
       Sentry.captureException(err);
     }
   },

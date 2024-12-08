@@ -22,7 +22,7 @@ module.exports = {
       ///jinbeコマンドは、/omikujiコマンドのエイリアスとして使用する。
       omikujiSystem.run(client, interaction);
     } catch (err) {
-      err.id = "jinbe_omikuji";
+      Sentry.setTag("Error Point", "jinbe_omikuji");
       Sentry.captureException(err);
     }
   },

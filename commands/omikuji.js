@@ -63,7 +63,7 @@ module.exports = {
         ephemeral: true,
       });
     } catch (err) {
-      err.id = "omikuji";
+      Sentry.setTag("Error Point", "omikuji");
       Sentry.captureException(err);
     }
   },

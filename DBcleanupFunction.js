@@ -30,7 +30,7 @@ async function deleteUserDBWithoutServerDB() {
         });
     }
   } catch (err) {
-    err.id = "DBcleanupFunction";
+    Sentry.setTag("Error Point", "DBcleanupFunction");
     Sentry.captureException(err);
   }
 }

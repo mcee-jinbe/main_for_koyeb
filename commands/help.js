@@ -102,7 +102,7 @@ module.exports = {
         });
       }
     } catch (err) {
-      err.id = "help";
+      Sentry.setTag("Error Point", "help");
       Sentry.captureException(err);
     }
   },

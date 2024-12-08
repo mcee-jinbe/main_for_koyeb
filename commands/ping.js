@@ -20,7 +20,7 @@ module.exports = {
         }ms\`.`
       );
     } catch (err) {
-      err.id = "ping";
+      Sentry.setTag("Error Point", "ping");
       Sentry.captureException(err);
     }
   },

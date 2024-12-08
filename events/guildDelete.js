@@ -30,7 +30,7 @@ module.exports = async (client, guild) => {
       await deleteUserDBWithoutServerDB();
     }
   } catch (err) {
-    err.id = "guildDelete";
+    Sentry.setTag("Error Point", "guildDelete");
     Sentry.captureException(err);
   }
 };

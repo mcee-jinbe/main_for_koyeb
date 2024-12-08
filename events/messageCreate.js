@@ -187,7 +187,7 @@ module.exports = async (client, message) => {
       }
     }
   } catch (err) {
-    err.id = "messageCreate";
+    Sentry.setTag("Error Point", "messageCreate");
     Sentry.captureException(err);
   }
 };

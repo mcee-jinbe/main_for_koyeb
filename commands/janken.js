@@ -156,12 +156,12 @@ module.exports = {
           });
         })
         .catch((err) => {
-          err.id = "janken_collection";
+          Sentry.setTag("Error Point", "janken_collection");
           const errorNotification = require("../errorFunction.js");
           errorNotification(client, interaction, err);
         });
     } catch (err) {
-      err.id = "janken";
+      Sentry.setTag("Error Point", "janken");
       Sentry.captureException(err);
     }
   },

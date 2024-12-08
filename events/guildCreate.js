@@ -73,7 +73,7 @@ module.exports = async (client, guild) => {
         });
       });
   } catch (err) {
-    err.id = "guildCreate";
+    Sentry.setTag("Error Point", "guildCreate");
     Sentry.captureException(err);
   }
 };

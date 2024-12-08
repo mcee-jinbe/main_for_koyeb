@@ -101,7 +101,7 @@ module.exports = async (client, interaction) => {
       }
     }
   } catch (err) {
-    err.id = "interactionCreate";
+    Sentry.setTag("Error Point", "interactionCreate");
     Sentry.captureException(err);
   }
 };

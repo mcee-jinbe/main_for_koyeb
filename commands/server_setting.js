@@ -157,7 +157,7 @@ module.exports = {
           });
       }
     } catch (err) {
-      err.id = "server_settings";
+      Sentry.setTag("Error Point","server_settings");
       Sentry.captureException(err);
     }
   },
