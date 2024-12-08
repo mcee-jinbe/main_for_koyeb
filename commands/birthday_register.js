@@ -1,6 +1,9 @@
 const { ApplicationCommandOptionType } = require("discord.js");
 const userDB = require("../models/user_db.js");
 const serverDB = require("../models/server_db.js");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = {
   name: "birthday_register",
@@ -28,7 +31,7 @@ module.exports = {
       serverDB
         .findOne({ _id: interaction.guild.id })
         .catch((err) => {
-          console.log(err);
+          Sentry.captureException(err);
           return interaction.reply({
             content:
               "内部エラーが発生しました。\nサーバー用データベースが正常に作成されなかった可能性があります。",
@@ -83,7 +86,7 @@ module.exports = {
                   profile
                     .save()
                     .catch(async (err) => {
-                      console.log(err);
+                      Sentry.captureException(err);
                       return interaction.editReply(
                         "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースの更新時にエラーが発生しました。\nコンソールを確認してください。"
                       );
@@ -104,7 +107,7 @@ module.exports = {
                   userDB
                     .findOne({ _id: user_id, serverID: interaction.guild.id })
                     .catch((err) => {
-                      console.log(err);
+                      Sentry.captureException(err);
                       return interaction.editReply({
                         content:
                           "誕生日のデータを更新する際に、内部エラーが発生しました。\nサポートサーバーからエラーが発生した旨を伝えてください。",
@@ -162,8 +165,7 @@ module.exports = {
         });
     } catch (err) {
       err.id = "birthday_register";
-      const errorNotification = require("../errorFunction.js");
-      errorNotification(client, interaction, err);
+      Sentry.captureException(err);
     }
   },
 };

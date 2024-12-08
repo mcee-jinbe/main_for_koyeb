@@ -3,6 +3,9 @@ const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 require("dotenv").config();
 const fs = require("fs");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 const url_check_api = process.env["url_check_api"];
 
@@ -185,7 +188,6 @@ module.exports = async (client, message) => {
     }
   } catch (err) {
     err.id = "messageCreate";
-    const errorNotification = require("../errorFunction.js");
-    errorNotification(client, message, err);
+    Sentry.captureException(err);
   }
 };

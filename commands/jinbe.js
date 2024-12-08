@@ -1,5 +1,8 @@
 const { ApplicationCommandOptionType } = require("discord.js");
 const omikujiSystem = require("./omikuji.js");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = {
   name: "jinbe",
@@ -20,8 +23,7 @@ module.exports = {
       omikujiSystem.run(client, interaction);
     } catch (err) {
       err.id = "jinbe_omikuji";
-      const errorNotification = require("../errorFunction.js");
-      errorNotification(client, interaction, err);
+      Sentry.captureException(err);
     }
   },
 };

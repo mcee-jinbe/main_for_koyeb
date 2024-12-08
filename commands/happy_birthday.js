@@ -1,5 +1,8 @@
 const { ApplicationCommandOptionType } = require("discord.js");
 const fs = require("fs");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = {
   name: "happy_birthday",
@@ -61,8 +64,7 @@ module.exports = {
       }
     } catch (err) {
       err.id = "happy_birthday";
-      const errorNotification = require("../errorFunction.js");
-      errorNotification(client, interaction, err);
+      Sentry.captureException(err);
     }
   },
 };

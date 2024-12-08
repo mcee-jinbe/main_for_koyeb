@@ -1,3 +1,6 @@
+// for using sentry
+require("./instrument");
+
 const fs = require("fs");
 const { Client, GatewayIntentBits } = require("discord.js");
 const client = new Client({
@@ -12,6 +15,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
+const Sentry = require("@sentry/node");
 
 //機密情報取得
 const token = process.env["bot_token"];
@@ -29,7 +33,7 @@ app.listen(PORT, () => {
 //コマンドをBOTに適応させる準備
 client.commands = [];
 fs.readdir("./commands", (err, files) => {
-  if (err) throw err;
+  if (err) Sentry.captureException(err);
   files.forEach(async (f) => {
     try {
       if (f.endsWith(".js")) {
@@ -42,7 +46,7 @@ fs.readdir("./commands", (err, files) => {
         console.log(`コマンドの読み込みが完了: ${props.name}`);
       }
     } catch (err) {
-      console.log(err);
+      Sentry.captureException(err);
     }
   });
 });
@@ -67,7 +71,7 @@ mongoose
     console.log("データベースに接続したんだゾ");
   })
   .catch((err) => {
-    console.log(err);
+    Sentry.captureException(err);
   });
 
 //Discordへの接続

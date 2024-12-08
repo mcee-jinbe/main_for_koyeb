@@ -4,6 +4,9 @@ const {
   ActionRowBuilder,
   TextInputStyle,
 } = require("discord.js");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = {
   name: "5000choyen",
@@ -57,12 +60,11 @@ module.exports = {
           });
         })
         .catch((err) => {
-          console.log(err);
+          Sentry.captureException(err);
         });
     } catch (err) {
       err.id = "5000choen";
-      const errorNotification = require("../errorFunction.js");
-      errorNotification(client, interaction, err);
+      Sentry.captureException(err);
     }
   },
 };

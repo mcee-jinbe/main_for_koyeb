@@ -1,4 +1,7 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = {
   name: "janken",
@@ -159,8 +162,7 @@ module.exports = {
         });
     } catch (err) {
       err.id = "janken";
-      const errorNotification = require("../errorFunction.js");
-      errorNotification(client, interaction, err);
+      Sentry.captureException(err);
     }
   },
 };

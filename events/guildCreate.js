@@ -6,6 +6,9 @@ const {
   PermissionsBitField,
 } = require("discord.js");
 const serverDB = require("../models/server_db.js");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = async (client, guild) => {
   try {
@@ -17,7 +20,7 @@ module.exports = async (client, guild) => {
     profile
       .save()
       .catch(async (err) => {
-        console.log(err);
+        Sentry.captureException(err);
         client.channels.cache
           .get("889478088486948925")
           .send(
@@ -71,7 +74,6 @@ module.exports = async (client, guild) => {
       });
   } catch (err) {
     err.id = "guildCreate";
-    const errorNotification = require("../errorFunction.js");
-    errorNotification(client, guild, err);
+    Sentry.captureException(err);
   }
 };

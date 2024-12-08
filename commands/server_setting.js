@@ -4,6 +4,9 @@ const {
 } = require("discord.js");
 const serverDB = require("../models/server_db.js");
 const userDB = require("../models/user_db.js");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = {
   name: "server_setting",
@@ -91,7 +94,7 @@ module.exports = {
             serverDB
               .findById(interaction.guild.id)
               .catch(async (err) => {
-                console.log(err);
+                Sentry.captureException(err);
                 await interaction.editReply({
                   content:
                     "内部エラーが発生しました。\nこの旨をサポートサーバーでお伝えください。",
@@ -119,7 +122,7 @@ module.exports = {
         serverDB
           .findById(interaction.guild.id)
           .catch((err) => {
-            console.log(err);
+            Sentry.captureException(err);
           })
           .then((model) => {
             if (!model) {
@@ -155,8 +158,7 @@ module.exports = {
       }
     } catch (err) {
       err.id = "server_settings";
-      const errorNotification = require("../errorFunction.js");
-      errorNotification(client, interaction, err);
+      Sentry.captureException(err);
     }
   },
 };

@@ -5,6 +5,9 @@ const {
   ButtonStyle,
 } = require("discord.js");
 const packageInfo = require("../package.json");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = {
   name: "help",
@@ -100,8 +103,7 @@ module.exports = {
       }
     } catch (err) {
       err.id = "help";
-      const errorNotification = require("../errorFunction.js");
-      errorNotification(client, interaction, err);
+      Sentry.captureException(err);
     }
   },
 };

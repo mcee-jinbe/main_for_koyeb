@@ -1,4 +1,7 @@
 const serverDB = require("../models/server_db.js");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = async (client, guild) => {
   try {
@@ -16,7 +19,7 @@ module.exports = async (client, guild) => {
       serverDB
         .deleteOne({ _id: guild.id })
         .catch((err) => {
-          console.log(err);
+          Sentry.captureException(err);
         })
         .then(() => {
           console.log("正常にサーバーから退出しました。");
@@ -28,7 +31,6 @@ module.exports = async (client, guild) => {
     }
   } catch (err) {
     err.id = "guildDelete";
-    const errorNotification = require("../errorFunction.js");
-    errorNotification(client, guild, err);
+    Sentry.captureException(err);
   }
 };

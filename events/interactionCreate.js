@@ -1,5 +1,8 @@
 const { InteractionType } = require("discord.js");
 const fs = require("fs");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = async (client, interaction) => {
   try {
@@ -12,7 +15,7 @@ module.exports = async (client, interaction) => {
     } else {
       if (interaction?.type == InteractionType.ApplicationCommand) {
         fs.readdir("./commands", (err, files) => {
-          if (err) throw err;
+          if (err) Sentry.captureException(err);
           files.forEach(async (f) => {
             let props = require(`../commands/${f}`);
             if (interaction.commandName == props.name) {
@@ -99,7 +102,6 @@ module.exports = async (client, interaction) => {
     }
   } catch (err) {
     err.id = "interactionCreate";
-    const errorNotification = require("../errorFunction.js");
-    errorNotification(client, interaction, err);
+    Sentry.captureException(err);
   }
 };

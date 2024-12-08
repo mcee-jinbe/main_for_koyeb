@@ -1,6 +1,9 @@
 const { ApplicationCommandOptionType } = require("discord.js");
 const userDB = require("../models/user_db.js");
 const serverDB = require("../models/server_db.js");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 module.exports = {
   name: "birthday_show",
@@ -32,7 +35,7 @@ module.exports = {
       serverDB
         .findOne({ _id: interaction.guild.id })
         .catch((err) => {
-          console.log(err);
+          Sentry.captureException(err);
           return interaction.reply({
             content:
               "内部エラーが発生しました。\nサーバー用データベースが正常に作成されなかった可能性があります。",
@@ -156,8 +159,7 @@ module.exports = {
         });
     } catch (err) {
       err.id = "birthday_show";
-      const errorNotification = require("../errorFunction.js");
-      errorNotification(client, interaction, err);
+      Sentry.captureException(err);
     }
   },
 };

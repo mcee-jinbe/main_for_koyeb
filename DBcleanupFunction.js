@@ -1,6 +1,9 @@
 async function deleteUserDBWithoutServerDB() {
   const userDB = require("./models/user_db.js");
   const serverDB = require("./models/server_db.js");
+  const Sentry = require("@sentry/node");
+  // for using sentry
+  require("./instrument");
 
   try {
     let users = await userDB.find();
@@ -9,14 +12,14 @@ async function deleteUserDBWithoutServerDB() {
       await serverDB
         .findById(key.serverID)
         .catch((err) => {
-          console.log(err);
+          Sentry.captureException(err);
         })
         .then((model) => {
           if (!model) {
             userDB
               .deleteOne({ _id: key._id, serverID: key.serverID })
               .catch((err) => {
-                console.log(err);
+                Sentry.captureException(err);
               })
               .then(() => {
                 console.log(
@@ -28,8 +31,7 @@ async function deleteUserDBWithoutServerDB() {
     }
   } catch (err) {
     err.id = "DBcleanupFunction";
-    const errorNotification = require("../errorFunction.js");
-    errorNotification(client, interaction, err);
+    Sentry.captureException(err);
   }
 }
 

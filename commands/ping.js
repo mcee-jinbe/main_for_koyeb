@@ -1,8 +1,14 @@
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
+
 module.exports = {
   name: "ping",
   description: "BotのPingを測定します。",
   run: async (client, interaction) => {
     try {
+      ThisIsSentryTestingErrorGenerator();
+
       let sent = await interaction.reply({
         content: "🔄️　計測中…",
         fetchReply: true,
@@ -17,8 +23,7 @@ module.exports = {
       );
     } catch (err) {
       err.id = "ping";
-      const errorNotification = require("../errorFunction.js");
-      errorNotification(client, interaction, err);
+      Sentry.captureException(err);
     }
   },
 };

@@ -7,6 +7,9 @@ const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
 require("dotenv").config();
 const fs = require("fs");
+const Sentry = require("@sentry/node");
+// for using sentry
+require("../instrument");
 
 const token = process.env["bot_token"];
 
@@ -61,7 +64,7 @@ async function birthday_check(client) {
     //status更新
     model[key].status = "finished";
     model[key].save().catch(async (err) => {
-      console.log(err);
+      Sentry.captureException(err);
       client.channels.cache
         .get(server_info.channelID)
         .send(
@@ -87,8 +90,9 @@ module.exports = async (client) => {
       console.log("スラッシュコマンドの再読み込みに成功しました。");
     } catch (err) {
       console.log(
-        `❌ スラッシュコマンドの再読み込み時にエラーが発生しました。：\n${err}`
+        `❌ スラッシュコマンドの再読み込み時にエラーが発生しました。`
       );
+      Sentry.captureException(err);
     }
   })();
 
@@ -110,7 +114,7 @@ module.exports = async (client) => {
           status: "false",
         });
         profile.save().catch(async (err) => {
-          console.log(err);
+          Sentry.captureException(err);
           client.channels.cache
             .get("889478088486948925")
             .send(
@@ -143,7 +147,7 @@ module.exports = async (client) => {
             )
           )
           .catch(async (err) => {
-            console.log(err);
+            Sentry.captureException(err);
             client.channels.cache
               .get("889478088486948925")
               .send(
@@ -215,7 +219,7 @@ module.exports = async (client) => {
       await userDB
         .find({ status: "finished" })
         .catch((err) => {
-          console.log(err);
+          Sentry.captureException(err);
           client.channels.cache
             .get("889478088486948925")
             .send(
@@ -231,7 +235,7 @@ module.exports = async (client) => {
               .save()
               .catch(async (err) => {
                 if (err) {
-                  console.log(err);
+                  Sentry.captureException(err);
                   client.channels.cache
                     .get("889478088486948925")
                     .send(
