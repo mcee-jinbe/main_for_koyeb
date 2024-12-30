@@ -11,7 +11,7 @@ const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
 
-const token = process.env["bot_token"];
+const token = process.env.bot_token;
 
 //誕生日チェック
 async function birthday_check(client) {

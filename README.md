@@ -14,7 +14,23 @@ npm i --save-dev @types/node fs
 - `node-fetch` :URLチェックのリクエストを送るため
 - `dotenv` :環境変数を取得するため
 - `express` :ステータスチェック用のwebサーバーを立ち上げるため。
+## .envに書くこと
+```
+# discord botのtoken
+bot_token=
 
+# sentryの接続情報
+sentry_dsn=
+
+# URLの安全性を調べるためのAPIのtoken
+url_check_api=
+
+# mongoDBの接続情報
+mongodb_token=
+
+# 許可されたサーバーのID(これらのサーバーのみメッセージ展開とURLチェックが動作する)
+allowed_servers=["ID1", "ID2"]      
+```
 ---
 # その他メモ
 ## 定期実行

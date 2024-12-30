@@ -18,8 +18,8 @@ require("dotenv").config();
 const Sentry = require("@sentry/node");
 
 //機密情報取得
-const token = process.env["bot_token"];
-const mong_db_info = process.env["mongodb_token"];
+const token = process.env.bot_token;
+const mong_db_info = process.env.mongodb_token;
 const PORT = 8000;
 
 //サイト立ち上げ

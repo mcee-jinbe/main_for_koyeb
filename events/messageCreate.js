@@ -7,7 +7,7 @@ const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
 
-const url_check_api = process.env["url_check_api"];
+const url_check_api = process.env.url_check_api;
 
 //URLチェックの動作を指定
 async function getSafe(urls, message) {
@@ -37,8 +37,8 @@ async function getSafe(urls, message) {
   })
     .then((response) => response.json())
     .then((data) => {
-      if ("matches" in data) {
-        message.channel.send({
+      if (data.matches) {
+        message.reply({
           embeds: [
             {
               title: "⚠⚠⚠危険なURLを検知しました！⚠⚠⚠",
@@ -85,12 +85,7 @@ module.exports = async (client, message) => {
     }
 
     //メッセージ展開
-    let GuildIds = [
-      "889474199704436776", //planet-bot-support鯖
-      "913953017550745610", //てきとー鯖
-      "768073209169444884", //デジクリマイクラ鯖
-      "1102158301862559774", //デジクリゲーム鯖
-    ];
+    let GuildIds = process.env.allowed_servers;
     if (GuildIds.includes(message.guild.id)) {
       const MESSAGE_URL_REGEX =
         /https?:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g;
