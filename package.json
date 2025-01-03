@@ -21,15 +21,15 @@
     "@sentry/node": "^8.47.0",
     "@sentry/profiling-node": "^8.47.0",
     "date-fns-timezone": "^0.1.4",
-    "discord.js": "^14.16.3",
+    "discord.js": "^14.17.2",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mongoose": "^8.9.2",
+    "mongoose": "^8.9.3",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.4",
     "fs": "^0.0.1-security"
   }
 }
