@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require("discord.js");
+const { ApplicationCommandOptionType, MessageFlags } = require("discord.js");
 const userDB = require("../models/user_db.js");
 const serverDB = require("../models/server_db.js");
 const Sentry = require("@sentry/node");
@@ -35,14 +35,14 @@ module.exports = {
           return interaction.reply({
             content:
               "内部エラーが発生しました。\nサーバー用データベースが正常に作成されなかった可能性があります。",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         })
         .then(async (model) => {
           if (!model) {
             return interaction.reply({
               content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             });
           }
 
@@ -50,10 +50,10 @@ module.exports = {
             return interaction.reply({
               content:
                 "申し訳ございません。このサーバーでは誕生日を祝う機能が利用できません。\nあなたがサーバーの管理者である場合は、`/server_setting`コマンドから設定を有効にできます。",
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             });
           } else if (model.status == "true") {
-            await interaction.deferReply({ ephemeral: true });
+            await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
             // スラッシュコマンドの入力情報を取得
             var new_birthday_month = interaction.options.getNumber("month");

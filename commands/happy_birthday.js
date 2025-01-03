@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType } = require("discord.js");
+const { ApplicationCommandOptionType, MessageFlags } = require("discord.js");
 const fs = require("fs");
 const Sentry = require("@sentry/node");
 // for using sentry
@@ -59,7 +59,7 @@ module.exports = {
       } else {
         return interaction.reply({
           content: `申し訳ございません。本コマンドはスパム対策のため、コマンド実行後一定時間このコマンドは使用できません。少し待ってもう一度お試しください。`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     } catch (err) {

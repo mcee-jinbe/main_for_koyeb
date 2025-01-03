@@ -1,6 +1,7 @@
 const {
   ApplicationCommandOptionType,
   PermissionsBitField,
+  MessageFlags,
 } = require("discord.js");
 const serverDB = require("../models/server_db.js");
 const userDB = require("../models/user_db.js");
@@ -53,7 +54,7 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       if (interaction.options.getSubcommand() == "birthday_celebrate") {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         if (
           !interaction.memberPermissions.has(
             PermissionsBitField.Flags.Administrator
@@ -62,7 +63,7 @@ module.exports = {
           return interaction.editReply({
             content:
               "あなたは管理者権限を持っていないため、サーバー設定を変更できません。\n変更したい場合は、サーバー管理者にこのコマンドを実行するようにお願いしてください。",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         } else {
           let status = interaction.options.getString("true_or_false");
@@ -72,7 +73,7 @@ module.exports = {
           if (!data) {
             return interaction.reply({
               content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             });
           } else {
             if (status == "true") {
@@ -81,7 +82,7 @@ module.exports = {
               } else {
                 return interaction.editReply({
                   content: "⚠️誕生日を祝うチャンネルを指定してください。",
-                  ephemeral: true,
+                  flags: MessageFlags.Ephemeral,
                 });
               }
             } else {
@@ -98,7 +99,7 @@ module.exports = {
                 await interaction.editReply({
                   content:
                     "内部エラーが発生しました。\nこの旨をサポートサーバーでお伝えください。",
-                  ephemeral: true,
+                  flags: MessageFlags.Ephemeral,
                 });
               })
               .then((model) => {
@@ -128,7 +129,7 @@ module.exports = {
             if (!model) {
               return interaction.reply({
                 content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
               });
             }
 
@@ -157,7 +158,7 @@ module.exports = {
           });
       }
     } catch (err) {
-      Sentry.setTag("Error Point","server_settings");
+      Sentry.setTag("Error Point", "server_settings");
       Sentry.captureException(err);
     }
   },

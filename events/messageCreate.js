@@ -1,4 +1,9 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  MessageFlags,
+} = require("discord.js");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 require("dotenv").config();
@@ -171,7 +176,7 @@ module.exports = async (client, message) => {
           content:
             "申し訳ございません。「omikuji」、「jinbe」、「omikujinbe」、「janken」を利用したおみくじやじゃんけんは、スラッシュコマンドに移行しました。\n`/omikuji`や`/janken`、`/jinbe`コマンドをご利用ください。",
           components: [deleteButton],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
 
         data.userId.push(message.author.id);

@@ -3,6 +3,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  MessageFlags,
 } = require("discord.js");
 const Sentry = require("@sentry/node");
 // for using sentry
@@ -60,7 +61,7 @@ module.exports = {
         ],
         files: [{ attachment: "images/omikuji.png", name: "file.png" }],
         components: [omikuji_choice],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } catch (err) {
       Sentry.setTag("Error Point", "omikuji");

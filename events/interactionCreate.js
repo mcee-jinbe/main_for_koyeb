@@ -1,4 +1,4 @@
-const { InteractionType } = require("discord.js");
+const { InteractionType, MessageFlags } = require("discord.js");
 const fs = require("fs");
 const Sentry = require("@sentry/node");
 // for using sentry
@@ -10,7 +10,7 @@ module.exports = async (client, interaction) => {
       return interaction?.reply({
         content:
           "❌ このBOTはサーバー内でのみ動作します。\nお手数をおかけしますが、サーバー内でご利用ください。",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } else {
       if (interaction?.type == InteractionType.ApplicationCommand) {
@@ -24,7 +24,7 @@ module.exports = async (client, interaction) => {
               } catch (err) {
                 return interaction?.reply({
                   content: `❌ 何らかのエラーが発生しました。`,
-                  ephemeral: true,
+                  flags: MessageFlags.Ephemeral,
                 });
               }
             }
