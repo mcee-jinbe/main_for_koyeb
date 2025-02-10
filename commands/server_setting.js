@@ -89,7 +89,10 @@ module.exports = {
               var st = null;
 
               //このサーバーに関連する誕生日データを削除
-              await userDB.deleteMany({ serverID: interaction.guild.id });
+              await userDB.updateMany(
+                { serverIDs: interaction.guild.id },
+                { $pull: { serverIDs: interaction.guild.id } }
+              );
             }
 
             serverDB

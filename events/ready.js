@@ -6,7 +6,6 @@ const { Routes } = require("discord-api-types/v10");
 const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
 require("dotenv").config();
-const fs = require("fs");
 const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
@@ -33,33 +32,36 @@ async function birthday_check(client) {
     return;
   }
 
+  // 誕生日を迎えた全ユーザー分ループする
   for (const key in model) {
     // めでたい人の情報を取得して定義
-    let celebrate_server_id = model[key].serverID;
+    let celebrate_server_ids = model[key].serverIDs;
     let birthday_people_id = model[key]._id;
 
-    let server_info = await serverDB.findById(celebrate_server_id);
+    for (const celebrate_server_id of celebrate_server_ids) {
+      let server_info = await serverDB.findById(celebrate_server_id);
 
-    //誕生日を祝う
-    client.channels.cache.get(server_info.channelID).send({
-      content: `<@${birthday_people_id}>`,
-      embeds: [
-        {
-          title: "お誕生日おめでとうございます！",
-          description: `今日は、<@${birthday_people_id}>さんのお誕生日です！`,
-          color: 0xff00ff,
-          thumbnail: {
-            url: "attachment://happy_birthday.png",
+      //誕生日を祝う
+      client.channels.cache.get(server_info.channelID).send({
+        content: `<@${birthday_people_id}>`,
+        embeds: [
+          {
+            title: "お誕生日おめでとうございます！",
+            description: `今日は、<@${birthday_people_id}>さんのお誕生日です！`,
+            color: 0xff00ff,
+            thumbnail: {
+              url: "attachment://happy_birthday.png",
+            },
           },
-        },
-      ],
-      files: [
-        {
-          attachment: "./images/jinbe_ome.png",
-          name: "happy_birthday.png",
-        },
-      ],
-    });
+        ],
+        files: [
+          {
+            attachment: "./images/jinbe_ome.png",
+            name: "happy_birthday.png",
+          },
+        ],
+      });
+    }
 
     //status更新
     model[key].status = "finished";
@@ -129,7 +131,7 @@ module.exports = async (client) => {
     }
   });
 
-  //シャットダウン中に退出されたサーバーを登録
+  //シャットダウン中に退出されたサーバーのデータ削除
   await serverDB.find({}).then(async (all_data) => {
     for (let data of all_data) {
       //全参加中のサーバーの中で、データベースに登録されていないサーバーIDが含まれる場合は登録削除処理を行う。
@@ -157,10 +159,6 @@ module.exports = async (client) => {
       }
     }
   });
-
-  //サーバーDBにないユーザーDBは削除する
-  const deleteUserDBWithoutServerDB = require("../DBcleanupFunction.js");
-  await deleteUserDBWithoutServerDB();
 
   birthday_check(client); //起動時に実行
 

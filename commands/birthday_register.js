@@ -70,14 +70,12 @@ module.exports = {
                 if (new_birthday_day >= 1 && new_birthday_day <= 9) {
                   var new_birthday_day = `0${new_birthday_day}`;
                 }
-                let database_data = await userDB.find({
-                  _id: user_id,
-                  serverID: interaction.guild.id,
-                });
-                if (!database_data.length) {
+                let usersInAllGuild = await userDB.find({ _id: user_id });
+                if (!usersInAllGuild.length) {
+                  // ユーザーDBに居ない場合は、新規登録
                   const profile = await userDB.create({
                     _id: user_id,
-                    serverID: interaction.guild.id,
+                    serverIDs: [interaction.guild.id],
                     user_name: interaction.user.name,
                     birthday_month: new_birthday_month,
                     birthday_day: new_birthday_day,
@@ -104,8 +102,21 @@ module.exports = {
                       });
                     });
                 } else {
-                  userDB
-                    .findOne({ _id: user_id, serverID: interaction.guild.id })
+                  // ユーザーDBに居る場合は、更新手続きを行う。
+                  let users = await userDB.findOne({ _id: user_id });
+
+                  // ユーザーDBのserverIDsに登録されていない場合は、登録する。
+                  let registered = true;
+                  if (!users.serverIDs.includes(interaction.guild.id)) {
+                    registered = false;
+                    await userDB.updateOne(
+                      { _id: user_id },
+                      { $push: { serverIDs: interaction.guild.id } }
+                    );
+                  }
+
+                  await userDB
+                    .findOne({ _id: user_id })
                     .catch((err) => {
                       Sentry.captureException(err);
                       return interaction.editReply({
@@ -125,7 +136,9 @@ module.exports = {
                         return interaction.editReply({
                           embeds: [
                             {
-                              title: "更新完了！",
+                              title: registered
+                                ? "全サーバーにおける、誕生日の更新が完了しました！"
+                                : "このサーバーでのあなたの誕生日を祝う設定を有効にし、全サーバーにおける、誕生日の更新が完了しました！",
                               description: `あなたの誕生日を\`${old_month}月${old_day}日\`から\`${new_birthday_month}月${new_birthday_day}日\`に更新しました。`,
                               color: 0x10ff00,
                             },

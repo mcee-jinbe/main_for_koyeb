@@ -65,7 +65,7 @@ module.exports = {
             if (show_type == "all") {
               userDB
                 .find({
-                  serverID: interaction.guild.id,
+                  serverIDs: interaction.guild.id,
                 })
                 .then(async (models) => {
                   if (models.length) {
@@ -104,7 +104,7 @@ module.exports = {
                   userDB
                     .findOne({
                       _id: interaction.user.id,
-                      serverID: interaction.guild.id,
+                      serverIDs: interaction.guild.id,
                     })
                     .then(async (model) => {
                       if (!model) {
