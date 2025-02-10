@@ -7,7 +7,7 @@ const {
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 require("dotenv").config();
-const fs = require("fs");
+const cooldown = new Map();
 const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
@@ -160,11 +160,11 @@ module.exports = async (client, message) => {
       message.channel.send("おやすみ～\nいい夢見てね…");
     } else if (message.content.match(/omikuji|jinbe|omikujinbe|janken/i)) {
       // ここのコードは、チャット入力コマンドがスラッシュコマンドに仕様変更になったことによる案内文を表示するコード
-      // 一定期間して、このコードを消す場合は、ready.jsのcronで「newCommandGuide_sentUser.json」をリセットしている
-      // コードも削除する事。
-      let data = fs.readFileSync("./newCommandGuide_sentUser.json");
-      data = JSON.parse(data);
-      if (!data.userId.includes(message.author.id)) {
+      const guildId = message.guild.id;
+      const now = Date.now();
+      const cooldownAmount = 24 * 60 * 60 * 1000; // 1週間
+
+      if (!cooldown.has(guildId) && now < cooldown.get(guildId)) {
         let deleteButton = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setLabel("このメッセージを削除する")
@@ -178,13 +178,10 @@ module.exports = async (client, message) => {
           components: [deleteButton],
           flags: MessageFlags.Ephemeral,
         });
-
-        data.userId.push(message.author.id);
-        fs.writeFileSync(
-          "./newCommandGuide_sentUser.json",
-          JSON.stringify(data)
-        );
       }
+
+      cooldown.set(guildId, now + cooldownAmount);
+      setTimeout(() => cooldown.delete(guildId), cooldownAmount);
     }
   } catch (err) {
     Sentry.setTag("Error Point", "messageCreate");
