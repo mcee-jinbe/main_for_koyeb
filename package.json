@@ -18,18 +18,18 @@
   },
   "homepage": "https://github.com/mcee-jinbe/main_for_koyeb#readme",
   "dependencies": {
-    "@sentry/node": "^8.53.0",
-    "@sentry/profiling-node": "^8.53.0",
+    "@sentry/node": "^8.54.0",
+    "@sentry/profiling-node": "^8.54.0",
     "date-fns-timezone": "^0.1.4",
     "discord.js": "^14.17.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mongoose": "^8.9.6",
+    "mongoose": "^8.10.0",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@types/node": "^22.13.0",
+    "@types/node": "^22.13.1",
     "fs": "^0.0.1-security"
   }
 }
