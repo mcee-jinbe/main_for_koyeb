@@ -1,5 +1,5 @@
 const { ApplicationCommandOptionType, MessageFlags } = require("discord.js");
-const fs = require("fs");
+const cooldown = new Map();
 const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
@@ -20,48 +20,34 @@ module.exports = {
 
   run: async (client, interaction) => {
     try {
-      let happyBirthday_sentUser = fs.readFileSync(
-        "./happyBirthday_sentUser.json"
-      );
-      happyBirthday_sentUser = JSON.parse(happyBirthday_sentUser);
+      const user = interaction.options.getUser("user");
+      const now = Date.now();
+      const cooldownAmount = 60 * 1000; // 1分（60秒）
 
-      if (!happyBirthday_sentUser.userId.includes(interaction.user.id)) {
-        // 1分間使えなくなるようにする
-        happyBirthday_sentUser.userId.push(interaction.user.id);
-        fs.writeFileSync(
-          "./happyBirthday_sentUser.json",
-          JSON.stringify(happyBirthday_sentUser)
-        );
-
-        const user = interaction.options.getUser("user");
-        await interaction.reply({
-          content: `<@${user.id}>`,
-          embeds: [
-            {
-              title: "🎊たんおめ！🎊",
-              description: `<@${user.id}>さん　お誕生日おめでとうございます！`,
-              color: 0xff30ff,
-              timestamp: new Date(),
-            },
-          ],
-        });
-
-        //1分後にデータ削除して、再度コマンドを実行できるようにする
-        setTimeout(() => {
-          happyBirthday_sentUser.userId = happyBirthday_sentUser.userId.filter(
-            (data) => data != interaction.user.id
-          );
-          fs.writeFileSync(
-            "./happyBirthday_sentUser.json",
-            JSON.stringify(happyBirthday_sentUser)
-          );
-        }, 60000);
-      } else {
-        return interaction.reply({
-          content: `申し訳ございません。本コマンドはスパム対策のため、コマンド実行後一定時間このコマンドは使用できません。少し待ってもう一度お試しください。`,
-          flags: MessageFlags.Ephemeral,
-        });
+      if (cooldown.has(user.id)) {
+        const expirationTime = cooldown.get(user.id);
+        if (now < expirationTime) {
+          return interaction.reply({
+            content: `申し訳ございません。本コマンドはスパム対策のため、一定時間の間に1ユーザーに対して実行できる回数を制限しております。少し待ってもう一度お試しください。`,
+            flags: MessageFlags.Ephemeral,
+          });
+        }
       }
+
+      cooldown.set(user.id, now + cooldownAmount);
+      setTimeout(() => cooldown.delete(user.id), cooldownAmount);
+
+      await interaction.reply({
+        content: `<@${user.id}>`,
+        embeds: [
+          {
+            title: "🎊たんおめ！🎊",
+            description: `<@${user.id}>さん　お誕生日おめでとうございます！`,
+            color: 0xff30ff,
+            timestamp: new Date(),
+          },
+        ],
+      });
     } catch (err) {
       Sentry.setTag("Error Point", "happy_birthday");
       Sentry.captureException(err);
