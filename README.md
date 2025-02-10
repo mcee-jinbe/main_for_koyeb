@@ -1,7 +1,8 @@
 # パッケージに関して
 ## 実行する際のnpmコマンド
 ```
-npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch util
+npm i date-fns-timezone discord.js mongoose node-cron node-fetch express dotenv
+npm i --save-dev @types/node fs
 ```
 ## 各パッケージの使用用途
 - `@types/node`　：node.jsを書きやすくするやつらしい
@@ -11,8 +12,25 @@ npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch 
 - `mongoose` ：MongoDBの操作を簡単に行うため
 - `node-cron` ：毎日決まった時間に処理を行うため
 - `node-fetch` :URLチェックのリクエストを送るため
-- `util` :○○ms待つを使用するため
+- `dotenv` :環境変数を取得するため
+- `express` :ステータスチェック用のwebサーバーを立ち上げるため。
+## .envに書くこと
+```
+# discord botのtoken
+bot_token=
 
+# sentryの接続情報
+sentry_dsn=
+
+# URLの安全性を調べるためのAPIのtoken
+url_check_api=
+
+# mongoDBの接続情報
+mongodb_token=
+
+# 許可されたサーバーのID(これらのサーバーのみメッセージ展開とURLチェックが動作する)
+allowed_servers=["ID1", "ID2"]      
+```
 ---
 # その他メモ
 ## 定期実行
