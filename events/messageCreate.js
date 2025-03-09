@@ -158,13 +158,16 @@ module.exports = async (client, message) => {
       message.content.match(/おやすみjinbe/)
     ) {
       message.channel.send("おやすみ～\nいい夢見てね…");
-    } else if (message.content.match(/omikuji|jinbe|omikujinbe|janken/i)) {
+    } else if (
+      /^omikuji$|^jinbe$|^omikujinbe$|^janken$/.test(message.content)
+    ) {
       // ここのコードは、チャット入力コマンドがスラッシュコマンドに仕様変更になったことによる案内文を表示するコード
       const guildId = message.guild.id;
       const now = Date.now();
       const cooldownAmount = 24 * 60 * 60 * 1000; // 1週間
 
-      if (!cooldown.has(guildId) && now < cooldown.get(guildId)) {
+      console.log(cooldown);
+      if (!cooldown.has(guildId) || now > cooldown.get(guildId)) {
         let deleteButton = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setLabel("このメッセージを削除する")
@@ -178,10 +181,10 @@ module.exports = async (client, message) => {
           components: [deleteButton],
           flags: MessageFlags.Ephemeral,
         });
-      }
 
-      cooldown.set(guildId, now + cooldownAmount);
-      setTimeout(() => cooldown.delete(guildId), cooldownAmount);
+        cooldown.set(guildId, now + cooldownAmount);
+        setTimeout(() => cooldown.delete(guildId), cooldownAmount);
+      }
     }
   } catch (err) {
     Sentry.setTag("Error Point", "messageCreate");
