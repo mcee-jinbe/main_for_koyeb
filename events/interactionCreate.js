@@ -47,7 +47,7 @@ module.exports = async (client, interaction) => {
           buttonId.includes("omi3")
         ) {
           await interaction.deferReply({
-            ephemeral: secret,
+            flags: secret ? MessageFlags.Ephemeral : null,
           });
 
           const arr = [

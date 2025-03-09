@@ -98,7 +98,7 @@ module.exports = {
                             color: 0x0000ff,
                           },
                         ],
-                        ephemeral: false,
+                        flags: MessageFlags.Ephemeral,
                       });
                     });
                 } else {
