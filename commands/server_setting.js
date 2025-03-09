@@ -76,9 +76,10 @@ module.exports = {
               flags: MessageFlags.Ephemeral,
             });
           } else {
+            let st;
             if (status == "true") {
               if (channel) {
-                var st = channel.id;
+                st = channel.id;
               } else {
                 return interaction.editReply({
                   content: "⚠️誕生日を祝うチャンネルを指定してください。",
@@ -86,7 +87,7 @@ module.exports = {
                 });
               }
             } else {
-              var st = null;
+              st = null;
 
               //このサーバーに関連する誕生日データを削除
               await userDB.updateMany(
@@ -136,18 +137,18 @@ module.exports = {
               });
             }
 
+            let status, channel;
             if (model.status == "true") {
-              var status = "有効(true)";
-              var channel = interaction.guild.channels.cache.find(
+              status = "有効(true)";
+              channel = interaction.guild.channels.cache.find(
                 (ch) => ch.id === model.channelID
               );
               if (!channel) {
-                var channel = "`見つかりませんでした！`";
+                channel = "`見つかりませんでした！`";
               }
             } else if (model.status == "false") {
-              var status = "無効(false)";
-              var channel =
-                "`(機能が無効のため、この項目は無効化されています)`";
+              status = "無効(false)";
+              channel = "`(機能が無効のため、この項目は無効化されています)`";
             }
 
             return interaction.reply({
