@@ -1,4 +1,10 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ApplicationCommandOptionType,
+  MessageFlags,
+} = require("discord.js");
 const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
@@ -6,9 +12,19 @@ require("../instrument");
 module.exports = {
   name: "janken",
   description: "✊✌️🖐️じゃんけんをしよう！！",
+  options: [
+    {
+      type: ApplicationCommandOptionType.String,
+      name: "secret",
+      description: "結果を非公開で送信したい場合は設定してください。",
+      required: false,
+      choices: [{ name: "非公開にする", value: "true" }],
+    },
+  ],
 
   run: async (client, interaction) => {
     try {
+      const secret = interaction.options.getString("secret");
       const janken_choice = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId("pa")
@@ -43,6 +59,7 @@ module.exports = {
           ],
           files: [{ attachment: "images/janken.png", name: "file.png" }],
           components: [janken_choice],
+          flags: MessageFlags.Ephemeral,
         })
         .then((buttonMessage) => {
           const filter = (i) => i.user.id == interaction.user.id;
@@ -137,8 +154,13 @@ module.exports = {
                 var file_pas = "images/lose.png";
               }
 
+              // おみくじのUIを削除する
+              setTimeout(async () => {
+                await interaction.deleteReply();
+              }, 500);
+
               // 結果表示
-              await interaction.editReply({
+              return interaction.followUp({
                 embeds: [
                   {
                     title: "じゃんけんの結果！",
@@ -150,7 +172,7 @@ module.exports = {
                   },
                 ],
                 files: [{ attachment: file_pas, name: "omi_kekka.png" }],
-                components: [],
+                flags: secret ? MessageFlags.Ephemeral : 0,
               });
             }
           });

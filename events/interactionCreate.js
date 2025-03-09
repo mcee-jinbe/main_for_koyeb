@@ -46,9 +46,8 @@ module.exports = async (client, interaction) => {
           buttonId.includes("omi2") ||
           buttonId.includes("omi3")
         ) {
-          await interaction.deferReply({
-            flags: secret ? MessageFlags.Ephemeral : null,
-          });
+          // ボタンを押した後のグルグル表示をやめる
+          await interaction.deferUpdate();
 
           const arr = [
             "大吉",
@@ -80,7 +79,12 @@ module.exports = async (client, interaction) => {
             var number = "3";
           }
 
-          await interaction.editReply({
+          // おみくじのUIを削除する
+          setTimeout(async () => {
+            await interaction.deleteReply();
+          }, 500);
+
+          return interaction.followUp({
             embeds: [
               {
                 title: "おみくじの結果！",
@@ -92,6 +96,7 @@ module.exports = async (client, interaction) => {
               },
             ],
             files: [{ attachment: file_pas, name: "omi_kekka.png" }],
+            flags: secret ? MessageFlags.Ephemeral : 0,
           });
         }
 
