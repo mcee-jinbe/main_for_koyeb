@@ -90,7 +90,7 @@ module.exports = async (client, message) => {
     }
 
     //メッセージ展開
-    let GuildIds = process.env.allowed_servers;
+    let GuildIds = JSON.parse(process.env.allowedServers);
     if (GuildIds.includes(message.guild.id)) {
       const MESSAGE_URL_REGEX =
         /https?:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g;
@@ -166,7 +166,6 @@ module.exports = async (client, message) => {
       const now = Date.now();
       const cooldownAmount = 24 * 60 * 60 * 1000; // 1週間
 
-      console.log(cooldown);
       if (!cooldown.has(guildId) || now > cooldown.get(guildId)) {
         let deleteButton = new ActionRowBuilder().addComponents(
           new ButtonBuilder()

@@ -33,7 +33,7 @@ url_check_api=
 mongodb_token=
 
 # 許可されたサーバーのID(これらのサーバーのみメッセージ展開とURLチェックが動作する)
-allowed_servers=["ID1", "ID2"]      
+allowedServers='["ID1", "ID2"]'
 ```
 ---
 # その他メモ
