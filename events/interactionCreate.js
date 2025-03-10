@@ -34,7 +34,7 @@ module.exports = async (client, interaction) => {
 
       if (interaction?.type == InteractionType.MessageComponent) {
         let buttonId = interaction.customId;
-        var secret;
+        let secret;
         if (buttonId.includes("secret")) {
           secret = true;
         } else {
@@ -46,9 +46,8 @@ module.exports = async (client, interaction) => {
           buttonId.includes("omi2") ||
           buttonId.includes("omi3")
         ) {
-          await interaction.deferReply({
-            ephemeral: secret,
-          });
+          // ボタンを押した後のグルグル表示をやめる
+          await interaction.deferUpdate();
 
           const arr = [
             "大吉",
@@ -63,24 +62,30 @@ module.exports = async (client, interaction) => {
           const random = Math.floor(Math.random() * arr.length);
           const result = arr[random];
 
+          let file_pas, number;
           if (random === 0) {
-            var file_pas = "images/jinbe_daikiti.png";
+            file_pas = "images/jinbe_daikiti.png";
           } else if (random === 4 || random === 7) {
-            var file_pas = "images/jinbe_pien.png";
+            file_pas = "images/jinbe_pien.png";
           } else if (random === 5) {
-            var file_pas = "images/jinbe_pien2.png";
+            file_pas = "images/jinbe_pien2.png";
           } else {
-            var file_pas = "images/jinbe.png";
+            file_pas = "images/jinbe.png";
           }
           if (buttonId === "omi1") {
-            var number = "1";
+            number = "1";
           } else if (buttonId === "omi2") {
-            var number = "2";
+            number = "2";
           } else {
-            var number = "3";
+            number = "3";
           }
 
-          await interaction.editReply({
+          // おみくじのUIを削除する
+          setTimeout(async () => {
+            await interaction.deleteReply();
+          }, 500);
+
+          return interaction.followUp({
             embeds: [
               {
                 title: "おみくじの結果！",
@@ -92,6 +97,7 @@ module.exports = async (client, interaction) => {
               },
             ],
             files: [{ attachment: file_pas, name: "omi_kekka.png" }],
+            flags: secret ? MessageFlags.Ephemeral : 0,
           });
         }
 

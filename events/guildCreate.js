@@ -10,6 +10,8 @@ const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
 
+const errorNotificationChannelID = process.env.errorNotificationChannelID;
+
 module.exports = async (client, guild) => {
   try {
     const profile = await serverDB.create({
@@ -22,7 +24,7 @@ module.exports = async (client, guild) => {
       .catch(async (err) => {
         Sentry.captureException(err);
         client.channels.cache
-          .get("889478088486948925")
+          .get(errorNotificationChannelID)
           .send(
             "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
           );

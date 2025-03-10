@@ -3,6 +3,8 @@ const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
 
+const errorNotificationChannelID = process.env.errorNotificationChannelID;
+
 module.exports = async (client, guild) => {
   try {
     const profile = await serverDB.findOne({
@@ -11,7 +13,7 @@ module.exports = async (client, guild) => {
 
     if (!profile) {
       client.channels.cache
-        .get("889486664760721418")
+        .get(errorNotificationChannelID)
         .send(
           `データベースに登録されていないサーバーから退出しました。オーナーIDは${guild.ownerId}、サーバーIDは${guild.id}`
         );

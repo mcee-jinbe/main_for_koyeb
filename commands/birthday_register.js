@@ -56,8 +56,8 @@ module.exports = {
             await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
             // スラッシュコマンドの入力情報を取得
-            var new_birthday_month = interaction.options.getNumber("month");
-            var new_birthday_day = interaction.options.getNumber("day");
+            let new_birthday_month = interaction.options.getNumber("month");
+            let new_birthday_day = interaction.options.getNumber("day");
             let lastDay = new Date(2020, new_birthday_month, 0).getDate();
 
             let user_id = interaction.user.id;
@@ -65,10 +65,10 @@ module.exports = {
             if (new_birthday_month >= 1 && new_birthday_month <= 12) {
               if (new_birthday_day >= 1 && new_birthday_day <= lastDay) {
                 if (new_birthday_month >= 1 && new_birthday_month <= 9) {
-                  var new_birthday_month = `0${new_birthday_month}`;
+                  new_birthday_month = `0${new_birthday_month}`;
                 }
                 if (new_birthday_day >= 1 && new_birthday_day <= 9) {
-                  var new_birthday_day = `0${new_birthday_day}`;
+                  new_birthday_day = `0${new_birthday_day}`;
                 }
                 let usersInAllGuild = await userDB.find({ _id: user_id });
                 if (!usersInAllGuild.length) {
@@ -98,7 +98,7 @@ module.exports = {
                             color: 0x0000ff,
                           },
                         ],
-                        ephemeral: false,
+                        flags: MessageFlags.Ephemeral,
                       });
                     });
                 } else {

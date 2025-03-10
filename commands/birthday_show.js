@@ -110,7 +110,7 @@ module.exports = {
                       if (!model) {
                         await interaction.editReply({
                           content: "誕生日が登録されていません。",
-                          ephemeral: false,
+                          flags: MessageFlags.Ephemeral,
                         });
                       } else {
                         let database_month = model.birthday_month;
@@ -124,7 +124,7 @@ module.exports = {
                               description: `ユーザー名：　\`${show_user.username}\`\nユーザーID：　\`${show_user.id}\`\n誕生日(登録されたもの)：　\`${database_month}月${database_day}日\``,
                             },
                           ],
-                          ephemeral: false,
+                          flags: MessageFlags.Ephemeral,
                         });
                       }
                     });

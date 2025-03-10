@@ -19,6 +19,10 @@ npm i --save-dev @types/node fs
 # discord botのtoken
 bot_token=
 
+# discordのconsole用チャンネルID
+readyNotificationChannelID=
+errorNotificationChannelID=
+
 # sentryの接続情報
 sentry_dsn=
 

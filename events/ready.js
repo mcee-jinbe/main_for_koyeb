@@ -5,12 +5,15 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v10");
 const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
+const os = require("node:os");
 require("dotenv").config();
 const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
 
 const token = process.env.bot_token;
+const readyNotificationChannelID = process.env.readyNotificationChannelID;
+const errorNotificationChannelID = process.env.errorNotificationChannelID;
 
 //誕生日チェック
 async function birthday_check(client) {
@@ -73,7 +76,7 @@ async function birthday_check(client) {
           "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。"
         );
       client.channels.cache
-        .get("889478088486948925")
+        .get(errorNotificationChannelID)
         .send(
           `<@728495196303523900>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報:　鯖ID: ${celebrate_server_id}、ユーザーID:　${birthday_people_id}`
         );
@@ -118,7 +121,7 @@ module.exports = async (client) => {
         profile.save().catch(async (err) => {
           Sentry.captureException(err);
           client.channels.cache
-            .get("889478088486948925")
+            .get(errorNotificationChannelID)
             .send(
               "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
             );
@@ -151,7 +154,7 @@ module.exports = async (client) => {
           .catch(async (err) => {
             Sentry.captureException(err);
             client.channels.cache
-              .get("889478088486948925")
+              .get(errorNotificationChannelID)
               .send(
                 "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
               );
@@ -204,7 +207,7 @@ module.exports = async (client) => {
         .catch((err) => {
           Sentry.captureException(err);
           client.channels.cache
-            .get("889478088486948925")
+            .get(errorNotificationChannelID)
             .send(
               "内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。"
             );
@@ -220,7 +223,7 @@ module.exports = async (client) => {
                 if (err) {
                   Sentry.captureException(err);
                   client.channels.cache
-                    .get("889478088486948925")
+                    .get(errorNotificationChannelID)
                     .send(
                       "内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。"
                     );
@@ -239,12 +242,20 @@ module.exports = async (client) => {
 
   setInterval(() => {
     client.user.setActivity(
-      `所属サーバー数は、${client.guilds.cache.size}サーバー｜Ping値は、${client.ws.ping}ms｜koyeb.comで起動中です`,
+      `所属サーバー数は、${client.guilds.cache.size}サーバー｜Ping値は、${
+        client.ws.ping
+      }ms｜${
+        os.type().includes("Windows") ? "開発環境" : "koyeb.com"
+      }で起動中です`,
       { type: ActivityType.Listening }
     );
   }, 10000);
 
   client.channels.cache
-    .get("889486664760721418")
-    .send("koyeb.comで起動しました！");
+    .get(readyNotificationChannelID)
+    .send(
+      `${
+        os.type().includes("Windows") ? "開発環境" : "koyeb.com"
+      }で起動しました！`
+    );
 };

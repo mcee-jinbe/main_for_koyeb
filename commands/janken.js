@@ -1,4 +1,10 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ApplicationCommandOptionType,
+  MessageFlags,
+} = require("discord.js");
 const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
@@ -6,9 +12,19 @@ require("../instrument");
 module.exports = {
   name: "janken",
   description: "✊✌️🖐️じゃんけんをしよう！！",
+  options: [
+    {
+      type: ApplicationCommandOptionType.String,
+      name: "secret",
+      description: "結果を非公開で送信したい場合は設定してください。",
+      required: false,
+      choices: [{ name: "非公開にする", value: "true" }],
+    },
+  ],
 
   run: async (client, interaction) => {
     try {
+      const secret = interaction.options.getString("secret");
       const janken_choice = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId("pa")
@@ -43,6 +59,7 @@ module.exports = {
           ],
           files: [{ attachment: "images/janken.png", name: "file.png" }],
           components: [janken_choice],
+          flags: MessageFlags.Ephemeral,
         })
         .then((buttonMessage) => {
           const filter = (i) => i.user.id == interaction.user.id;
@@ -58,87 +75,100 @@ module.exports = {
               const arr = ["pa", "cho", "gu"];
               const random = Math.floor(Math.random() * arr.length);
               const jinbe = arr[random];
+              // 処理用の変数を用意
+              let me,
+                jan_result,
+                result_me,
+                result_jinbe,
+                result_ja,
+                color,
+                file_pas;
               // 自分の手を「me」に代入
               if (buttonId.includes("pa")) {
-                var me = "pa";
+                me = "pa";
               } else if (buttonId.includes("cho")) {
-                var me = "cho";
+                me = "cho";
               } else if (buttonId.includes("gu")) {
-                var me = "gu";
+                me = "gu";
               }
               // 結果判定
               // 自分がパーの時
               if (buttonId.includes("pa")) {
                 if (jinbe === "pa") {
-                  var jan_result = "aiko";
+                  jan_result = "aiko";
                 } else if (jinbe === "cho") {
-                  var jan_result = "lose";
+                  jan_result = "lose";
                 } else if (jinbe === "gu") {
-                  var jan_result = "win";
+                  jan_result = "win";
                 }
                 // 自分がチョキの時
               } else if (buttonId.includes("cho")) {
                 if (jinbe === "pa") {
-                  var jan_result = "win";
+                  jan_result = "win";
                 } else if (jinbe === "cho") {
-                  var jan_result = "aiko";
+                  jan_result = "aiko";
                 } else if (jinbe === "gu") {
-                  var jan_result = "lose";
+                  jan_result = "lose";
                 }
               } else if (buttonId.includes("gu")) {
                 // 自分がグーの時
                 if (jinbe === "pa") {
-                  var jan_result = "lose";
+                  jan_result = "lose";
                 } else if (jinbe === "cho") {
-                  var jan_result = "win";
+                  jan_result = "win";
                 } else if (jinbe === "gu") {
-                  var jan_result = "aiko";
+                  jan_result = "aiko";
                 }
               }
               // 変数調整
               //me変数の日本語化
               if (me === "pa") {
-                var result_me = "パー";
+                result_me = "パー";
               } else if (me === "cho") {
-                var result_me = "チョキ";
+                result_me = "チョキ";
               } else if (me === "gu") {
-                var result_me = "グー";
+                result_me = "グー";
               }
               //jinbe変数の日本語化
               if (jinbe === "pa") {
-                var result_jinbe = "パー";
+                result_jinbe = "パー";
               } else if (jinbe === "cho") {
-                var result_jinbe = "チョキ";
+                result_jinbe = "チョキ";
               } else if (jinbe === "gu") {
-                var result_jinbe = "グー";
+                result_jinbe = "グー";
               }
               //結果の日本語化
               if (jan_result === "win") {
-                var result_ja = "あなたの勝ち";
+                result_ja = "あなたの勝ち";
               } else if (jan_result === "aiko") {
-                var result_ja = "あいこ";
+                result_ja = "あいこ";
               } else if (jan_result === "lose") {
-                var result_ja = "あなたの負け";
+                result_ja = "あなたの負け";
               }
               // 色調整
               if (jan_result === "win") {
-                var color = 0xff0000;
+                color = 0xff0000;
               } else if (jan_result === "aiko") {
-                var color = 0xffff00;
+                color = 0xffff00;
               } else if (jan_result === "lose") {
-                var color = 0x0000ff;
+                color = 0x0000ff;
               }
               // file_pass設定
               if (jan_result === "win") {
-                var file_pas = "images/win.png";
+                file_pas = "images/win.png";
               } else if (jan_result === "aiko") {
-                var file_pas = "images/aiko.png";
+                file_pas = "images/aiko.png";
               } else if (jan_result === "lose") {
-                var file_pas = "images/lose.png";
+                file_pas = "images/lose.png";
               }
 
+              // おみくじのUIを削除する
+              setTimeout(async () => {
+                await interaction.deleteReply();
+              }, 500);
+
               // 結果表示
-              await interaction.editReply({
+              return interaction.followUp({
                 embeds: [
                   {
                     title: "じゃんけんの結果！",
@@ -150,7 +180,7 @@ module.exports = {
                   },
                 ],
                 files: [{ attachment: file_pas, name: "omi_kekka.png" }],
-                components: [],
+                flags: secret ? MessageFlags.Ephemeral : 0,
               });
             }
           });

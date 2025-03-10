@@ -24,10 +24,10 @@ module.exports = {
 
   run: async (client, interaction) => {
     try {
-      var secret = interaction.options.getString("secret");
+      let secret = interaction.options.getString("secret");
 
       // String => Boolean
-      var secret = secret == "true";
+      secret = secret == "true";
 
       const omikuji_choice = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
