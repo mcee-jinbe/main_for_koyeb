@@ -182,6 +182,18 @@ module.exports = async (client, message) => {
             }
           }
 
+          // 埋め込みがある場合
+          if (fetchedMessage.embeds.length) {
+            notificationButton.addComponents(
+              new ButtonBuilder()
+                .setCustomId("dummy2")
+                .setEmoji("⚠️")
+                .setLabel("元メッセージに埋め込みあり")
+                .setDisabled(true)
+                .setStyle(ButtonStyle.Secondary)
+            );
+          }
+
           message.channel.send({
             embeds: [embed].concat(imageEmbed),
             components: notificationButton.components.length
@@ -194,7 +206,7 @@ module.exports = async (client, message) => {
             message.delete();
           }
         } catch (err) {
-          return;
+          return console.log(err);
         }
       }
     }
