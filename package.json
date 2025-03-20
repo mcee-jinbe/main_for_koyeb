@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/mcee-jinbe/main_for_koyeb#readme",
   "dependencies": {
-    "@sentry/node": "^9.6.1",
-    "@sentry/profiling-node": "^9.6.1",
+    "@sentry/node": "^9.7.0",
+    "@sentry/profiling-node": "^9.7.0",
     "date-fns-timezone": "^0.1.4",
     "discord.js": "^14.18.0",
     "dotenv": "^16.4.7",
