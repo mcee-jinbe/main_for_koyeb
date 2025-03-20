@@ -13,7 +13,6 @@ module.exports = {
       type: ApplicationCommandOptionType.User,
       name: "user",
       description: "誰の誕生日を祝いますか？",
-      value: "user",
       required: true,
     },
   ],

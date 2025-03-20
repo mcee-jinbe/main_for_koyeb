@@ -22,7 +22,6 @@ module.exports = {
     {
       type: ApplicationCommandOptionType.User,
       name: "user",
-      value: "user",
       description:
         "誰の情報を表示しますか？（「全体の情報を表示」を選んだ場合は、無視されます）",
       required: false,
