@@ -81,7 +81,7 @@ module.exports = {
             .setURL("https://github.com/mcee-jinbe/main_for_koyeb")
         );
 
-        await interaction.editReply({
+        return interaction.editReply({
           embeds: [
             {
               title: `HELP(${title})`,

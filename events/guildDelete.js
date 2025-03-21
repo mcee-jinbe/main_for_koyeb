@@ -7,9 +7,7 @@ const errorNotificationChannelID = process.env.errorNotificationChannelID;
 
 module.exports = async (client, guild) => {
   try {
-    const profile = await serverDB.findOne({
-      _id: guild.id,
-    });
+    const profile = await serverDB.findById(guild.id);
 
     if (!profile) {
       client.channels.cache

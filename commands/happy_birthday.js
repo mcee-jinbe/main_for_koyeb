@@ -36,7 +36,7 @@ module.exports = {
       cooldown.set(user.id, now + cooldownAmount);
       setTimeout(() => cooldown.delete(user.id), cooldownAmount);
 
-      await interaction.reply({
+      return interaction.reply({
         content: `<@${user.id}>`,
         embeds: [
           {

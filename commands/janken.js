@@ -43,7 +43,7 @@ module.exports = {
           .setEmoji("✊")
       );
 
-      await interaction
+      return interaction
         .reply({
           embeds: [
             {

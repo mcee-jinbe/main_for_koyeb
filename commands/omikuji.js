@@ -46,7 +46,7 @@ module.exports = {
           .setStyle(ButtonStyle.Danger)
           .setEmoji("3️⃣")
       );
-      await interaction.reply({
+      return interaction.reply({
         embeds: [
           {
             title: "↓直感で押して！↓",
