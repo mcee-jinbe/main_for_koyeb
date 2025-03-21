@@ -58,11 +58,12 @@ module.exports = {
         if (!user)
           return interaction.editReply({
             content:
-              "そのユーザーのデータは存在しません。既に削除された可能性があります。",
+              "そのユーザーのデータは存在しません。登録されていないか、既に削除された可能性があります。",
           });
 
+        // TODO: ボタンで確認をしてから削除するように変更
         // ユーザーDBに居る場合は、削除手続きを行う。
-        user.serverIDs.filter((serverID) => {
+        user.serverIDs = user.serverIDs.filter((serverID) => {
           return serverID != interaction.guild.id;
         });
         user
