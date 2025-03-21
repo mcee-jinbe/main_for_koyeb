@@ -66,18 +66,18 @@ module.exports = {
             flags: MessageFlags.Ephemeral,
           });
         } else {
-          let status = interaction.options.getString("true_or_false");
+          let status = interaction.options.getString("true_or_false") == "true";
           let channel = interaction.options.getChannel("channel");
 
-          let data = serverDB.find({ _id: interaction.guild.id });
-          if (!data) {
+          let server = await serverDB.findById(interaction.guild.id);
+          if (!server) {
             return interaction.reply({
               content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
               flags: MessageFlags.Ephemeral,
             });
           } else {
             let st;
-            if (status == "true") {
+            if (status) {
               if (channel) {
                 st = channel.id;
               } else {
@@ -96,70 +96,52 @@ module.exports = {
               );
             }
 
-            serverDB
-              .findById(interaction.guild.id)
-              .catch(async (err) => {
-                Sentry.captureException(err);
-                await interaction.editReply({
-                  content:
-                    "内部エラーが発生しました。\nこの旨をサポートサーバーでお伝えください。",
-                  flags: MessageFlags.Ephemeral,
-                });
-              })
-              .then((model) => {
-                model.channelID = st;
-                model.status = status;
-                model.save().then(async () => {
-                  await interaction.editReply({
-                    embeds: [
-                      {
-                        title: "設定を更新しました！",
-                        color: 0x10ff00,
-                      },
-                    ],
-                  });
-                  return;
-                });
+            server.channelID = st;
+            server.status = status;
+            server.save().then(async () => {
+              return interaction.editReply({
+                embeds: [
+                  {
+                    title: "設定を更新しました！",
+                    color: 0x10ff00,
+                  },
+                ],
               });
+              return;
+            });
           }
         }
       } else if (interaction.options.getSubcommand() == "show") {
-        serverDB
-          .findById(interaction.guild.id)
-          .catch((err) => {
-            Sentry.captureException(err);
-          })
-          .then((model) => {
-            if (!model) {
-              return interaction.reply({
-                content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
-                flags: MessageFlags.Ephemeral,
-              });
-            }
-
-            let status, channel;
-            if (model.status == "true") {
-              status = "有効(true)";
-              channel = interaction.guild.channels.cache.find(
-                (ch) => ch.id === model.channelID
-              );
-              if (!channel) {
-                channel = "`見つかりませんでした！`";
-              }
-            } else if (model.status == "false") {
-              status = "無効(false)";
-              channel = "`(機能が無効のため、この項目は無効化されています)`";
-            }
-
-            return interaction.reply({
-              embeds: [
-                {
-                  title: `${interaction.guild.name}の設定`,
-                  description: `- 誕生日を祝う機能：　${status}\n- 誕生日を祝うチャンネル:　${channel}`,
-                },
-              ],
-            });
+        let server = await serverDB.findById(interaction.guild.id);
+        if (!server) {
+          return interaction.reply({
+            content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
+            flags: MessageFlags.Ephemeral,
           });
+        }
+
+        let status, channel;
+        if (server.status) {
+          status = "有効(true)";
+          channel = interaction.guild.channels.cache.find(
+            (ch) => ch.id === server.channelID
+          );
+          if (!channel) {
+            channel = "`見つかりませんでした！`";
+          }
+        } else {
+          status = "無効(false)";
+          channel = "`(機能が無効のため、この項目は無効化されています)`";
+        }
+
+        return interaction.reply({
+          embeds: [
+            {
+              title: `${interaction.guild.name}の設定`,
+              description: `- 誕生日を祝う機能：　${status}\n- 誕生日を祝うチャンネル:　${channel}`,
+            },
+          ],
+        });
       }
     } catch (err) {
       Sentry.setTag("Error Point", "server_settings");

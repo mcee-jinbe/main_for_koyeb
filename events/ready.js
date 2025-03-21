@@ -1,8 +1,6 @@
-const { ActivityType } = require("discord.js");
+const { ActivityType, REST, Routes } = require("discord.js");
 const userDB = require("../models/user_db.js");
 const serverDB = require("../models/server_db.js");
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v10");
 const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
 const os = require("node:os");
@@ -14,6 +12,7 @@ require("../instrument");
 const token = process.env.bot_token;
 const readyNotificationChannelID = process.env.readyNotificationChannelID;
 const errorNotificationChannelID = process.env.errorNotificationChannelID;
+const botOwner = process.env.botOwner;
 
 //誕生日チェック
 async function birthday_check(client) {
@@ -25,7 +24,7 @@ async function birthday_check(client) {
   let model = await userDB.find({
     birthday_month: today_month,
     birthday_day: today_day,
-    status: "yet",
+    finished: false,
   });
 
   if (!model.length) {
@@ -67,18 +66,18 @@ async function birthday_check(client) {
     }
 
     //status更新
-    model[key].status = "finished";
+    model[key].finished = true;
     model[key].save().catch(async (err) => {
       Sentry.captureException(err);
       client.channels.cache
         .get(server_info.channelID)
         .send(
-          "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。"
+          `申し訳ございません。内部エラーが発生しました。\n開発者(<@${botOwner}>)が対応しますので、しばらくお待ちください。`
         );
       client.channels.cache
         .get(errorNotificationChannelID)
         .send(
-          `<@728495196303523900>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報:　鯖ID: ${celebrate_server_id}、ユーザーID:　${birthday_people_id}`
+          `<@${botOwner}>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報:　鯖ID: ${celebrate_server_id}、ユーザーID:　${birthday_people_id}`
         );
       return;
     });
@@ -105,63 +104,50 @@ module.exports = async (client) => {
 
   //シャットダウン中に導入されたサーバーを登録
   let allGuilds = await client.guilds.cache.map((guild) => guild.id);
-  await serverDB.find({}).then(async (all_data) => {
-    for (let guildId of allGuilds) {
-      //全DBのデータ内に参加中のサーバーIDが含まれない場合は登録処理を行う。
-      let count = 0;
-      for (let data of all_data) {
-        if (allGuilds.includes(data._id)) count++;
-      }
-      if (!count) {
-        const profile = await serverDB.create({
+  let allServerData = await serverDB.find();
+  let allServerDataIDs = allServerData.map((data) => data._id);
+  for (let guildId of allGuilds) {
+    //全DBのデータ内に参加中のサーバーIDが含まれない場合は登録処理を行う。
+    if (!allServerDataIDs.includes(guildId)) {
+      try {
+        await serverDB.create({
           _id: guildId,
           channelID: null,
-          status: "false",
-        });
-        profile.save().catch(async (err) => {
-          Sentry.captureException(err);
-          client.channels.cache
-            .get(errorNotificationChannelID)
-            .send(
-              "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
-            );
-          return;
+          status: false,
         });
         console.log(
           "シャットダウン中に招待されたサーバーのデータを作成しました。"
         );
+      } catch (err) {
+        Sentry.captureException(err);
+        client.channels.cache
+          .get(errorNotificationChannelID)
+          .send(
+            "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
+          );
       }
     }
-  });
+  }
 
   //シャットダウン中に退出されたサーバーのデータ削除
-  await serverDB.find({}).then(async (all_data) => {
-    for (let data of all_data) {
-      //全参加中のサーバーの中で、データベースに登録されていないサーバーIDが含まれる場合は登録削除処理を行う。
-      let count = 0;
-      for (let guildId of allGuilds) {
-        if (data._id == guildId) count++;
-      }
-
-      if (!count) {
-        serverDB
-          .deleteOne({ _id: data._id })
-          .then(() =>
-            console.log(
-              "シャットダウン中に退出したサーバーのデータを削除しました。"
-            )
-          )
-          .catch(async (err) => {
-            Sentry.captureException(err);
-            client.channels.cache
-              .get(errorNotificationChannelID)
-              .send(
-                "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
-              );
-          });
+  for (let id of allServerDataIDs) {
+    //全参加中のサーバーの中で、データベースに登録されていないサーバーIDが含まれる場合は登録削除処理を行う。
+    if (!allGuilds.includes(id)) {
+      try {
+        await serverDB.deleteOne({ _id: id });
+        console.log(
+          "シャットダウン中に退出したサーバーのデータを削除しました。"
+        );
+      } catch (err) {
+        Sentry.captureException(err);
+        client.channels.cache
+          .get(errorNotificationChannelID)
+          .send(
+            "内部エラーが発生しました。\nサーバーの削除時にエラーが発生しました。コンソールを確認してください。"
+          );
       }
     }
-  });
+  }
 
   birthday_check(client); //起動時に実行
 
@@ -203,8 +189,9 @@ module.exports = async (client) => {
     async () => {
       //12/31 23:59にリセット
       await userDB
-        .find({ status: "finished" })
+        .find({ finished: true })
         .catch((err) => {
+          Sentry.setTag("Error Point", "birthdayStatusReset");
           Sentry.captureException(err);
           client.channels.cache
             .get(errorNotificationChannelID)
@@ -216,7 +203,7 @@ module.exports = async (client) => {
         .then((model) => {
           //status更新
           for (const key in model) {
-            model[key].status = "yet";
+            model[key].finished = false;
             model[key]
               .save()
               .catch(async (err) => {

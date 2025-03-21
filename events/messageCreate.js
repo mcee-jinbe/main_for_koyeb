@@ -3,6 +3,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
   MessageFlags,
+  EmbedBuilder,
 } = require("discord.js");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -61,6 +62,17 @@ async function getSafe(urls, message) {
     });
 }
 
+// 特定のキーと値に一致するエントリを抽出する関数
+function filterMapByKeyValue(map, key, value) {
+  const result = new Map();
+  for (const [mapKey, mapValue] of map.entries()) {
+    if (mapValue[key].startsWith(value)) {
+      result.set(mapKey, mapValue);
+    }
+  }
+  return result;
+}
+
 module.exports = async (client, message) => {
   try {
     if (message.author.bot) return;
@@ -101,7 +113,8 @@ module.exports = async (client, message) => {
           const channel = await client.channels.fetch(channelId);
           const fetchedMessage = await channel.messages.fetch(messageId);
 
-          let buttons = new ActionRowBuilder().addComponents(
+          // button生成
+          let guideButton = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
               .setLabel("メッセージを見る")
               .setURL(fetchedMessage.url)
@@ -111,20 +124,81 @@ module.exports = async (client, message) => {
               .setEmoji("🗑️")
               .setStyle(ButtonStyle.Secondary)
           );
+          let notificationButton = new ActionRowBuilder();
+
+          let embed = new EmbedBuilder()
+            .setURL(fetchedMessage.url)
+            .setDescription(
+              fetchedMessage.content ? fetchedMessage.content : "\u200B" //contentに何もなければゼロ幅スペースを入力
+            )
+            .setAuthor({
+              name: fetchedMessage.author.tag,
+              iconURL: fetchedMessage.author.displayAvatarURL(),
+            })
+            .setColor(0x4d4df7)
+            .setTimestamp(new Date(fetchedMessage.createdTimestamp));
+
+          // 添付ファイル関連処理
+          let imageEmbed = [];
+          if (fetchedMessage.attachments.size > 0) {
+            // 画像添付ファイル処理
+            let attachedImages = filterMapByKeyValue(
+              fetchedMessage.attachments,
+              "contentType",
+              "image/"
+            );
+            if (attachedImages.size >= 2) {
+              attachedImages.forEach((attachedImage) => {
+                let attachmentField = {
+                  url: fetchedMessage.url,
+                  image: {
+                    url: attachedImage.url,
+                  },
+                };
+                imageEmbed.push(attachmentField);
+              });
+            }
+            if (attachedImages.size > 4) {
+              notificationButton.addComponents(
+                new ButtonBuilder()
+                  .setCustomId("dummy0")
+                  .setEmoji("⚠️")
+                  .setLabel("元メッセージに5枚以上の画像あり")
+                  .setDisabled(true)
+                  .setStyle(ButtonStyle.Secondary)
+              );
+            }
+
+            // 画像以外の添付ファイル処理
+            if (fetchedMessage.attachments.size != attachedImages.size) {
+              notificationButton.addComponents(
+                new ButtonBuilder()
+                  .setCustomId("dummy1")
+                  .setEmoji("⚠️")
+                  .setLabel("元メッセージに画像以外の添付ファイルあり")
+                  .setDisabled(true)
+                  .setStyle(ButtonStyle.Secondary)
+              );
+            }
+          }
+
+          // 埋め込みがある場合
+          if (fetchedMessage.embeds.length) {
+            notificationButton.addComponents(
+              new ButtonBuilder()
+                .setCustomId("dummy2")
+                .setEmoji("⚠️")
+                .setLabel("元メッセージに埋め込みあり")
+                .setDisabled(true)
+                .setStyle(ButtonStyle.Secondary)
+            );
+          }
 
           message.channel.send({
-            embeds: [
-              {
-                description: fetchedMessage.content,
-                author: {
-                  name: fetchedMessage.author.tag,
-                  iconURL: fetchedMessage.author.displayAvatarURL(),
-                },
-                color: 0x4d4df7,
-                timestamp: new Date(fetchedMessage.createdTimestamp),
-              },
-            ],
-            components: [buttons],
+            embeds: [embed].concat(imageEmbed),
+            components: notificationButton.components.length
+              ? [guideButton, notificationButton]
+              : [guideButton],
           });
 
           //メッセージリンクだけが投稿された場合の処理
@@ -132,6 +206,8 @@ module.exports = async (client, message) => {
             message.delete();
           }
         } catch (err) {
+          Sentry.setTag("Error Point", "messageExpansion");
+          Sentry.captureException(err);
           return;
         }
       }

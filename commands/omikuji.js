@@ -22,12 +22,12 @@ module.exports = {
     },
   ],
 
-  run: async (client, interaction) => {
+  run: async (client, interaction, secretInput) => {
     try {
-      let secret = interaction.options.getString("secret");
-
-      // String => Boolean
-      secret = secret == "true";
+      const userInput = secretInput
+        ? secretInput
+        : interaction.options.getString("secret");
+      const secret = userInput == "true";
 
       const omikuji_choice = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -46,7 +46,7 @@ module.exports = {
           .setStyle(ButtonStyle.Danger)
           .setEmoji("3️⃣")
       );
-      await interaction.reply({
+      return interaction.reply({
         embeds: [
           {
             title: "↓直感で押して！↓",

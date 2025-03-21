@@ -43,7 +43,7 @@ module.exports = {
           .setEmoji("✊")
       );
 
-      await interaction
+      return interaction
         .reply({
           embeds: [
             {
@@ -187,8 +187,7 @@ module.exports = {
         })
         .catch((err) => {
           Sentry.setTag("Error Point", "janken_collection");
-          const errorNotification = require("../errorFunction.js");
-          errorNotification(client, interaction, err);
+          Sentry.captureException(err);
         });
     } catch (err) {
       Sentry.setTag("Error Point", "janken");

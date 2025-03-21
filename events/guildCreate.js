@@ -17,7 +17,7 @@ module.exports = async (client, guild) => {
     const profile = await serverDB.create({
       _id: guild.id,
       channelID: null,
-      status: "false",
+      status: false,
     });
     profile
       .save()

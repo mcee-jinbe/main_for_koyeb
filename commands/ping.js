@@ -13,7 +13,7 @@ module.exports = {
 
       let msg = await interaction.fetchReply();
 
-      await interaction.editReply(
+      return interaction.editReply(
         `WebSocketのPing: ${
           interaction.client.ws.ping
         }ms\nAPIのエンドポイントのPing: ${

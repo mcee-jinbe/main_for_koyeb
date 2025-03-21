@@ -7,9 +7,7 @@ const errorNotificationChannelID = process.env.errorNotificationChannelID;
 
 module.exports = async (client, guild) => {
   try {
-    const profile = await serverDB.findOne({
-      _id: guild.id,
-    });
+    const profile = await serverDB.findById(guild.id);
 
     if (!profile) {
       client.channels.cache
@@ -21,6 +19,7 @@ module.exports = async (client, guild) => {
       serverDB
         .deleteOne({ _id: guild.id })
         .catch((err) => {
+          Sentry.setTag("Error Point", "leaveGuildDeleteServerDB");
           Sentry.captureException(err);
         })
         .then(() => {
