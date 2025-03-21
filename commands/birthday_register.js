@@ -1,6 +1,7 @@
 const { ApplicationCommandOptionType, MessageFlags } = require("discord.js");
 const userDB = require("../models/user_db.js");
 const serverDB = require("../models/server_db.js");
+require("dotenv").config();
 const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
@@ -68,7 +69,7 @@ module.exports = {
                 .catch(async (err) => {
                   Sentry.captureException(err);
                   return interaction.editReply(
-                    "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースの更新時にエラーが発生しました。\nコンソールを確認してください。"
+                    `申し訳ございません。内部エラーが発生しました。\n開発者(<@${process.env.botOwner}>)が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nデータベースの更新時にエラーが発生しました。\nコンソールを確認してください。`
                   );
                 })
                 .then(async () => {

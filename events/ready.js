@@ -12,6 +12,7 @@ require("../instrument");
 const token = process.env.bot_token;
 const readyNotificationChannelID = process.env.readyNotificationChannelID;
 const errorNotificationChannelID = process.env.errorNotificationChannelID;
+const botOwner = process.env.botOwner;
 
 //誕生日チェック
 async function birthday_check(client) {
@@ -71,12 +72,12 @@ async function birthday_check(client) {
       client.channels.cache
         .get(server_info.channelID)
         .send(
-          "申し訳ございません。内部エラーが発生しました。\n開発者(<@728495196303523900>)が対応しますので、しばらくお待ちください。"
+          `申し訳ございません。内部エラーが発生しました。\n開発者(<@${botOwner}>)が対応しますので、しばらくお待ちください。`
         );
       client.channels.cache
         .get(errorNotificationChannelID)
         .send(
-          `<@728495196303523900>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報:　鯖ID: ${celebrate_server_id}、ユーザーID:　${birthday_people_id}`
+          `<@${botOwner}>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報:　鯖ID: ${celebrate_server_id}、ユーザーID:　${birthday_people_id}`
         );
       return;
     });
