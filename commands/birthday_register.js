@@ -52,8 +52,8 @@ module.exports = {
 
         if (new_birthday_month >= 1 && new_birthday_month <= 12) {
           if (new_birthday_day >= 1 && new_birthday_day <= lastDay) {
-            let usersInAllGuild = await userDB.findById(user_id);
-            if (!usersInAllGuild.length) {
+            let users = await userDB.findById(user_id);
+            if (!users) {
               // ユーザーDBに居ない場合は、新規登録
               const profile = await userDB.create({
                 _id: user_id,
@@ -85,8 +85,6 @@ module.exports = {
                 });
             } else {
               // ユーザーDBに居る場合は、更新手続きを行う。
-              let users = await userDB.findById(user_id);
-
               // ユーザーDBのserverIDsに登録されていない場合は、登録する。
               let registered = true;
               if (!users.serverIDs.includes(interaction.guild.id)) {
