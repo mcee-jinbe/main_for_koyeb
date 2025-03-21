@@ -3,11 +3,11 @@ const mongoose = require("mongoose"); //mongoDBを使用するためのおまじ
 const profileSchema = new mongoose.Schema(
   {
     _id: { type: String }, //ユーザーID
-    serverIDs: [{ type: String }], //サーバーID
+    serverIDs: [{ type: Number }], //サーバーID
     user_name: { type: String }, //ユーザーネーム
-    birthday_month: { type: String },
-    birthday_day: { type: String },
-    status: { type: String },
+    birthday_month: { type: Number }, //誕生月
+    birthday_day: { type: Number }, //誕生日
+    finished: { type: Boolean }, //誕生日を迎えたかどうか
   },
   {
     versionKey: false,

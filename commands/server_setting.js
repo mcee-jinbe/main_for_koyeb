@@ -22,16 +22,16 @@ module.exports = {
           name: "true_or_false",
           description:
             "登録して誕生日を祝う機能を有効にするか無効にするか選択してください。",
-          type: ApplicationCommandOptionType.String,
+          type: ApplicationCommandOptionType.Boolean,
           required: true,
           choices: [
             {
               name: "有効にする",
-              value: "true",
+              value: true,
             },
             {
               name: "無効にする",
-              value: "false",
+              value: false,
             },
           ],
         },
@@ -66,7 +66,7 @@ module.exports = {
             flags: MessageFlags.Ephemeral,
           });
         } else {
-          let status = interaction.options.getString("true_or_false");
+          let status = interaction.options.getBoolean("true_or_false");
           let channel = interaction.options.getChannel("channel");
 
           let server = await serverDB.findById(interaction.guild.id);
@@ -121,7 +121,7 @@ module.exports = {
         }
 
         let status, channel;
-        if (server.status == "true") {
+        if (server.status) {
           status = "有効(true)";
           channel = interaction.guild.channels.cache.find(
             (ch) => ch.id === server.channelID
@@ -129,7 +129,7 @@ module.exports = {
           if (!channel) {
             channel = "`見つかりませんでした！`";
           }
-        } else if (server.status == "false") {
+        } else {
           status = "無効(false)";
           channel = "`(機能が無効のため、この項目は無効化されています)`";
         }

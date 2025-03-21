@@ -39,13 +39,13 @@ module.exports = {
         });
       }
 
-      if (server.status == "false") {
+      if (!server.status) {
         return interaction.reply({
           content:
             "申し訳ございません。このサーバーでは誕生日を祝う機能が利用できません。\nあなたがサーバーの管理者である場合は、`/server_setting`コマンドから設定を有効にできます。",
           flags: MessageFlags.Ephemeral,
         });
-      } else if (server.status == "true") {
+      } else {
         await interaction.deferReply();
 
         let show_type = interaction.options.getString("type");

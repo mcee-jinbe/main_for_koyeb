@@ -34,13 +34,13 @@ module.exports = {
         });
       }
 
-      if (server.status == "false") {
+      if (!server.status) {
         return interaction.reply({
           content:
             "申し訳ございません。このサーバーでは誕生日を祝う機能が利用できません。\nあなたがサーバーの管理者である場合は、`/server_setting`コマンドから設定を有効にできます。",
           flags: MessageFlags.Ephemeral,
         });
-      } else if (server.status == "true") {
+      } else {
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         // スラッシュコマンドの入力情報を取得
@@ -52,12 +52,6 @@ module.exports = {
 
         if (new_birthday_month >= 1 && new_birthday_month <= 12) {
           if (new_birthday_day >= 1 && new_birthday_day <= lastDay) {
-            if (new_birthday_month >= 1 && new_birthday_month <= 9) {
-              new_birthday_month = `0${new_birthday_month}`;
-            }
-            if (new_birthday_day >= 1 && new_birthday_day <= 9) {
-              new_birthday_day = `0${new_birthday_day}`;
-            }
             let usersInAllGuild = await userDB.findById(user_id);
             if (!usersInAllGuild.length) {
               // ユーザーDBに居ない場合は、新規登録
@@ -67,7 +61,7 @@ module.exports = {
                 user_name: interaction.user.name,
                 birthday_month: new_birthday_month,
                 birthday_day: new_birthday_day,
-                status: "yet",
+                finished: false,
               });
               profile
                 .save()
@@ -109,7 +103,7 @@ module.exports = {
               // 内容を更新
               users.birthday_month = new_birthday_month;
               users.birthday_day = new_birthday_day;
-              users.status = "yet";
+              users.finished = false;
               users.save().then(async () => {
                 return interaction.editReply({
                   embeds: [
@@ -146,11 +140,6 @@ module.exports = {
             ],
           });
         }
-      } else {
-        return interaction.editReply({
-          content:
-            "内部エラーが発生しました。\nサーバー用データベースのステータスの値が予期しない値であった可能性があります。",
-        });
       }
     } catch (err) {
       Sentry.setTag("Error Point", "birthday_register");

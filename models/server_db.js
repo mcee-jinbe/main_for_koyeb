@@ -3,8 +3,8 @@ const mongoose = require("mongoose"); //mongoDBを使用するためのおまじ
 const profileSchema = new mongoose.Schema(
   {
     _id: { type: String }, //サーバーID
-    channelID: { type: String }, //祝うチャンネルID
-    status: { type: String },
+    channelID: { type: Number }, //祝うチャンネルID
+    status: { type: Boolean }, //祝う機能の有効/無効
   },
   {
     versionKey: false,

@@ -47,13 +47,13 @@ module.exports = {
         });
       }
 
-      if (server.status == "false") {
+      if (!server.status) {
         return interaction.editReply({
           content:
             "申し訳ございません。このサーバーでは誕生日を祝う機能が利用できません。\nあなたがサーバーの管理者である場合は、`/server_setting`コマンドから設定を有効にできます。",
           flags: MessageFlags.Ephemeral,
         });
-      } else if (server.status == "true") {
+      } else {
         let user = await userDB.findById(user.id);
         if (!user)
           return interaction.editReply({

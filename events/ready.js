@@ -1,8 +1,6 @@
-const { ActivityType } = require("discord.js");
+const { ActivityType, REST, Routes } = require("discord.js");
 const userDB = require("../models/user_db.js");
 const serverDB = require("../models/server_db.js");
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v10");
 const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
 const os = require("node:os");
@@ -25,7 +23,7 @@ async function birthday_check(client) {
   let model = await userDB.find({
     birthday_month: today_month,
     birthday_day: today_day,
-    status: "yet",
+    finished: false,
   });
 
   if (!model.length) {
@@ -67,7 +65,7 @@ async function birthday_check(client) {
     }
 
     //status更新
-    model[key].status = "finished";
+    model[key].finished = true;
     model[key].save().catch(async (err) => {
       Sentry.captureException(err);
       client.channels.cache
@@ -116,7 +114,7 @@ module.exports = async (client) => {
       const profile = await serverDB.create({
         _id: guildId,
         channelID: null,
-        status: "false",
+        status: false,
       });
       profile.save().catch(async (err) => {
         Sentry.captureException(err);
@@ -200,7 +198,7 @@ module.exports = async (client) => {
     async () => {
       //12/31 23:59にリセット
       await userDB
-        .find({ status: "finished" })
+        .find({ finished: true })
         .catch((err) => {
           Sentry.setTag("Error Point", "birthdayStatusReset");
           Sentry.captureException(err);
@@ -214,7 +212,7 @@ module.exports = async (client) => {
         .then((model) => {
           //status更新
           for (const key in model) {
-            model[key].status = "yet";
+            model[key].finished = false;
             model[key]
               .save()
               .catch(async (err) => {
