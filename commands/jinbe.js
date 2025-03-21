@@ -20,7 +20,8 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       ///jinbeコマンドは、/omikujiコマンドのエイリアスとして使用する。
-      omikujiSystem.run(client, interaction);
+      const secret = interaction.options.getString("secret");
+      omikujiSystem.run(client, interaction, secret);
     } catch (err) {
       Sentry.setTag("Error Point", "jinbe_omikuji");
       Sentry.captureException(err);
