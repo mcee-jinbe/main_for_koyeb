@@ -25,14 +25,14 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       // ユーザー指定があればそれを使用する。管理者以外が実行した場合は強制的に実行者のデータを扱うようにする
-      let user = interaction.options.getUser("user");
+      let targetUser = interaction.options.getUser("user");
       if (
         !interaction.member.permissions.has(
           PermissionsBitField.Flags.Administrator
         ) ||
-        user == null
+        targetUser == null
       ) {
-        user = interaction.user;
+        targetUser = interaction.user;
       }
 
       await interaction.deferReply({
@@ -54,7 +54,7 @@ module.exports = {
           flags: MessageFlags.Ephemeral,
         });
       } else {
-        let user = await userDB.findById(user.id);
+        let user = await userDB.findById(targetUser.id);
         if (!user)
           return interaction.editReply({
             content:
@@ -83,7 +83,7 @@ module.exports = {
         }
       }
     } catch (err) {
-      Sentry.setTag("Error Point", "birthday_register");
+      Sentry.setTag("Error Point", "birthday_unregister");
       Sentry.captureException(err);
     }
   },
