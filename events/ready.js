@@ -205,6 +205,7 @@ module.exports = async (client) => {
       await userDB
         .find({ status: "finished" })
         .catch((err) => {
+          Sentry.setTag("Error Point", "birthdayStatusReset");
           Sentry.captureException(err);
           client.channels.cache
             .get(errorNotificationChannelID)

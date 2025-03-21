@@ -29,6 +29,7 @@ module.exports = {
       serverDB
         .findOne({ _id: interaction.guild.id })
         .catch((err) => {
+          Sentry.setTag("Error Point", "birthdayRegisterGetServerDB");
           Sentry.captureException(err);
           return interaction.reply({
             content:
@@ -116,6 +117,7 @@ module.exports = {
                   await userDB
                     .findOne({ _id: user_id })
                     .catch((err) => {
+                      Sentry.setTag("Error Point", "birthdayRegisterGetUserDB");
                       Sentry.captureException(err);
                       return interaction.editReply({
                         content:

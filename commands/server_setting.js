@@ -127,6 +127,7 @@ module.exports = {
         serverDB
           .findById(interaction.guild.id)
           .catch((err) => {
+            Sentry.setTag("Error Point", "serverSettingsShowGetServerDB");
             Sentry.captureException(err);
           })
           .then((model) => {

@@ -34,6 +34,7 @@ module.exports = {
       serverDB
         .findOne({ _id: interaction.guild.id })
         .catch((err) => {
+          Sentry.setTag("Error Point", "birthdayShowGetServerDB");
           Sentry.captureException(err);
           return interaction.reply({
             content:

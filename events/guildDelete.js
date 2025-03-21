@@ -21,6 +21,7 @@ module.exports = async (client, guild) => {
       serverDB
         .deleteOne({ _id: guild.id })
         .catch((err) => {
+          Sentry.setTag("Error Point", "leaveGuildDeleteServerDB");
           Sentry.captureException(err);
         })
         .then(() => {

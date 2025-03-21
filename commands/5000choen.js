@@ -61,6 +61,7 @@ module.exports = {
           });
         })
         .catch((err) => {
+          Sentry.setTag("Error Point", "receive5000choyenModal");
           Sentry.captureException(err);
         });
     } catch (err) {

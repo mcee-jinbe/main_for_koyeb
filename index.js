@@ -71,6 +71,7 @@ mongoose
     console.log("データベースに接続したんだゾ");
   })
   .catch((err) => {
+    Sentry.setTag("Error Point", "DBconnection");
     Sentry.captureException(err);
   });
 
