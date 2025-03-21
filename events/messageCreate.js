@@ -206,7 +206,9 @@ module.exports = async (client, message) => {
             message.delete();
           }
         } catch (err) {
-          return console.log(err);
+          Sentry.setTag("Error Point", "messageExpansion");
+          Sentry.captureException(err);
+          return;
         }
       }
     }
