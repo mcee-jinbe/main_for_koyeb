@@ -105,57 +105,47 @@ module.exports = async (client) => {
   //シャットダウン中に導入されたサーバーを登録
   let allGuilds = await client.guilds.cache.map((guild) => guild.id);
   let allServerData = await serverDB.find();
+  let allServerDataIDs = allServerData.map((data) => data._id);
   for (let guildId of allGuilds) {
     //全DBのデータ内に参加中のサーバーIDが含まれない場合は登録処理を行う。
-    let count = 0;
-    for (let data of allServerData) {
-      if (allGuilds.includes(data._id)) count++;
-    }
-    if (!count) {
-      const profile = await serverDB.create({
-        _id: guildId,
-        channelID: null,
-        status: false,
-      });
-      profile.save().catch(async (err) => {
+    if (!allServerDataIDs.includes(guildId)) {
+      try {
+        await serverDB.create({
+          _id: guildId,
+          channelID: null,
+          status: false,
+        });
+        console.log(
+          "シャットダウン中に招待されたサーバーのデータを作成しました。"
+        );
+      } catch (err) {
         Sentry.captureException(err);
         client.channels.cache
           .get(errorNotificationChannelID)
           .send(
             "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
           );
-        return;
-      });
-      console.log(
-        "シャットダウン中に招待されたサーバーのデータを作成しました。"
-      );
+      }
     }
   }
 
   //シャットダウン中に退出されたサーバーのデータ削除
-  for (let data of allServerData) {
+  for (let id of allServerDataIDs) {
     //全参加中のサーバーの中で、データベースに登録されていないサーバーIDが含まれる場合は登録削除処理を行う。
-    let count = 0;
-    for (let guildId of allGuilds) {
-      if (data._id == guildId) count++;
-    }
-
-    if (!count) {
-      serverDB
-        .deleteOne({ _id: data._id })
-        .then(() =>
-          console.log(
-            "シャットダウン中に退出したサーバーのデータを削除しました。"
-          )
-        )
-        .catch(async (err) => {
-          Sentry.captureException(err);
-          client.channels.cache
-            .get(errorNotificationChannelID)
-            .send(
-              "内部エラーが発生しました。\n新サーバーの登録時にエラーが発生しました。コンソールを確認してください。"
-            );
-        });
+    if (!allGuilds.includes(id)) {
+      try {
+        await serverDB.deleteOne({ _id: id });
+        console.log(
+          "シャットダウン中に退出したサーバーのデータを削除しました。"
+        );
+      } catch (err) {
+        Sentry.captureException(err);
+        client.channels.cache
+          .get(errorNotificationChannelID)
+          .send(
+            "内部エラーが発生しました。\nサーバーの削除時にエラーが発生しました。コンソールを確認してください。"
+          );
+      }
     }
   }
 
