@@ -89,10 +89,7 @@ module.exports = {
               });
 
               if (!users) {
-                return interaction.editReply({
-                  content: "誕生日が登録されていません。",
-                  flags: MessageFlags.Ephemeral,
-                });
+                return interaction.editReply("誕生日が登録されていません。");
               } else {
                 let database_month = users.birthday_month;
                 let database_day = users.birthday_day;
@@ -105,7 +102,6 @@ module.exports = {
                       description: `ユーザー名：　\`${show_user.username}\`\nユーザーID：　\`${show_user.id}\`\n誕生日(登録されたもの)：　\`${database_month}月${database_day}日\``,
                     },
                   ],
-                  flags: MessageFlags.Ephemeral,
                 });
               }
             } else {
