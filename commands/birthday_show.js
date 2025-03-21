@@ -102,7 +102,7 @@ module.exports = {
                 if (!isBot) {
                   userDB
                     .findOne({
-                      _id: interaction.user.id,
+                      _id: show_user.id,
                       serverIDs: interaction.guild.id,
                     })
                     .then(async (model) => {
