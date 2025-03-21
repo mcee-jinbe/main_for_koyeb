@@ -47,6 +47,7 @@ module.exports = {
         // スラッシュコマンドの入力情報を取得
         let new_birthday_month = interaction.options.getNumber("month");
         let new_birthday_day = interaction.options.getNumber("day");
+        // 2月29日を登録できるようにするために、うるう年の日付データを取得する。
         let lastDay = new Date(2020, new_birthday_month, 0).getDate();
 
         let user_id = interaction.user.id;
