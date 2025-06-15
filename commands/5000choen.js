@@ -61,6 +61,9 @@ module.exports = {
           });
         })
         .catch((err) => {
+          // time理由のエラーは無視
+          if (err.code === "InteractionCollectorError" && err.reason === "time")
+            return;
           Sentry.setTag("Error Point", "receive5000choyenModal");
           Sentry.captureException(err);
         });
