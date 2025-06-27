@@ -14,7 +14,7 @@ const client = new Client({
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 const Sentry = require("@sentry/node");
 
 //機密情報取得

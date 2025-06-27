@@ -1,11 +1,12 @@
 {
   "name": "jinbe-main_for_koyeb",
-  "version": "3.2.4",
+  "version": "3.2.5",
   "description": "```\r npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch dotenv express\r ```\r ## 各パッケージの使用用途\r - `@types/node`　：node.jsを書きやすくするやつらしい\r - `date-fns-timezone`　：日本時間の月・日を取得するため\r - `discord.js`　：Discord BOTに接続し、操作するため\r - `fs` :「commands」フォルダを読み取るため\r - `mongoose` ：MongoDBの操作を簡単に行うため\r - `node-cron` ：毎日決まった時間に処理を行うため\r - `node-fetch` :URLチェックのリクエストを送るため\r - `dotenv` :環境変数を取得するため\r - `express` :ステータスチェック用のwebサーバーを立ち上げるため。",
   "main": "index.js",
   "scripts": {
     "main": "node index.js && npm run sentry:sourcemaps",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org planet-bot-project --project jinbe-dev ./ && sentry-cli sourcemaps upload --org planet-bot-project --project jinbe-dev ./"
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org planet-bot-project --project jinbe-dev ./ && sentry-cli sourcemaps upload --org planet-bot-project --project jinbe-dev ./",
+    "buildTest": "docker image build --tag jinbe-dev:latest . && docker run --name jinbe-dev --rm jinbe-dev:latest"
   },
   "repository": {
     "type": "git",
@@ -18,18 +19,18 @@
   },
   "homepage": "https://github.com/mcee-jinbe/main_for_koyeb#readme",
   "dependencies": {
-    "@sentry/node": "^9.29.0",
-    "@sentry/profiling-node": "^9.29.0",
+    "@sentry/node": "^9.32.0",
+    "@sentry/profiling-node": "^9.32.0",
     "date-fns-timezone": "^0.1.4",
-    "discord.js": "^14.19.3",
-    "dotenv": "^16.5.0",
+    "discord.js": "^14.21.0",
+    "dotenv": "^16.6.0",
     "express": "^5.1.0",
-    "mongoose": "^8.15.2",
-    "node-cron": "^4.1.0",
+    "mongoose": "^8.16.1",
+    "node-cron": "^4.1.1",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@types/node": "^24.0.1",
+    "@types/node": "^24.0.4",
     "fs": "^0.0.1-security"
   }
 }

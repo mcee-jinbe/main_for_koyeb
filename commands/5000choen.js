@@ -56,6 +56,9 @@ module.exports = {
                     top
                   )}&bottom=${encodeURIComponent(bottom)}&type=png`,
                 },
+                footer: {
+                  text: "※しばらく待っても生成されない場合は、再生成をお試しください。\n※生成にはCyberRex氏のAPIを使用しています。",
+                },
               },
             ],
           });

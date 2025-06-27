@@ -1,7 +1,7 @@
 const { ApplicationCommandOptionType, MessageFlags } = require("discord.js");
 const userDB = require("../models/user_db.js");
 const serverDB = require("../models/server_db.js");
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");
