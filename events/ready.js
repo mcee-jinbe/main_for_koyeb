@@ -4,7 +4,7 @@ const serverDB = require("../models/server_db.js");
 const cron = require("node-cron");
 const { formatToTimeZone } = require("date-fns-timezone");
 const os = require("node:os");
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 const Sentry = require("@sentry/node");
 // for using sentry
 require("../instrument");

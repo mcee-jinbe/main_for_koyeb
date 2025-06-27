@@ -1,6 +1,6 @@
 const Sentry = require("@sentry/node");
 const { nodeProfilingIntegration } = require("@sentry/profiling-node");
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 
 Sentry.init({
   dsn: process.env.sentry_dsn,

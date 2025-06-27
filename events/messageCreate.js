@@ -7,7 +7,7 @@ const {
 } = require("discord.js");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 const cooldown = new Map();
 const Sentry = require("@sentry/node");
 // for using sentry
