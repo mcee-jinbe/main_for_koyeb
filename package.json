@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "main": "node index.js && npm run sentry:sourcemaps",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org planet-bot-project --project jinbe-dev ./ && sentry-cli sourcemaps upload --org planet-bot-project --project jinbe-dev ./"
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org planet-bot-project --project jinbe-dev ./ && sentry-cli sourcemaps upload --org planet-bot-project --project jinbe-dev ./",
+    "buildTest": "docker image build --tag jinbe-dev:latest . && docker run --name jinbe-dev --rm jinbe-dev:latest"
   },
   "repository": {
     "type": "git",
