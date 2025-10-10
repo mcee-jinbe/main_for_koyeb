@@ -1,7 +1,6 @@
 const {
 	ModalBuilder,
 	TextInputBuilder,
-	ActionRowBuilder,
 	TextInputStyle,
 	MessageFlags,
 	LabelBuilder,
@@ -52,17 +51,17 @@ module.exports = {
 			const filter = (mInteraction) => mInteraction.customId === '5000choyen';
 			interaction
 				.awaitModalSubmit({ filter, time: 360000 })
-				.then(async (mInteraction) => {
+				.then((mInteraction) => {
 					const top = mInteraction.fields.getTextInputValue('topInput');
 					const bottom = mInteraction.fields.getTextInputValue('bottomInput');
 
 					if (top.length + bottom.length > 30)
 						return mInteraction.reply({
-							content: `上側と下側の合計で30文字以内で入力してください。\n\nあなたが入力した文字列は以下の通りでした。\n\`\`\`\n- 上側：　${top}\n- 下側：　${bottom}\n\`\`\``,
+							content: `上側と下側の合計で30文字以内で入力してください。\n\nあなたが入力した文字列は以下の通りでした。\n\`\`\`\n- 上側： ${top}\n- 下側： ${bottom}\n\`\`\``,
 							flags: MessageFlags.Ephemeral,
 						});
 
-					mInteraction.reply({
+					return mInteraction.reply({
 						embeds: [
 							{
 								image: {

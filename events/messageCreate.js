@@ -16,7 +16,7 @@ require('../instrument');
 const url_check_api = process.env.url_check_api;
 
 //URLチェックの動作を指定
-async function getSafe(urls, message) {
+function getSafe(urls, message) {
 	const request_url = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${url_check_api}`;
 
 	const data = {
@@ -95,7 +95,7 @@ module.exports = async (client, message) => {
 
 		//危険なURLに警告
 		const urls = String(message.content).match(
-			/https?:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#\u3000-\u30FE\u4E00-\u9FA0\uFF01-\uFFE3]+/g,
+			/https?:\/\/[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#\u3000-\u30FE\u4E00-\u9FA0\uFF01-\uFFE3]+/g,
 		);
 		if (urls) {
 			getSafe(urls, message);
