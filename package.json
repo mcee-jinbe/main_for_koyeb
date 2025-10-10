@@ -1,36 +1,44 @@
 {
-  "name": "jinbe-main_for_koyeb",
-  "version": "3.2.7",
-  "description": "```\r npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch dotenv express\r ```\r ## 各パッケージの使用用途\r - `@types/node`　：node.jsを書きやすくするやつらしい\r - `date-fns-timezone`　：日本時間の月・日を取得するため\r - `discord.js`　：Discord BOTに接続し、操作するため\r - `fs` :「commands」フォルダを読み取るため\r - `mongoose` ：MongoDBの操作を簡単に行うため\r - `node-cron` ：毎日決まった時間に処理を行うため\r - `node-fetch` :URLチェックのリクエストを送るため\r - `dotenv` :環境変数を取得するため\r - `express` :ステータスチェック用のwebサーバーを立ち上げるため。",
-  "main": "index.js",
-  "scripts": {
-    "main": "node index.js && npm run sentry:sourcemaps",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org planet-bot-project --project jinbe-dev ./ && sentry-cli sourcemaps upload --org planet-bot-project --project jinbe-dev ./",
-    "buildTest": "docker image build --tag jinbe-dev:latest . && docker run --name jinbe-dev --rm jinbe-dev:latest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mcee-jinbe/main_for_koyeb.git"
-  },
-  "author": "Hoshimikan6490",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/mcee-jinbe/main_for_koyeb/issues"
-  },
-  "homepage": "https://github.com/mcee-jinbe/main_for_koyeb#readme",
-  "dependencies": {
-    "@sentry/node": "^10.17.0",
-    "@sentry/profiling-node": "^10.17.0",
-    "date-fns-timezone": "^0.1.4",
-    "discord.js": "^14.22.1",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "mongoose": "^8.19.0",
-    "node-cron": "^4.2.1",
-    "node-fetch": "^3.3.2"
-  },
-  "devDependencies": {
-    "@types/node": "^24.7.0",
-    "fs": "^0.0.1-security"
-  }
+	"name": "jinbe-main_for_koyeb",
+	"version": "3.2.7",
+	"description": "```\r npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch dotenv express\r ```\r ## 各パッケージの使用用途\r - `@types/node`　：node.jsを書きやすくするやつらしい\r - `date-fns-timezone`　：日本時間の月・日を取得するため\r - `discord.js`　：Discord BOTに接続し、操作するため\r - `fs` :「commands」フォルダを読み取るため\r - `mongoose` ：MongoDBの操作を簡単に行うため\r - `node-cron` ：毎日決まった時間に処理を行うため\r - `node-fetch` :URLチェックのリクエストを送るため\r - `dotenv` :環境変数を取得するため\r - `express` :ステータスチェック用のwebサーバーを立ち上げるため。",
+	"main": "index.js",
+	"scripts": {
+		"main": "node index.js && npm run sentry:sourcemaps",
+		"sentry:sourcemaps": "sentry-cli sourcemaps inject --org planet-bot-project --project jinbe-dev ./ && sentry-cli sourcemaps upload --org planet-bot-project --project jinbe-dev ./",
+		"buildTest": "docker image build --tag jinbe-dev:latest . && docker run --name jinbe-dev --rm jinbe-dev:latest",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"format:lint": "prettier --write . && eslint . --fix"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mcee-jinbe/main_for_koyeb.git"
+	},
+	"author": "Hoshimikan6490",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/mcee-jinbe/main_for_koyeb/issues"
+	},
+	"homepage": "https://github.com/mcee-jinbe/main_for_koyeb#readme",
+	"dependencies": {
+		"@sentry/node": "^10.19.0",
+		"@sentry/profiling-node": "^10.19.0",
+		"date-fns-timezone": "^0.1.4",
+		"discord.js": "^14.23.2",
+		"dotenv": "^17.2.3",
+		"express": "^5.1.0",
+		"mongoose": "^8.19.1",
+		"node-cron": "^4.2.1",
+		"node-fetch": "^3.3.2"
+	},
+	"devDependencies": {
+		"@types/node": "^24.7.1",
+		"eslint": "^9.37.0",
+		"eslint-config-prettier": "^10.1.8",
+		"fs": "^0.0.1-security",
+		"prettier": "^3.6.2"
+	}
 }
