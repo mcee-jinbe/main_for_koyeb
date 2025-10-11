@@ -2,6 +2,10 @@ const {
 	ApplicationCommandOptionType,
 	MessageFlags,
 	PermissionsBitField,
+	EmbedBuilder,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
 } = require('discord.js');
 const userDB = require('../models/user_db.js');
 const serverDB = require('../models/server_db.js');
@@ -70,27 +74,28 @@ module.exports = {
 							'そのユーザーのデータは存在しません。登録されていないか、既に削除された可能性があります。',
 					});
 
-				// TODO: ボタンで確認をしてから削除するように変更
-				// ユーザーDBに居る場合は、削除手続きを行う。
-				user.serverIDs = user.serverIDs.filter((serverID) => {
-					return serverID !== interaction.guild.id;
+				// 削除確認ボタン処理
+				const embed = new EmbedBuilder()
+					.setTitle('誕生日データ削除確認')
+					.setDescription(
+						`${targetUser}さんの誕生日データをこのサーバーから削除します。\nよろしいですか？`,
+					)
+					.setColor(0xff0000)
+					.setFooter({ text: '※ボタンを押さないと削除されません。' });
+				const button = new ActionRowBuilder().setComponents(
+					new ButtonBuilder()
+						.setCustomId('birthday_unregister_confirm')
+						.setLabel('削除する')
+						.setStyle(ButtonStyle.Danger),
+					new ButtonBuilder()
+						.setCustomId('cancel')
+						.setLabel('キャンセル')
+						.setStyle(ButtonStyle.Secondary),
+				);
+				return interaction.editReply({
+					embeds: [embed],
+					components: [button],
 				});
-				user
-					.save()
-					.then(() => {
-						return interaction.editReply({
-							content: `このサーバーにおける、<@${user.id}>さんのデータの削除が完了しました。`,
-						});
-					})
-					.catch((err) => {
-						Sentry.setTag('Error Point', 'birthdayUnregisterSaveDB');
-						Sentry.captureException(err);
-					});
-
-				// serverIDsが何もなければデータ削除
-				if (user.serverIDs.length === 0) {
-					await userDB.deleteOne({ _id: user.id });
-				}
 			}
 		} catch (err) {
 			Sentry.setTag('Error Point', 'birthday_unregister');

@@ -1,6 +1,7 @@
-const { InteractionType, MessageFlags } = require('discord.js');
+const { InteractionType, MessageFlags, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const Sentry = require('@sentry/node');
+const userDB = require('../models/user_db.js');
 // for using sentry
 require('../instrument');
 
@@ -100,10 +101,59 @@ module.exports = async (client, interaction) => {
 						files: [{ attachment: file_pas, name: 'omi_kekka.png' }],
 						flags: secret ? MessageFlags.Ephemeral : 0,
 					});
+				} else if (buttonId === 'birthday_unregister_confirm') {
+					const user = await userDB.findOne({
+						_id: interaction.message.embeds[0].description
+							.split('<@')[1]
+							.split('>')[0],
+					});
+
+					// 削除済みの場合はその旨を表示
+					if (!user || user === null) {
+						return interaction.update({
+							content: 'そのユーザーのデータは既に削除されています。',
+							embeds: [],
+							components: [],
+						});
+					}
+
+					// ユーザーDBに居る場合は、削除手続きを行う。
+					user.serverIDs = user.serverIDs.filter((serverID) => {
+						return serverID !== interaction.guild.id;
+					});
+					user
+						.save()
+						.then(async () => {
+							const embed = new EmbedBuilder()
+								.setTitle('誕生日データ削除完了')
+								.setDescription(
+									`このサーバーにおける、<@${user._id}>さんのデータの削除が完了しました。`,
+								)
+								.setColor(0x00ff00);
+
+							await interaction.update({
+								content: `このサーバーにおける、<@${user._id}>さんのデータの削除が完了しました。`,
+								embeds: [],
+								components: [],
+							});
+
+							// serverIDsが何もなければデータ削除
+							if (user.serverIDs.length === 0) {
+								await userDB.deleteOne({ _id: user.id });
+							}
+							return;
+						})
+						.catch((err) => {
+							Sentry.setTag('Error Point', 'birthdayUnregisterSaveDB');
+							Sentry.captureException(err);
+						});
 				}
 
 				if (buttonId === 'cancel' || buttonId === 'delete') {
-					return interaction.message.delete();
+					// ボタンを押した後のグルグル表示をやめる
+					await interaction.deferUpdate();
+					// インタラクションの元のメッセージを削除する
+					await interaction.deleteReply();
 				}
 			}
 		}
