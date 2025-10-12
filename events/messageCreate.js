@@ -210,9 +210,8 @@ module.exports = async (client, message) => {
 
 				//メッセージリンクだけが投稿された場合の処理
 				if (url === message.content) {
-					message.delete().catch((err) => {
+					message.delete().catch((_err) => {
 						// 削除できなくても無視
-						void err;
 					});
 				}
 			} catch (err) {
