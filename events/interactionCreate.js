@@ -147,8 +147,8 @@ module.exports = async (client, interaction) => {
 								.setColor(0x00ff00);
 
 							await interaction.update({
-								content: `このサーバーにおける、<@${user._id}>さんのデータの削除が完了しました。`,
-								embeds: [],
+								content: '',
+								embeds: [embed],
 								components: [],
 							});
 

@@ -1,8 +1,4 @@
-const {
-	ApplicationCommandOptionType,
-	PermissionsBitField,
-	SlashCommandBuilder,
-} = require('discord.js');
+const { PermissionsBitField, SlashCommandBuilder } = require('discord.js');
 const serverDB = require('../models/server_db.js');
 const userDB = require('../models/user_db.js');
 const Sentry = require('@sentry/node');
