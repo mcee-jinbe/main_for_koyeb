@@ -40,7 +40,7 @@ fs.readdir('./commands', (err, files) => {
 				const props = require(`./commands/${f}`);
 				const propsJson = props.data.toJSON();
 				client.commands.push(propsJson);
-				console.log(`コマンドの読み込みが完了: ${props.name}`);
+				console.log(`コマンドの読み込みが完了: ${propsJson.name}`);
 			}
 		} catch (err) {
 			Sentry.captureException(err);
