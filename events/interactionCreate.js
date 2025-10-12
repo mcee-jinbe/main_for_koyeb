@@ -1,113 +1,179 @@
-const { InteractionType, MessageFlags } = require("discord.js");
-const fs = require("fs");
-const Sentry = require("@sentry/node");
+const {
+	InteractionType,
+	MessageFlags,
+	EmbedBuilder,
+	ApplicationCommandType,
+} = require('discord.js');
+const fs = require('fs');
+const Sentry = require('@sentry/node');
+const userDB = require('../models/user_db.js');
 // for using sentry
-require("../instrument");
+require('../instrument');
 
 module.exports = async (client, interaction) => {
-  try {
-    if (!interaction?.guild) {
-      return interaction?.reply({
-        content:
-          "❌ このBOTはサーバー内でのみ動作します。\nお手数をおかけしますが、サーバー内でご利用ください。",
-        flags: MessageFlags.Ephemeral,
-      });
-    } else {
-      if (interaction?.type == InteractionType.ApplicationCommand) {
-        fs.readdir("./commands", (err, files) => {
-          if (err) Sentry.captureException(err);
-          files.forEach(async (f) => {
-            let props = require(`../commands/${f}`);
-            if (interaction.commandName == props.name) {
-              try {
-                return props.run(client, interaction);
-              } catch (err) {
-                return interaction?.reply({
-                  content: `❌ 何らかのエラーが発生しました。`,
-                  flags: MessageFlags.Ephemeral,
-                });
-              }
-            }
-          });
-        });
-      }
+	try {
+		if (!interaction?.guild) {
+			return interaction?.reply({
+				content:
+					'❌ このBOTはサーバー内でのみ動作します。\nお手数をおかけしますが、サーバー内でご利用ください。',
+				flags: MessageFlags.Ephemeral,
+			});
+		} else {
+			if (interaction?.type === InteractionType.ApplicationCommand) {
+				fs.readdir('./commands', (err, files) => {
+					if (err) Sentry.captureException(err);
+					files.forEach(async (f) => {
+						const props = require(`../commands/${f}`);
+						const propsJson = props.data.toJSON();
 
-      if (interaction?.type == InteractionType.MessageComponent) {
-        let buttonId = interaction.customId;
-        let secret;
-        if (buttonId.includes("secret")) {
-          secret = true;
-        } else {
-          secret = false;
-        }
+						// propsJsonがundefinedだった場合は、スラッシュコマンドとしてタイプ1に設定
+						if (propsJson === undefined) {
+							propsJson.type = ApplicationCommandType.ChatInput;
+						}
 
-        if (
-          buttonId.includes("omi1") ||
-          buttonId.includes("omi2") ||
-          buttonId.includes("omi3")
-        ) {
-          // ボタンを押した後のグルグル表示をやめる
-          await interaction.deferUpdate();
+						if (
+							interaction.commandName === propsJson.name &&
+							interaction.commandType === propsJson.type
+						) {
+							try {
+								return props.run(client, interaction);
+							} catch (err) {
+								await interaction?.reply({
+									content: `❌ 何らかのエラーが発生しました。`,
+									flags: MessageFlags.Ephemeral,
+								});
+								throw err;
+							}
+						}
+					});
+				});
+			}
 
-          const arr = [
-            "大吉",
-            "中吉",
-            "小吉",
-            "吉",
-            "凶",
-            "大凶",
-            "じんべえ吉",
-            "じんべえ凶",
-          ];
-          const random = Math.floor(Math.random() * arr.length);
-          const result = arr[random];
+			if (interaction?.type === InteractionType.MessageComponent) {
+				const buttonId = interaction.customId;
+				let secret;
+				if (buttonId.includes('secret')) {
+					secret = true;
+				} else {
+					secret = false;
+				}
 
-          let file_pas, number;
-          if (random === 0) {
-            file_pas = "images/jinbe_daikiti.png";
-          } else if (random === 4 || random === 7) {
-            file_pas = "images/jinbe_pien.png";
-          } else if (random === 5) {
-            file_pas = "images/jinbe_pien2.png";
-          } else {
-            file_pas = "images/jinbe.png";
-          }
-          if (buttonId === "omi1") {
-            number = "1";
-          } else if (buttonId === "omi2") {
-            number = "2";
-          } else {
-            number = "3";
-          }
+				if (
+					buttonId.includes('omi1') ||
+					buttonId.includes('omi2') ||
+					buttonId.includes('omi3')
+				) {
+					// ボタンを押した後のグルグル表示をやめる
+					await interaction.deferUpdate();
 
-          // おみくじのUIを削除する
-          setTimeout(async () => {
-            await interaction.deleteReply();
-          }, 500);
+					const arr = [
+						'大吉',
+						'中吉',
+						'小吉',
+						'吉',
+						'凶',
+						'大凶',
+						'じんべえ吉',
+						'じんべえ凶',
+					];
+					const random = Math.floor(Math.random() * arr.length);
+					const result = arr[random];
 
-          return interaction.followUp({
-            embeds: [
-              {
-                title: "おみくじの結果！",
-                description: `<@${interaction.user.id}>さんは、${result}を引きました！\n\n||\`ここだけの話、\`<@${interaction.user.id}> \`さんは、${number}を押したらしいよ...\`||`,
-                color: 4817413,
-                thumbnail: {
-                  url: "attachment://omi_kekka.png",
-                },
-              },
-            ],
-            files: [{ attachment: file_pas, name: "omi_kekka.png" }],
-            flags: secret ? MessageFlags.Ephemeral : 0,
-          });
-        }
+					let file_pas, number;
+					if (random === 0) {
+						file_pas = 'images/jinbe_daikiti.png';
+					} else if (random === 4 || random === 7) {
+						file_pas = 'images/jinbe_pien.png';
+					} else if (random === 5) {
+						file_pas = 'images/jinbe_pien2.png';
+					} else {
+						file_pas = 'images/jinbe.png';
+					}
+					if (buttonId === 'omi1') {
+						number = '1';
+					} else if (buttonId === 'omi2') {
+						number = '2';
+					} else {
+						number = '3';
+					}
 
-        if (buttonId == "cancel" || buttonId == "delete") {
-          return interaction.message.delete();
-        }
-      }
-    }
-  } catch (err) {
-    Sentry.setTag("Error Point", "interactionCreate");
-    Sentry.captureException(err);
-  }
+					// おみくじのUIを削除する
+					setTimeout(async () => {
+						await interaction.deleteReply();
+					}, 500);
+
+					return interaction.followUp({
+						embeds: [
+							{
+								title: 'おみくじの結果！',
+								description: `<@${interaction.user.id}>さんは、${result}を引きました！\n\n||\`ここだけの話、\`<@${interaction.user.id}> \`さんは、${number}を押したらしいよ...\`||`,
+								color: 4817413,
+								thumbnail: {
+									url: 'attachment://omi_kekka.png',
+								},
+							},
+						],
+						files: [{ attachment: file_pas, name: 'omi_kekka.png' }],
+						flags: secret ? MessageFlags.Ephemeral : 0,
+					});
+				} else if (buttonId === 'birthday_unregister_confirm') {
+					const user = await userDB.findOne({
+						_id: interaction.message.embeds[0].description
+							.split('<@')[1]
+							.split('>')[0],
+					});
+
+					// 削除済みの場合はその旨を表示
+					if (!user || user === null) {
+						return interaction.update({
+							content: 'そのユーザーのデータは既に削除されています。',
+							embeds: [],
+							components: [],
+						});
+					}
+
+					// ユーザーDBに居る場合は、削除手続きを行う。
+					user.serverIDs = user.serverIDs.filter((serverID) => {
+						return serverID !== interaction.guild.id;
+					});
+					user
+						.save()
+						.then(async () => {
+							const embed = new EmbedBuilder()
+								.setTitle('誕生日データ削除完了')
+								.setDescription(
+									`このサーバーにおける、<@${user._id}>さんのデータの削除が完了しました。`,
+								)
+								.setColor(0x00ff00);
+
+							await interaction.update({
+								content: '',
+								embeds: [embed],
+								components: [],
+							});
+
+							// serverIDsが何もなければデータ削除
+							if (user.serverIDs.length === 0) {
+								await userDB.deleteOne({ _id: user.id });
+							}
+							return;
+						})
+						.catch((err) => {
+							Sentry.setTag('Error Point', 'birthdayUnregisterSaveDB');
+							Sentry.captureException(err);
+						});
+				}
+
+				if (buttonId === 'cancel' || buttonId === 'delete') {
+					// ボタンを押した後のグルグル表示をやめる
+					await interaction.deferUpdate();
+					// インタラクションの元のメッセージを削除する
+					await interaction.deleteReply();
+				}
+			}
+		}
+	} catch (err) {
+		Sentry.setTag('Error Point', 'interactionCreate');
+		Sentry.captureException(err);
+	}
 };

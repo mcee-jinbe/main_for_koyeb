@@ -1,28 +1,31 @@
-const Sentry = require("@sentry/node");
+const Sentry = require('@sentry/node');
+const { SlashCommandBuilder } = require('discord.js');
 // for using sentry
-require("../instrument");
+require('../instrument');
 
 module.exports = {
-  name: "ping",
-  description: "BotのPingを測定します。",
-  run: async (client, interaction) => {
-    try {
-      await interaction.reply(
-        `WebSocketのPing: ${interaction.client.ws.ping}ms\nAPIのエンドポイントのPing: ...`
-      );
+	data: new SlashCommandBuilder()
+		.setName('ping')
+		.setDescription('BotのPingを測定します'),
 
-      let msg = await interaction.fetchReply();
+	run: async (client, interaction) => {
+		try {
+			await interaction.reply(
+				`WebSocketのPing: ${interaction.client.ws.ping}ms\nAPIのエンドポイントのPing: ...`,
+			);
 
-      return interaction.editReply(
-        `WebSocketのPing: ${
-          interaction.client.ws.ping
-        }ms\nAPIのエンドポイントのPing: ${
-          msg.createdTimestamp - interaction.createdTimestamp
-        }ms`
-      );
-    } catch (err) {
-      Sentry.setTag("Error Point", "ping");
-      Sentry.captureException(err);
-    }
-  },
+			const msg = await interaction.fetchReply();
+
+			return interaction.editReply(
+				`WebSocketのPing: ${
+					interaction.client.ws.ping
+				}ms\nAPIのエンドポイントのPing: ${
+					msg.createdTimestamp - interaction.createdTimestamp
+				}ms`,
+			);
+		} catch (err) {
+			Sentry.setTag('Error Point', 'ping');
+			Sentry.captureException(err);
+		}
+	},
 };
