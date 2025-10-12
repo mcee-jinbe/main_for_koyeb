@@ -4,14 +4,16 @@ const {
 	TextInputStyle,
 	MessageFlags,
 	LabelBuilder,
+	SlashCommandBuilder,
 } = require('discord.js');
 const Sentry = require('@sentry/node');
 // for using sentry
 require('../instrument');
 
 module.exports = {
-	name: '5000choyen',
-	description: '5000兆円画像生成',
+	data: new SlashCommandBuilder()
+		.setName('5000choyen')
+		.setDescription('5000兆円画像生成'),
 
 	run: async (client, interaction) => {
 		try {

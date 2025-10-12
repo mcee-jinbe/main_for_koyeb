@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, MessageFlags } = require('discord.js');
+const { MessageFlags, SlashCommandBuilder } = require('discord.js');
 const userDB = require('../models/user_db.js');
 const serverDB = require('../models/server_db.js');
 require('dotenv').config({ quiet: true });
@@ -7,22 +7,21 @@ const Sentry = require('@sentry/node');
 require('../instrument');
 
 module.exports = {
-	name: 'birthday_register',
-	description: '🔧誕生日を登録・更新しよう！',
-	options: [
-		{
-			type: ApplicationCommandOptionType.Number,
-			name: 'month',
-			description: '誕生月を入力してください（半角数字で入力）',
-			required: true,
-		},
-		{
-			type: ApplicationCommandOptionType.Number,
-			name: 'day',
-			description: '誕生日を入力してください(半角数字で入力)',
-			required: true,
-		},
-	],
+	data: new SlashCommandBuilder()
+		.setName('birthday_register')
+		.setDescription('🔧誕生日を登録・更新しよう！')
+		.addNumberOption((option) =>
+			option
+				.setName('month')
+				.setDescription('誕生月を入力してください（半角数字で入力）')
+				.setRequired(true),
+		)
+		.addNumberOption((option) =>
+			option
+				.setName('day')
+				.setDescription('誕生日を入力してください(半角数字で入力)')
+				.setRequired(true),
+		),
 
 	run: async (client, interaction) => {
 		try {

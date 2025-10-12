@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, MessageFlags } = require('discord.js');
+const { MessageFlags, SlashCommandBuilder } = require('discord.js');
 const userDB = require('../models/user_db.js');
 const serverDB = require('../models/server_db.js');
 const Sentry = require('@sentry/node');
@@ -6,27 +6,27 @@ const Sentry = require('@sentry/node');
 require('../instrument');
 
 module.exports = {
-	name: 'birthday_show',
-	description: '🖥データベースに登録された情報を表示します',
-	options: [
-		{
-			type: ApplicationCommandOptionType.String,
-			name: 'type',
-			description: '何の情報を表示しますか',
-			required: true,
-			choices: [
-				{ name: 'サーバー全体', value: 'all' },
-				{ name: '個人', value: 'user' },
-			],
-		},
-		{
-			type: ApplicationCommandOptionType.User,
-			name: 'user',
-			description:
-				'誰の情報を表示しますか？（「全体の情報を表示」を選んだ場合は、無視されます）',
-			required: false,
-		},
-	],
+	data: new SlashCommandBuilder()
+		.setName('birthday_show')
+		.setDescription('🖥データベースに登録された情報を表示します')
+		.addStringOption((option) =>
+			option
+				.setName('type')
+				.setDescription('何の情報を表示しますか')
+				.setRequired(true)
+				.addChoices(
+					{ name: 'サーバー全体', value: 'all' },
+					{ name: '個人', value: 'user' },
+				),
+		)
+		.addUserOption((option) =>
+			option
+				.setName('user')
+				.setDescription(
+					'誰の情報を表示しますか？（「全体の情報を表示」を選んだ場合は、無視されます）',
+				)
+				.setRequired(false),
+		),
 
 	run: async (client, interaction) => {
 		try {

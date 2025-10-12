@@ -1,8 +1,8 @@
 const {
-	ApplicationCommandOptionType,
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
+	SlashCommandBuilder,
 } = require('discord.js');
 const packageInfo = require('../package.json');
 const Sentry = require('@sentry/node');
@@ -10,20 +10,19 @@ const Sentry = require('@sentry/node');
 require('../instrument');
 
 module.exports = {
-	name: 'help',
-	description: '❓このBOTのコマンドをご紹介します！',
-	options: [
-		{
-			type: ApplicationCommandOptionType.String,
-			name: 'type',
-			description: '何の情報を表示しますか',
-			required: false,
-			choices: [
-				{ name: 'スラッシュコマンド系', value: 'slashCommand' },
-				{ name: 'チャットコマンド系', value: 'chatCommand' },
-			],
-		},
-	],
+	data: new SlashCommandBuilder()
+		.setName('help')
+		.setDescription('❓このBOTのコマンドをご紹介します！')
+		.addStringOption((option) =>
+			option
+				.setName('type')
+				.setDescription('何の情報を表示しますか')
+				.setRequired(false)
+				.addChoices(
+					{ name: 'スラッシュコマンド系', value: 'slashCommand' },
+					{ name: 'チャットコマンド系', value: 'chatCommand' },
+				),
+		),
 
 	run: async (client, interaction) => {
 		try {

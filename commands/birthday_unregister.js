@@ -1,11 +1,11 @@
 const {
-	ApplicationCommandOptionType,
 	MessageFlags,
 	PermissionsBitField,
 	EmbedBuilder,
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
+	SlashCommandBuilder,
 } = require('discord.js');
 const userDB = require('../models/user_db.js');
 const serverDB = require('../models/server_db.js');
@@ -14,17 +14,17 @@ const Sentry = require('@sentry/node');
 require('../instrument');
 
 module.exports = {
-	name: 'birthday_unregister',
-	description: '🔧このサーバーに登録した誕生日情報を削除します',
-	options: [
-		{
-			type: ApplicationCommandOptionType.User,
-			name: 'user',
-			description:
-				'誕生日データを削除するユーザーを指定します(サーバー管理者限定)',
-			required: false,
-		},
-	],
+	data: new SlashCommandBuilder()
+		.setName('birthday_unregister')
+		.setDescription('🔧このサーバーに登録した誕生日情報を削除します')
+		.addUserOption((option) =>
+			option
+				.setName('user')
+				.setDescription(
+					'誕生日データを削除するユーザーを指定します(サーバー管理者限定)',
+				)
+				.setRequired(false),
+		),
 
 	run: async (client, interaction) => {
 		try {

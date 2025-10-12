@@ -1,21 +1,21 @@
-const { ApplicationCommandOptionType, MessageFlags } = require('discord.js');
+const { MessageFlags, SlashCommandBuilder } = require('discord.js');
 const cooldown = new Map();
 const Sentry = require('@sentry/node');
 // for using sentry
 require('../instrument');
 
 module.exports = {
-	name: 'happy_birthday',
-	description:
-		'🎊いつでもどこでもハッピーバースデー(相手にメンションが送られます)',
-	options: [
-		{
-			type: ApplicationCommandOptionType.User,
-			name: 'user',
-			description: '誰の誕生日を祝いますか？',
-			required: true,
-		},
-	],
+	data: new SlashCommandBuilder()
+		.setName('happy_birthday')
+		.setDescription(
+			'🎊いつでもどこでもハッピーバースデー(相手にメンションが送られます)',
+		)
+		.addUserOption((option) =>
+			option
+				.setName('user')
+				.setDescription('誰の誕生日を祝いますか？')
+				.setRequired(true),
+		),
 
 	run: (client, interaction) => {
 		try {

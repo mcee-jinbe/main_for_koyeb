@@ -2,25 +2,24 @@ const {
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
-	ApplicationCommandOptionType,
 	MessageFlags,
+	SlashCommandBuilder,
 } = require('discord.js');
 const Sentry = require('@sentry/node');
 // for using sentry
 require('../instrument');
 
 module.exports = {
-	name: 'janken',
-	description: '✊✌️🖐️じゃんけんをしよう！！',
-	options: [
-		{
-			type: ApplicationCommandOptionType.String,
-			name: 'secret',
-			description: '結果を非公開で送信したい場合は設定してください。',
-			required: false,
-			choices: [{ name: '非公開にする', value: 'true' }],
-		},
-	],
+	data: new SlashCommandBuilder()
+		.setName('janken')
+		.setDescription('✊✌️🖐️じゃんけんをしよう！！')
+		.addStringOption((option) =>
+			option
+				.setName('secret')
+				.setDescription('結果を非公開で送信したい場合は設定してください。')
+				.setRequired(false)
+				.addChoices({ name: '非公開にする', value: 'true' }),
+		),
 
 	run: (client, interaction) => {
 		try {

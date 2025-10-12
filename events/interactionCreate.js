@@ -1,4 +1,9 @@
-const { InteractionType, MessageFlags, EmbedBuilder } = require('discord.js');
+const {
+	InteractionType,
+	MessageFlags,
+	EmbedBuilder,
+	ApplicationCommandType,
+} = require('discord.js');
 const fs = require('fs');
 const Sentry = require('@sentry/node');
 const userDB = require('../models/user_db.js');
@@ -19,7 +24,17 @@ module.exports = async (client, interaction) => {
 					if (err) Sentry.captureException(err);
 					files.forEach(async (f) => {
 						const props = require(`../commands/${f}`);
-						if (interaction.commandName === props.name) {
+						const propsJson = props.data.toJSON();
+
+						// propsJsonがundefinedだった場合は、スラッシュコマンドとしてタイプ1に設定
+						if (propsJson === undefined) {
+							propsJson.type = ApplicationCommandType.ChatInput;
+						}
+
+						if (
+							interaction.commandName === propsJson.name &&
+							interaction.commandType === propsJson.type
+						) {
 							try {
 								return props.run(client, interaction);
 							} catch (err) {

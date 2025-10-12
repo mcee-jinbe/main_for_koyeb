@@ -1,6 +1,7 @@
 const {
 	ApplicationCommandOptionType,
 	PermissionsBitField,
+	SlashCommandBuilder,
 } = require('discord.js');
 const serverDB = require('../models/server_db.js');
 const userDB = require('../models/user_db.js');
@@ -9,70 +10,54 @@ const Sentry = require('@sentry/node');
 require('../instrument');
 
 module.exports = {
-	name: 'server_setting',
-	description: '🛠️サーバーの設定を変更します。',
-	options: [
-		{
-			name: 'birthday_celebrate',
-			description: '誕生日を祝う機能の設定をします。',
-			type: ApplicationCommandOptionType.Subcommand,
-			options: [
-				{
-					name: 'true_or_false',
-					description:
-						'登録して誕生日を祝う機能を有効にするか無効にするか選択してください。',
-					type: ApplicationCommandOptionType.String,
-					required: true,
-					choices: [
-						{
-							name: '有効にする',
-							value: 'true',
-						},
-						{
-							name: '無効にする',
-							value: 'false',
-						},
-					],
-				},
-				{
-					name: 'channel',
-					description:
-						'誕生日を祝うチャンネルを指定してください。(有効に設定する場合のみ使用されます)',
-					type: ApplicationCommandOptionType.Channel,
-					require: false,
-				},
-			],
-		},
-		{
-			name: 'message_expand',
-			description: 'メッセージ展開機能の設定をします。',
-			type: ApplicationCommandOptionType.Subcommand,
-			options: [
-				{
-					name: 'true_or_false',
-					description:
-						'メッセージ展開機能を有効にするか無効にするか選択してください。',
-					type: ApplicationCommandOptionType.String,
-					required: true,
-					choices: [
-						{
-							name: '有効にする',
-							value: 'true',
-						},
-						{
-							name: '無効にする',
-							value: 'false',
-						},
-					],
-				},
-			],
-		},
-		{
-			name: 'show',
-			description: '設定を閲覧します。',
-			type: ApplicationCommandOptionType.Subcommand,
-		},
-	], // TODO: メッセージ展開機能のON/OFF
+	data: new SlashCommandBuilder()
+		.setName('server_setting')
+		.setDescription('🛠️サーバーの設定を変更します')
+		.addSubcommand((subcommand) =>
+			subcommand
+				.setName('birthday_celebrate')
+				.setDescription('誕生日を祝う機能の設定をします。')
+				.addStringOption((option) =>
+					option
+						.setName('true_or_false')
+						.setDescription(
+							'登録して誕生日を祝う機能を有効にするか無効にするか選択してください。',
+						)
+						.setRequired(true)
+						.addChoices(
+							{ name: '有効にする', value: 'true' },
+							{ name: '無効にする', value: 'false' },
+						),
+				)
+				.addChannelOption((option) =>
+					option
+						.setName('channel')
+						.setDescription(
+							'誕生日を祝うチャンネルを指定してください。(有効に設定する場合のみ使用されます)',
+						)
+						.setRequired(false),
+				),
+		)
+		.addSubcommand((subcommand) =>
+			subcommand
+				.setName('message_expand')
+				.setDescription('メッセージ展開機能の設定をします。')
+				.addStringOption((option) =>
+					option
+						.setName('true_or_false')
+						.setDescription(
+							'メッセージ展開機能を有効にするか無効にするか選択してください。',
+						)
+						.setRequired(true)
+						.addChoices(
+							{ name: '有効にする', value: 'true' },
+							{ name: '無効にする', value: 'false' },
+						),
+				),
+		)
+		.addSubcommand((subcommand) =>
+			subcommand.setName('show').setDescription('設定を閲覧します.'),
+		),
 
 	run: async (client, interaction) => {
 		try {

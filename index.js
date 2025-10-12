@@ -38,11 +38,8 @@ fs.readdir('./commands', (err, files) => {
 		try {
 			if (f.endsWith('.js')) {
 				const props = require(`./commands/${f}`);
-				client.commands.push({
-					name: props.name,
-					description: props.description,
-					options: props.options,
-				});
+				const propsJson = props.data.toJSON();
+				client.commands.push(propsJson);
 				console.log(`コマンドの読み込みが完了: ${props.name}`);
 			}
 		} catch (err) {
