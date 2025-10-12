@@ -18,6 +18,7 @@ module.exports = async (client, guild) => {
 			_id: guild.id,
 			channelID: null,
 			status: false,
+			message_expand: true,
 		});
 		profile
 			.save()

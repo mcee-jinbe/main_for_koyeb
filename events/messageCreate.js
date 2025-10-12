@@ -10,6 +10,7 @@ const fetch = (...args) =>
 require('dotenv').config({ quiet: true });
 const cooldown = new Map();
 const Sentry = require('@sentry/node');
+const serverDB = require('../models/server_db');
 // for using sentry
 require('../instrument');
 
@@ -111,6 +112,10 @@ module.exports = async (client, message) => {
 			// セキュリティチェック: 抽出されたguildIdが現在のguildIdと一致するかを確認
 			if (guildId !== message.guild.id) return; // 異なるサーバーのメッセージは展開しない
 
+			// サーバー設定で有効化されているか確認
+			const server = await serverDB.findById(message.guild.id);
+			if (!server || !server.message_expand) return; // サーバー設定が存在しない、またはメッセージ展開が無効の場合は終了
+
 			try {
 				const channel = await client.channels.fetch(channelId);
 				const fetchedMessage = await channel.messages.fetch(messageId);
@@ -205,7 +210,10 @@ module.exports = async (client, message) => {
 
 				//メッセージリンクだけが投稿された場合の処理
 				if (url === message.content) {
-					message.delete();
+					message.delete().catch((err) => {
+						// 削除できなくても無視
+						void err;
+					});
 				}
 			} catch (err) {
 				Sentry.setTag('Error Point', 'messageExpansion');

@@ -109,6 +109,7 @@ module.exports = async (client) => {
 					_id: guildId,
 					channelID: null,
 					status: false,
+					message_expand: true,
 				});
 				console.log(
 					'シャットダウン中に招待されたサーバーのデータを作成しました。',
