@@ -50,10 +50,6 @@ export default [
 			// .gitignoreから取り込み
 			'node_modules/**',
 			'.env',
-			'lib/pomodoro/voicevox/**',
-			'!lib/pomodoro/voicevox/.VOICEVOX_FILES_IS_HERE',
-			'assets/audio/**',
-			'!assets/audio/voiceList.json',
 
 			// ESLint用の追加設定
 			'*.min.js',
