@@ -22,7 +22,7 @@ module.exports = {
 			const secret = interaction.options.getString('secret');
 			return omikujiSystem.run(client, interaction, secret);
 		} catch (err) {
-			Sentry.setTag('Error Point', 'jinbe_omikuji');
+			Sentry.setTag('Error Point', 'jinbeOmikuji');
 			Sentry.captureException(err);
 		}
 	},

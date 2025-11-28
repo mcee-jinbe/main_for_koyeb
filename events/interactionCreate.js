@@ -79,15 +79,15 @@ module.exports = async (client, interaction) => {
 					const random = Math.floor(Math.random() * arr.length);
 					const result = arr[random];
 
-					let file_pas, number;
+					let filePass, number;
 					if (random === 0) {
-						file_pas = 'images/jinbe_daikiti.png';
+						filePass = 'images/jinbe_daikiti.png';
 					} else if (random === 4 || random === 7) {
-						file_pas = 'images/jinbe_pien.png';
+						filePass = 'images/jinbe_pien.png';
 					} else if (random === 5) {
-						file_pas = 'images/jinbe_pien2.png';
+						filePass = 'images/jinbe_pien2.png';
 					} else {
-						file_pas = 'images/jinbe.png';
+						filePass = 'images/jinbe.png';
 					}
 					if (buttonId === 'omi1') {
 						number = '1';
@@ -113,7 +113,7 @@ module.exports = async (client, interaction) => {
 								},
 							},
 						],
-						files: [{ attachment: file_pas, name: 'omi_kekka.png' }],
+						files: [{ attachment: filePass, name: 'omi_kekka.png' }],
 						flags: secret ? MessageFlags.Ephemeral : 0,
 					});
 				} else if (buttonId === 'birthday_unregister_confirm') {

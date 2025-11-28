@@ -47,8 +47,8 @@ module.exports = async (client, guild) => {
 			const inviterId = inviterInfo.id;
 			DMuser = await client.users.fetch(inviterId);
 		} else {
-			const owner_id = guild.ownerId;
-			DMuser = await client.users.fetch(owner_id);
+			const ownerId = guild.ownerId;
+			DMuser = await client.users.fetch(ownerId);
 		}
 		(await DMuser).send({
 			embeds: [

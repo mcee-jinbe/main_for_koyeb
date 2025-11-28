@@ -48,29 +48,29 @@ module.exports = {
 			} else {
 				await interaction.deferReply();
 
-				const show_type = interaction.options.getString('type');
-				const show_user = interaction.options.getUser('user');
+				const showType = interaction.options.getString('type');
+				const showUser = interaction.options.getUser('user');
 
-				if (show_type === 'all') {
+				if (showType === 'all') {
 					const users = await userDB.find({
 						serverIDs: interaction.guild.id,
 					});
 
 					if (users.length) {
-						const member_list = [];
+						const memberList = [];
 						for (const key in users) {
-							const user_id = users[key]._id;
-							const user = await client.users.fetch(user_id);
-							const user_name = user.username;
-							const display_name = user.globalName;
-							const push_text = `${display_name}(@${user_name})`;
-							member_list.push(push_text);
+							const userId = users[key]._id;
+							const user = await client.users.fetch(userId);
+							const username = user.username;
+							const displayName = user.globalName;
+							const pushText = `${displayName}(@${username})`;
+							memberList.push(pushText);
 						}
 						return interaction.editReply({
 							embeds: [
 								{
 									title: '現在、データベースに登録されているユーザー一覧',
-									description: `\`\`\`\n${member_list.join('\n')}\n\`\`\``,
+									description: `\`\`\`\n${memberList.join('\n')}\n\`\`\``,
 									color: 0xaad0ff,
 									timestamp: new Date(),
 								},
@@ -79,27 +79,27 @@ module.exports = {
 					} else {
 						return interaction.editReply('誰も誕生日を登録していません。');
 					}
-				} else if (show_type === 'user') {
-					if (show_user !== null) {
-						const isBot = (await client.users.fetch(show_user)).bot;
+				} else if (showType === 'user') {
+					if (showUser !== null) {
+						const isBot = (await client.users.fetch(showUser)).bot;
 						if (!isBot) {
 							const users = await userDB.findOne({
-								_id: show_user.id,
+								_id: showUser.id,
 								serverIDs: interaction.guild.id,
 							});
 
 							if (!users) {
 								return interaction.editReply('誕生日が登録されていません。');
 							} else {
-								const database_month = users.birthday_month;
-								const database_day = users.birthday_day;
+								const databaseMonth = users.birthday_month;
+								const databaseDay = users.birthday_day;
 
 								return interaction.editReply({
 									content: '',
 									embeds: [
 										{
-											title: `${show_user.username}さんの情報`,
-											description: `ユーザー名： \`${show_user.username}\`\nユーザーID： \`${show_user.id}\`\n誕生日(登録されたもの)： \`${database_month}月${database_day}日\``,
+											title: `${showUser.username}さんの情報`,
+											description: `ユーザー名： \`${showUser.username}\`\nユーザーID： \`${showUser.id}\`\n誕生日(登録されたもの)： \`${databaseMonth}月${databaseDay}日\``,
 										},
 									],
 								});
@@ -133,7 +133,7 @@ module.exports = {
 				}
 			}
 		} catch (err) {
-			Sentry.setTag('Error Point', 'birthday_show');
+			Sentry.setTag('Error Point', 'birthdayShow');
 			Sentry.captureException(err);
 		}
 	},

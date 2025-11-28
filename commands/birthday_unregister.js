@@ -98,7 +98,7 @@ module.exports = {
 				});
 			}
 		} catch (err) {
-			Sentry.setTag('Error Point', 'birthday_unregister');
+			Sentry.setTag('Error Point', 'birthdayUnregister');
 			Sentry.captureException(err);
 		}
 	},

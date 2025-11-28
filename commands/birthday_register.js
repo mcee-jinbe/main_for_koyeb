@@ -44,24 +44,24 @@ module.exports = {
 				await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
 				// スラッシュコマンドの入力情報を取得
-				const new_birthday_month = interaction.options.getNumber('month');
-				const new_birthday_day = interaction.options.getNumber('day');
+				const newBirthdayMonth = interaction.options.getNumber('month');
+				const newBirthdayDay = interaction.options.getNumber('day');
 				// 2月29日を登録できるようにするために、うるう年の日付データを取得する。
-				const lastDay = new Date(2020, new_birthday_month, 0).getDate();
+				const lastDay = new Date(2020, newBirthdayMonth, 0).getDate();
 
-				const user_id = interaction.user.id;
+				const userId = interaction.user.id;
 
-				if (new_birthday_month >= 1 && new_birthday_month <= 12) {
-					if (new_birthday_day >= 1 && new_birthday_day <= lastDay) {
-						const users = await userDB.findById(user_id);
+				if (newBirthdayMonth >= 1 && newBirthdayMonth <= 12) {
+					if (newBirthdayDay >= 1 && newBirthdayDay <= lastDay) {
+						const users = await userDB.findById(userId);
 						if (!users) {
 							// ユーザーDBに居ない場合は、新規登録
 							const profile = await userDB.create({
-								_id: user_id,
+								_id: userId,
 								serverIDs: [interaction.guild.id],
 								user_name: interaction.user.name,
-								birthday_month: new_birthday_month,
-								birthday_day: new_birthday_day,
+								birthday_month: newBirthdayMonth,
+								birthday_day: newBirthdayDay,
 								finished: false,
 							});
 							profile
@@ -77,7 +77,7 @@ module.exports = {
 										embeds: [
 											{
 												title: '新規登録完了！',
-												description: `あなたの誕生日を\`${new_birthday_month}月${new_birthday_day}日\`に設定しました。`,
+												description: `あなたの誕生日を\`${newBirthdayMonth}月${newBirthdayDay}日\`に設定しました。`,
 												color: 0x0000ff,
 											},
 										],
@@ -91,17 +91,17 @@ module.exports = {
 							if (!users.serverIDs.includes(interaction.guild.id)) {
 								registered = false;
 								await userDB.updateOne(
-									{ _id: user_id },
+									{ _id: userId },
 									{ $push: { serverIDs: interaction.guild.id } },
 								);
 							}
 
 							// 古い情報を取得
-							const old_month = users.birthday_month;
-							const old_day = users.birthday_day;
+							const oldMonth = users.birthday_month;
+							const oldDay = users.birthday_day;
 							// 内容を更新
-							users.birthday_month = new_birthday_month;
-							users.birthday_day = new_birthday_day;
+							users.birthday_month = newBirthdayMonth;
+							users.birthday_day = newBirthdayDay;
 							users.finished = false;
 							users.save().then(() => {
 								return interaction.editReply({
@@ -110,7 +110,7 @@ module.exports = {
 											title: registered
 												? '全サーバーにおける、誕生日の更新が完了しました！'
 												: 'このサーバーでのあなたの誕生日を祝う設定を有効にし、全サーバーにおける、誕生日の更新が完了しました！',
-											description: `あなたの誕生日を\`${old_month}月${old_day}日\`から\`${new_birthday_month}月${new_birthday_day}日\`に更新しました。`,
+											description: `あなたの誕生日を\`${oldMonth}月${oldDay}日\`から\`${newBirthdayMonth}月${newBirthdayDay}日\`に更新しました。`,
 											color: 0x10ff00,
 										},
 									],
@@ -122,7 +122,7 @@ module.exports = {
 							embeds: [
 								{
 									title: 'エラー！',
-									description: `${new_birthday_month}月には、最大で${lastDay}日までしか存在しません。\n正しい月日使用して再度お試しください。`,
+									description: `${newBirthdayMonth}月には、最大で${lastDay}日までしか存在しません。\n正しい月日使用して再度お試しください。`,
 									color: 0xff0000,
 								},
 							],
@@ -141,7 +141,7 @@ module.exports = {
 				}
 			}
 		} catch (err) {
-			Sentry.setTag('Error Point', 'birthday_register');
+			Sentry.setTag('Error Point', 'birthdayRegister');
 			Sentry.captureException(err);
 		}
 	},
