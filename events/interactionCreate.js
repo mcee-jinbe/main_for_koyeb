@@ -117,11 +117,11 @@ module.exports = async (client, interaction) => {
 						flags: secret ? MessageFlags.Ephemeral : 0,
 					});
 				} else if (buttonId === 'birthday_unregister_confirm') {
-					const user = await userDB.findOne({
-						_id: interaction.message.embeds[0].description
+					const user = await userDB.findById(
+						interaction.message.embeds[0].description
 							.split('<@')[1]
 							.split('>')[0],
-					});
+					);
 
 					// 削除済みの場合はその旨を表示
 					if (!user || user === null) {
@@ -136,32 +136,33 @@ module.exports = async (client, interaction) => {
 					user.serverIDs = user.serverIDs.filter((serverID) => {
 						return serverID !== interaction.guild.id;
 					});
-					user
-						.save()
-						.then(async () => {
-							const embed = new EmbedBuilder()
-								.setTitle('誕生日データ削除完了')
-								.setDescription(
-									`このサーバーにおける、<@${user._id}>さんのデータの削除が完了しました。`,
-								)
-								.setColor(0x00ff00);
+					try {
+						await user.save();
 
-							await interaction.update({
-								content: '',
-								embeds: [embed],
-								components: [],
-							});
+						const embed = new EmbedBuilder()
+							.setTitle('誕生日データ削除完了')
+							.setDescription(
+								`このサーバーにおける、<@${user._id}>さんのデータの削除が完了しました。`,
+							)
+							.setColor(0x00ff00);
 
-							// serverIDsが何もなければデータ削除
-							if (user.serverIDs.length === 0) {
-								await userDB.deleteOne({ _id: user.id });
-							}
-							return;
-						})
-						.catch((err) => {
-							Sentry.setTag('Error Point', 'birthdayUnregisterSaveDB');
-							Sentry.captureException(err);
+						await interaction.update({
+							content: '',
+							embeds: [embed],
+							components: [],
 						});
+
+						// serverIDsが何もなければデータ削除
+						if (user.serverIDs.length === 0) {
+							const data = await userDB.findById(user.id);
+							await data.deleteOne();
+						}
+						return;
+					} catch (err) {
+						Sentry.setTag('Error Point', 'birthdayUnregisterSaveDB');
+						Sentry.captureException(err);
+						return interaction.update({});
+					}
 				}
 
 				if (buttonId === 'cancel' || buttonId === 'delete') {

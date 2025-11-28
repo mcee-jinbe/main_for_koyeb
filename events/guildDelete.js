@@ -16,15 +16,9 @@ module.exports = async (client, guild) => {
 					`データベースに登録されていないサーバーから退出しました。オーナーIDは${guild.ownerId}、サーバーIDは${guild.id}`,
 				);
 		} else {
-			serverDB
-				.deleteOne({ _id: guild.id })
-				.catch((err) => {
-					Sentry.setTag('Error Point', 'leaveGuildDeleteServerDB');
-					Sentry.captureException(err);
-				})
-				.then(() => {
-					console.log('正常にサーバーから退出しました。');
-				});
+			const data = await serverDB.findById(guild.id);
+			await data.deleteOne();
+			console.log('正常にサーバーから退出しました。');
 		}
 	} catch (err) {
 		Sentry.setTag('Error Point', 'guildDelete');

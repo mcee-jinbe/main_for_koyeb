@@ -67,15 +67,17 @@ async function birthday_check(client) {
 
 		//status更新
 		model[key].finished = true;
-		model[key].save().catch((err) => {
+		try {
+			await model[key].save();
+		} catch (err) {
+			Sentry.setTag('Error Point', 'birthdayStatusUpdateWhenCelebrated');
 			Sentry.captureException(err);
-			client.channels.cache
+			return client.channels.cache
 				.get(errorNotificationChannelID)
 				.send(
 					`<@${botOwner}>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報: ユーザーID: ${birthday_people_id}`,
 				);
-			return;
-		});
+		}
 	}
 }
 
@@ -130,7 +132,8 @@ module.exports = async (client) => {
 		//全参加中のサーバーの中で、データベースに登録されていないサーバーIDが含まれる場合は登録削除処理を行う。
 		if (!allGuilds.includes(id)) {
 			try {
-				await serverDB.deleteOne({ _id: id });
+				const data = await serverDB.findById(id);
+				await data.deleteOne();
 				console.log(
 					'シャットダウン中に退出したサーバーのデータを削除しました。',
 				);
@@ -196,22 +199,22 @@ module.exports = async (client) => {
 						);
 					return;
 				})
-				.then((model) => {
+				.then(async (model) => {
 					//status更新
 					for (const key in model) {
 						model[key].finished = false;
-						model[key]
-							.save()
-							.catch((err) => {
-								Sentry.captureException(err);
-								client.channels.cache
-									.get(errorNotificationChannelID)
-									.send(
-										'内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。',
-									);
-								return;
-							})
-							.then(() => console.log('done'));
+						try {
+							await model[key].save();
+							return console.log('done');
+						} catch (err) {
+							Sentry.setTag('Error Point', 'birthdayStatusResetSaveDB');
+							Sentry.captureException(err);
+							return client.channels.cache
+								.get(errorNotificationChannelID)
+								.send(
+									'内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。',
+								);
+						}
 					}
 				});
 		},
