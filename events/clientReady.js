@@ -132,7 +132,7 @@ module.exports = async (client) => {
 		if (!allGuilds.includes(id)) {
 			try {
 				const data = await serverDB.findById(id);
-				await data.deleteOne();
+				if (data) await data.deleteOne();
 				console.log(
 					'シャットダウン中に退出したサーバーのデータを削除しました。',
 				);

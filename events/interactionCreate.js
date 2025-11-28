@@ -155,7 +155,7 @@ module.exports = async (client, interaction) => {
 						// serverIDsが何もなければデータ削除
 						if (user.serverIDs.length === 0) {
 							const data = await userDB.findById(user.id);
-							await data.deleteOne();
+							if (data) await data.deleteOne();
 						}
 						return;
 					} catch (err) {
