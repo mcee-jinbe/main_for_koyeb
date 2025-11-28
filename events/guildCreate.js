@@ -50,7 +50,7 @@ module.exports = async (client, guild) => {
 			const ownerId = guild.ownerId;
 			DMuser = await client.users.fetch(ownerId);
 		}
-		(await DMuser).send({
+		return DMuser.send({
 			embeds: [
 				{
 					title: 'お知らせ',
