@@ -204,7 +204,7 @@ module.exports = async (client) => {
 						model[key].finished = false;
 						try {
 							await model[key].save();
-							return console.log('done');
+							console.log('done');
 						} catch (err) {
 							Sentry.setTag('Error Point', 'birthdayStatusResetSaveDB');
 							Sentry.captureException(err);
