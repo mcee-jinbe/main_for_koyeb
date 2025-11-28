@@ -7,17 +7,16 @@ const errorNotificationChannelID = process.env.errorNotificationChannelID;
 
 module.exports = async (client, guild) => {
 	try {
-		const profile = await serverDB.findById(guild.id);
+		const serverInfo = await serverDB.findById(guild.id);
 
-		if (!profile) {
+		if (!serverInfo) {
 			client.channels.cache
 				.get(errorNotificationChannelID)
 				.send(
 					`データベースに登録されていないサーバーから退出しました。オーナーIDは${guild.ownerId}、サーバーIDは${guild.id}`,
 				);
 		} else {
-			const data = await serverDB.findById(guild.id);
-			await data.deleteOne();
+			await serverInfo.deleteOne();
 			console.log('正常にサーバーから退出しました。');
 		}
 	} catch (err) {
