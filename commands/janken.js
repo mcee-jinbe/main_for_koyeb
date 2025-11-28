@@ -161,7 +161,7 @@ module.exports = {
 								filePass = 'images/lose.png';
 							}
 
-							// おみくじのUIを削除する
+							// じゃんけんのUIを削除する
 							setTimeout(async () => {
 								await interaction.deleteReply();
 							}, 500);
