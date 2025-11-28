@@ -97,7 +97,7 @@ module.exports = {
 
 						//このサーバーに関連する誕生日データを削除
 						const data = await userDB.find({ serverIDs: interaction.guild.id });
-						data.forEach(async (userData) => {
+						for (const userData of data) {
 							userData.serverIDs.pull(interaction.guild.id);
 							try {
 								await userData.save();
@@ -105,7 +105,7 @@ module.exports = {
 								Sentry.setTag('Error Point', 'birthdayCelebrateRemoveServerID');
 								Sentry.captureException(err);
 							}
-						});
+						}
 					}
 
 					server.channelID = st;
