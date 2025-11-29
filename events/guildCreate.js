@@ -21,7 +21,12 @@ module.exports = async (client, guild) => {
 			status: false,
 			message_expand: true,
 		});
+	} catch (err) {
+		Sentry.setTag('Error Point', 'createNewServerDataAtGuildCreate');
+		Sentry.captureException(err);
+	}
 
+	try {
 		// サーバーに招待した人(またはサーバーオーナー)にDMを送信
 		const button = new ActionRowBuilder().setComponents(
 			new ButtonBuilder()
@@ -64,7 +69,7 @@ module.exports = async (client, guild) => {
 			components: [button],
 		});
 	} catch (err) {
-		Sentry.setTag('Error Point', 'guildCreate');
+		Sentry.setTag('Error Point', 'sendDMAtGuildCreate');
 		Sentry.captureException(err);
 		return client.channels.cache
 			.get(errorNotificationChannelID)
