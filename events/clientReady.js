@@ -71,7 +71,7 @@ async function birthdayCheck(client) {
 		} catch (err) {
 			Sentry.setTag('Error Point', 'birthdayStatusUpdateWhenCelebrated');
 			Sentry.captureException(err);
-			return client.channels.cache
+			client.channels.cache
 				.get(errorNotificationChannelID)
 				.send(
 					`<@${botOwner}>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報: ユーザーID: ${birthdayPeopleID}`,
