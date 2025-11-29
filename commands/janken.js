@@ -174,11 +174,11 @@ module.exports = {
 										description: `<@${interaction.user.id}>さんは ${resultMe}を出して、\n私は ${resultJinbe}を出したので、\n\n__**${resultJa}です！**__`,
 										color: color,
 										thumbnail: {
-											url: 'attachment://omikuji_kekka.png',
+											url: 'attachment://janken_kekka.png',
 										},
 									},
 								],
-								files: [{ attachment: filePass, name: 'omikuji_kekka.png' }],
+								files: [{ attachment: filePass, name: 'janken_kekka.png' }],
 								flags: secret ? MessageFlags.Ephemeral : 0,
 							});
 						}
