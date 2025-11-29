@@ -24,7 +24,7 @@ module.exports = {
 	run: (client, interaction) => {
 		try {
 			const secret = interaction.options.getString('secret');
-			const janken_choice = new ActionRowBuilder().addComponents(
+			const jankenChoice = new ActionRowBuilder().addComponents(
 				new ButtonBuilder()
 					.setCustomId('pa')
 					.setLabel('パー')
@@ -57,7 +57,7 @@ module.exports = {
 						},
 					],
 					files: [{ attachment: 'images/janken.png', name: 'file.png' }],
-					components: [janken_choice],
+					components: [jankenChoice],
 					flags: MessageFlags.Ephemeral,
 				})
 				.then((buttonMessage) => {
@@ -76,12 +76,12 @@ module.exports = {
 							const jinbe = arr[random];
 							// 処理用の変数を用意
 							let me,
-								jan_result,
-								result_me,
-								result_jinbe,
-								result_ja,
+								jankenResult,
+								resultMe,
+								resultJinbe,
+								resultJa,
 								color,
-								file_pas;
+								filePass;
 							// 自分の手を「me」に代入
 							if (buttonId.includes('pa')) {
 								me = 'pa';
@@ -94,74 +94,74 @@ module.exports = {
 							// 自分がパーの時
 							if (buttonId.includes('pa')) {
 								if (jinbe === 'pa') {
-									jan_result = 'aiko';
+									jankenResult = 'aiko';
 								} else if (jinbe === 'cho') {
-									jan_result = 'lose';
+									jankenResult = 'lose';
 								} else if (jinbe === 'gu') {
-									jan_result = 'win';
+									jankenResult = 'win';
 								}
 								// 自分がチョキの時
 							} else if (buttonId.includes('cho')) {
 								if (jinbe === 'pa') {
-									jan_result = 'win';
+									jankenResult = 'win';
 								} else if (jinbe === 'cho') {
-									jan_result = 'aiko';
+									jankenResult = 'aiko';
 								} else if (jinbe === 'gu') {
-									jan_result = 'lose';
+									jankenResult = 'lose';
 								}
 							} else if (buttonId.includes('gu')) {
 								// 自分がグーの時
 								if (jinbe === 'pa') {
-									jan_result = 'lose';
+									jankenResult = 'lose';
 								} else if (jinbe === 'cho') {
-									jan_result = 'win';
+									jankenResult = 'win';
 								} else if (jinbe === 'gu') {
-									jan_result = 'aiko';
+									jankenResult = 'aiko';
 								}
 							}
 							// 変数調整
 							//me変数の日本語化
 							if (me === 'pa') {
-								result_me = 'パー';
+								resultMe = 'パー';
 							} else if (me === 'cho') {
-								result_me = 'チョキ';
+								resultMe = 'チョキ';
 							} else if (me === 'gu') {
-								result_me = 'グー';
+								resultMe = 'グー';
 							}
 							//jinbe変数の日本語化
 							if (jinbe === 'pa') {
-								result_jinbe = 'パー';
+								resultJinbe = 'パー';
 							} else if (jinbe === 'cho') {
-								result_jinbe = 'チョキ';
+								resultJinbe = 'チョキ';
 							} else if (jinbe === 'gu') {
-								result_jinbe = 'グー';
+								resultJinbe = 'グー';
 							}
 							//結果の日本語化
-							if (jan_result === 'win') {
-								result_ja = 'あなたの勝ち';
-							} else if (jan_result === 'aiko') {
-								result_ja = 'あいこ';
-							} else if (jan_result === 'lose') {
-								result_ja = 'あなたの負け';
+							if (jankenResult === 'win') {
+								resultJa = 'あなたの勝ち';
+							} else if (jankenResult === 'aiko') {
+								resultJa = 'あいこ';
+							} else if (jankenResult === 'lose') {
+								resultJa = 'あなたの負け';
 							}
 							// 色調整
-							if (jan_result === 'win') {
+							if (jankenResult === 'win') {
 								color = 0xff0000;
-							} else if (jan_result === 'aiko') {
+							} else if (jankenResult === 'aiko') {
 								color = 0xffff00;
-							} else if (jan_result === 'lose') {
+							} else if (jankenResult === 'lose') {
 								color = 0x0000ff;
 							}
-							// file_pass設定
-							if (jan_result === 'win') {
-								file_pas = 'images/win.png';
-							} else if (jan_result === 'aiko') {
-								file_pas = 'images/aiko.png';
-							} else if (jan_result === 'lose') {
-								file_pas = 'images/lose.png';
+							// file Pass設定
+							if (jankenResult === 'win') {
+								filePass = 'images/win.png';
+							} else if (jankenResult === 'aiko') {
+								filePass = 'images/aiko.png';
+							} else if (jankenResult === 'lose') {
+								filePass = 'images/lose.png';
 							}
 
-							// おみくじのUIを削除する
+							// じゃんけんのUIを削除する
 							setTimeout(async () => {
 								await interaction.deleteReply();
 							}, 500);
@@ -171,21 +171,21 @@ module.exports = {
 								embeds: [
 									{
 										title: 'じゃんけんの結果！',
-										description: `<@${interaction.user.id}>さんは ${result_me}を出して、\n私は ${result_jinbe}を出したので、\n\n__**${result_ja}です！**__`,
+										description: `<@${interaction.user.id}>さんは ${resultMe}を出して、\n私は ${resultJinbe}を出したので、\n\n__**${resultJa}です！**__`,
 										color: color,
 										thumbnail: {
-											url: 'attachment://omi_kekka.png',
+											url: 'attachment://janken_kekka.png',
 										},
 									},
 								],
-								files: [{ attachment: file_pas, name: 'omi_kekka.png' }],
+								files: [{ attachment: filePass, name: 'janken_kekka.png' }],
 								flags: secret ? MessageFlags.Ephemeral : 0,
 							});
 						}
 					});
 				})
 				.catch((err) => {
-					Sentry.setTag('Error Point', 'janken_collection');
+					Sentry.setTag('Error Point', 'jankenCollection');
 					Sentry.captureException(err);
 				});
 		} catch (err) {

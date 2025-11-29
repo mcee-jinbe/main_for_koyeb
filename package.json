@@ -1,6 +1,6 @@
 {
 	"name": "jinbe-main_for_koyeb",
-	"version": "3.3.0",
+	"version": "3.4.0",
 	"description": "```\r npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch dotenv express\r ```\r ## 各パッケージの使用用途\r - `@types/node`　：node.jsを書きやすくするやつらしい\r - `date-fns-timezone`　：日本時間の月・日を取得するため\r - `discord.js`　：Discord BOTに接続し、操作するため\r - `fs` :「commands」フォルダを読み取るため\r - `mongoose` ：MongoDBの操作を簡単に行うため\r - `node-cron` ：毎日決まった時間に処理を行うため\r - `node-fetch` :URLチェックのリクエストを送るため\r - `dotenv` :環境変数を取得するため\r - `express` :ステータスチェック用のwebサーバーを立ち上げるため。",
 	"main": "index.js",
 	"scripts": {
@@ -24,21 +24,21 @@
 	},
 	"homepage": "https://github.com/mcee-jinbe/main_for_koyeb#readme",
 	"dependencies": {
-		"@sentry/node": "^10.19.0",
-		"@sentry/profiling-node": "^10.19.0",
+		"@sentry/node": "^10.27.0",
+		"@sentry/profiling-node": "^10.27.0",
 		"date-fns-timezone": "^0.1.4",
-		"discord.js": "^14.23.2",
+		"discord.js": "^14.25.1",
 		"dotenv": "^17.2.3",
 		"express": "^5.1.0",
-		"mongoose": "^8.19.1",
+		"mongoose": "^9.0.0",
 		"node-cron": "^4.2.1",
 		"node-fetch": "^3.3.2"
 	},
 	"devDependencies": {
-		"@types/node": "^24.7.1",
-		"eslint": "^9.37.0",
+		"@types/node": "^24.10.1",
+		"eslint": "^9.39.1",
 		"eslint-config-prettier": "^10.1.8",
 		"fs": "^0.0.1-security",
-		"prettier": "^3.6.2"
+		"prettier": "^3.7.1"
 	}
 }

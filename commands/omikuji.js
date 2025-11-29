@@ -28,7 +28,7 @@ module.exports = {
 				: interaction.options.getString('secret');
 			const secret = userInput === 'true';
 
-			const omikuji_choice = new ActionRowBuilder().addComponents(
+			const omikujiChoice = new ActionRowBuilder().addComponents(
 				new ButtonBuilder()
 					.setCustomId(secret ? 'secret_omi1' : 'omi1')
 					.setLabel('を引く')
@@ -59,7 +59,7 @@ module.exports = {
 					},
 				],
 				files: [{ attachment: 'images/omikuji.png', name: 'file.png' }],
-				components: [omikuji_choice],
+				components: [omikujiChoice],
 				flags: MessageFlags.Ephemeral,
 			});
 		} catch (err) {

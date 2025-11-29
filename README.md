@@ -38,7 +38,7 @@ url_check_api=
 # mongoDBの接続情報
 mongodb_token=
 
-# 許可されたサーバーのID(これらのサーバーのみメッセージ展開とURLチェックが動作する)
+# 許可されたサーバーのID(これらのサーバーのみURLチェックが動作する)
 allowedServers='["ID1", "ID2"]'
 ```
 

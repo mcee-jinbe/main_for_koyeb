@@ -79,15 +79,15 @@ module.exports = async (client, interaction) => {
 					const random = Math.floor(Math.random() * arr.length);
 					const result = arr[random];
 
-					let file_pas, number;
+					let filePass, number;
 					if (random === 0) {
-						file_pas = 'images/jinbe_daikiti.png';
+						filePass = 'images/jinbe_daikiti.png';
 					} else if (random === 4 || random === 7) {
-						file_pas = 'images/jinbe_pien.png';
+						filePass = 'images/jinbe_pien.png';
 					} else if (random === 5) {
-						file_pas = 'images/jinbe_pien2.png';
+						filePass = 'images/jinbe_pien2.png';
 					} else {
-						file_pas = 'images/jinbe.png';
+						filePass = 'images/jinbe.png';
 					}
 					if (buttonId === 'omi1') {
 						number = '1';
@@ -113,15 +113,15 @@ module.exports = async (client, interaction) => {
 								},
 							},
 						],
-						files: [{ attachment: file_pas, name: 'omi_kekka.png' }],
+						files: [{ attachment: filePass, name: 'omi_kekka.png' }],
 						flags: secret ? MessageFlags.Ephemeral : 0,
 					});
 				} else if (buttonId === 'birthday_unregister_confirm') {
-					const user = await userDB.findOne({
-						_id: interaction.message.embeds[0].description
+					const user = await userDB.findById(
+						interaction.message.embeds[0].description
 							.split('<@')[1]
 							.split('>')[0],
-					});
+					);
 
 					// 削除済みの場合はその旨を表示
 					if (!user || user === null) {
@@ -136,32 +136,36 @@ module.exports = async (client, interaction) => {
 					user.serverIDs = user.serverIDs.filter((serverID) => {
 						return serverID !== interaction.guild.id;
 					});
-					user
-						.save()
-						.then(async () => {
-							const embed = new EmbedBuilder()
-								.setTitle('誕生日データ削除完了')
-								.setDescription(
-									`このサーバーにおける、<@${user._id}>さんのデータの削除が完了しました。`,
-								)
-								.setColor(0x00ff00);
+					try {
+						await user.save();
 
-							await interaction.update({
-								content: '',
-								embeds: [embed],
-								components: [],
-							});
+						const embed = new EmbedBuilder()
+							.setTitle('誕生日データ削除完了')
+							.setDescription(
+								`このサーバーにおける、<@${user._id}>さんのデータの削除が完了しました。`,
+							)
+							.setColor(0x00ff00);
 
-							// serverIDsが何もなければデータ削除
-							if (user.serverIDs.length === 0) {
-								await userDB.deleteOne({ _id: user.id });
-							}
-							return;
-						})
-						.catch((err) => {
-							Sentry.setTag('Error Point', 'birthdayUnregisterSaveDB');
-							Sentry.captureException(err);
+						await interaction.update({
+							content: '',
+							embeds: [embed],
+							components: [],
 						});
+
+						// serverIDsが何もなければデータ削除
+						if (user.serverIDs.length === 0) {
+							await user.deleteOne();
+						}
+						return;
+					} catch (err) {
+						Sentry.setTag('Error Point', 'birthdayUnregisterSaveDB');
+						Sentry.captureException(err);
+						return interaction.update({
+							content: 'エラーが発生しました。開発者に連絡してください。',
+							embeds: [],
+							components: [],
+						});
+					}
 				}
 
 				if (buttonId === 'cancel' || buttonId === 'delete') {

@@ -14,11 +14,11 @@ const serverDB = require('../models/server_db');
 // for using sentry
 require('../instrument');
 
-const url_check_api = process.env.url_check_api;
+const urlCheckAPIKey = process.env.url_check_api;
 
 //URLチェックの動作を指定
 function getSafe(urls, message) {
-	const request_url = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${url_check_api}`;
+	const requestURL = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${urlCheckAPIKey}`;
 
 	const data = {
 		client: {
@@ -35,7 +35,7 @@ function getSafe(urls, message) {
 		},
 	};
 
-	fetch(request_url, {
+	fetch(requestURL, {
 		method: 'POST', // or 'PUT'
 		headers: {
 			'Content-Type': 'application/json',
@@ -103,9 +103,9 @@ module.exports = async (client, message) => {
 		}
 
 		//メッセージ展開
-		const MESSAGE_URL_REGEX =
+		const messageURLRegex =
 			/https?:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g;
-		const matches = MESSAGE_URL_REGEX.exec(message.content);
+		const matches = messageURLRegex.exec(message.content);
 		if (matches) {
 			const [url, guildId, channelId, messageId] = matches;
 

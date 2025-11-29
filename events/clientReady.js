@@ -15,21 +15,21 @@ const errorNotificationChannelID = process.env.errorNotificationChannelID;
 const botOwner = process.env.botOwner;
 
 //誕生日チェック
-async function birthday_check(client) {
+async function birthdayCheck(client) {
 	const FORMAT = 'MM-DD';
 	const now = new Date();
 	const today = formatToTimeZone(now, FORMAT, { timeZone: 'Asia/Tokyo' });
-	const today_month = today.split('-')[0];
-	const today_day = String(today.split('-')[1]);
+	const todayMonth = today.split('-')[0];
+	const todayDay = String(today.split('-')[1]);
 	const model = await userDB.find({
-		birthday_month: today_month,
-		birthday_day: today_day,
+		birthday_month: todayMonth,
+		birthday_day: todayDay,
 		finished: false,
 	});
 
 	if (!model.length) {
 		console.log(
-			`祝福されていない、今日(${today_month}月${today_day}日)誕生日の人は確認できませんでした。`,
+			`祝福されていない、今日(${todayMonth}月${todayDay}日)誕生日の人は確認できませんでした。`,
 		);
 		return;
 	}
@@ -37,19 +37,18 @@ async function birthday_check(client) {
 	// 誕生日を迎えた全ユーザー分ループする
 	for (const key in model) {
 		// めでたい人の情報を取得して定義
-		const celebrate_server_ids = model[key].serverIDs;
-		const birthday_people_id = model[key]._id;
+		const celebrateServerIDs = model[key].serverIDs;
+		const birthdayPeopleID = model[key]._id;
 
-		for (const celebrate_server_id of celebrate_server_ids) {
-			const server_info = await serverDB.findById(celebrate_server_id);
-
+		for (const celebrateServerID of celebrateServerIDs) {
+			const serverInfo = await serverDB.findById(celebrateServerID);
 			//誕生日を祝う
-			client.channels.cache.get(server_info.channelID).send({
-				content: `<@${birthday_people_id}>`,
+			client.channels.cache.get(serverInfo.channelID).send({
+				content: `<@${birthdayPeopleID}>`,
 				embeds: [
 					{
 						title: 'お誕生日おめでとうございます！',
-						description: `今日は、<@${birthday_people_id}>さんのお誕生日です！`,
+						description: `今日は、<@${birthdayPeopleID}>さんのお誕生日です！`,
 						color: 0xff00ff,
 						thumbnail: {
 							url: 'attachment://happy_birthday.png',
@@ -67,15 +66,17 @@ async function birthday_check(client) {
 
 		//status更新
 		model[key].finished = true;
-		model[key].save().catch((err) => {
+		try {
+			await model[key].save();
+		} catch (err) {
+			Sentry.setTag('Error Point', 'birthdayStatusUpdateWhenCelebrated');
 			Sentry.captureException(err);
 			client.channels.cache
 				.get(errorNotificationChannelID)
 				.send(
-					`<@${botOwner}>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報: ユーザーID: ${birthday_people_id}`,
+					`<@${botOwner}>\n誕生日statusの更新時にエラーが発生しました。コンソールを確認してください。\n\nエラー情報: ユーザーID: ${birthdayPeopleID}`,
 				);
-			return;
-		});
+		}
 	}
 }
 
@@ -130,7 +131,8 @@ module.exports = async (client) => {
 		//全参加中のサーバーの中で、データベースに登録されていないサーバーIDが含まれる場合は登録削除処理を行う。
 		if (!allGuilds.includes(id)) {
 			try {
-				await serverDB.deleteOne({ _id: id });
+				const data = await serverDB.findById(id);
+				if (data) await data.deleteOne();
 				console.log(
 					'シャットダウン中に退出したサーバーのデータを削除しました。',
 				);
@@ -145,13 +147,13 @@ module.exports = async (client) => {
 		}
 	}
 
-	birthday_check(client); //起動時に実行
+	birthdayCheck(client); //起動時に実行
 
 	cron.schedule(
 		'15 8 * * *',
 		() => {
 			//8:15に実行
-			birthday_check(client);
+			birthdayCheck(client);
 		},
 		{
 			timezone: 'Asia/Tokyo',
@@ -162,7 +164,7 @@ module.exports = async (client) => {
 		'15 13 * * *',
 		() => {
 			//13:15に実行
-			birthday_check(client);
+			birthdayCheck(client);
 		},
 		{
 			timezone: 'Asia/Tokyo',
@@ -173,7 +175,7 @@ module.exports = async (client) => {
 		'45 15 * * *',
 		() => {
 			//15:45に実行
-			birthday_check(client);
+			birthdayCheck(client);
 		},
 		{
 			timezone: 'Asia/Tokyo',
@@ -196,22 +198,22 @@ module.exports = async (client) => {
 						);
 					return;
 				})
-				.then((model) => {
+				.then(async (model) => {
 					//status更新
 					for (const key in model) {
 						model[key].finished = false;
-						model[key]
-							.save()
-							.catch((err) => {
-								Sentry.captureException(err);
-								client.channels.cache
-									.get(errorNotificationChannelID)
-									.send(
-										'内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。',
-									);
-								return;
-							})
-							.then(() => console.log('done'));
+						try {
+							await model[key].save();
+							console.log('done');
+						} catch (err) {
+							Sentry.setTag('Error Point', 'birthdayStatusResetSaveDB');
+							Sentry.captureException(err);
+							return client.channels.cache
+								.get(errorNotificationChannelID)
+								.send(
+									'内部エラーが発生しました。\n年末の誕生日statusのリセット時にエラーが発生しました。コンソールを確認してください。',
+								);
+						}
 					}
 				});
 		},

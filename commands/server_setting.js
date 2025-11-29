@@ -96,15 +96,22 @@ module.exports = {
 						st = null;
 
 						//このサーバーに関連する誕生日データを削除
-						await userDB.updateMany(
-							{ serverIDs: interaction.guild.id },
-							{ $pull: { serverIDs: interaction.guild.id } },
-						);
+						const data = await userDB.find({ serverIDs: interaction.guild.id });
+						for (const userData of data) {
+							userData.serverIDs.pull(interaction.guild.id);
+							try {
+								await userData.save();
+							} catch (err) {
+								Sentry.setTag('Error Point', 'birthdayCelebrateRemoveServerID');
+								Sentry.captureException(err);
+							}
+						}
 					}
 
 					server.channelID = st;
 					server.status = status;
-					server.save().then(() => {
+					try {
+						await server.save();
 						return interaction.editReply({
 							embeds: [
 								{
@@ -113,7 +120,14 @@ module.exports = {
 								},
 							],
 						});
-					});
+					} catch (err) {
+						Sentry.setTag('Error Point', 'birthdayCelebrateSaveDB');
+						Sentry.captureException(err);
+						return interaction.editReply({
+							content:
+								'申し訳ございません。内部エラーが発生しました。\n開発者が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nサーバー設定の更新時にエラーが発生しました。\nコンソールを確認してください。',
+						});
+					}
 				}
 			} else if (subcommand === 'message_expand') {
 				const status =
@@ -126,7 +140,8 @@ module.exports = {
 					});
 				} else {
 					server.message_expand = status;
-					server.save().then(() => {
+					try {
+						await server.save();
 						return interaction.editReply({
 							embeds: [
 								{
@@ -135,7 +150,14 @@ module.exports = {
 								},
 							],
 						});
-					});
+					} catch (err) {
+						Sentry.setTag('Error Point', 'messageExpandSaveDB');
+						Sentry.captureException(err);
+						return interaction.editReply({
+							content:
+								'申し訳ございません。内部エラーが発生しました。\n開発者が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nサーバー設定の更新時にエラーが発生しました。\nコンソールを確認してください。',
+						});
+					}
 				}
 			} else if (subcommand === 'show') {
 				const server = await serverDB.findById(interaction.guild.id);
@@ -172,7 +194,7 @@ module.exports = {
 				});
 			}
 		} catch (err) {
-			Sentry.setTag('Error Point', 'server_settings');
+			Sentry.setTag('Error Point', 'serverSettings');
 			Sentry.captureException(err);
 		}
 	},
