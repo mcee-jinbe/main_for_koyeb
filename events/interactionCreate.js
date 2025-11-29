@@ -160,7 +160,11 @@ module.exports = async (client, interaction) => {
 					} catch (err) {
 						Sentry.setTag('Error Point', 'birthdayUnregisterSaveDB');
 						Sentry.captureException(err);
-						return interaction.update({});
+						return interaction.update({
+							content: 'エラーが発生しました。開発者に連絡してください。',
+							embeds: [],
+							components: [],
+						});
 					}
 				}
 
