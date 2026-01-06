@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:24
 
 # アプリケーションディレクトリを作成する
 WORKDIR /usr/src/app
