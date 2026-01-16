@@ -45,13 +45,17 @@ async function birthdayCheck(client) {
 
 			// サーバー設定で誕生日祝いが無効になっている場合、またはサーバー情報が取得できなかった場合
 			if (!serverInfo || !serverInfo.status) {
-				const celebratedUser = await client.users.fetch(ownerId);
-				const serverName =
-					await client.guilds.cache.get(celebrateServerID)?.name;
+				try {
+					const celebratedUser = await client.users.fetch(ownerId);
+					const serverName = client.guilds.cache.get(celebrateServerID)?.name;
 
-				await celebratedUser.send(
-					`🎉お誕生日おめでとうございます！🎉\n\nサーバー「${serverName ? serverName : '不明なサーバー'}」において、誕生日を祝う機能が無効にされたため、誕生日祝うことができませんでした。\nサーバー管理者に再設定を依頼してください。\n\n※なお、あなたのこのメッセージをもって、このサーバーに関連付けされたあなたの誕生日情報は削除されます。サーバー管理者が再設定したら、あなた自身も再度設定してください。`,
-				);
+					await celebratedUser.send(
+						`🎉お誕生日おめでとうございます！🎉\n\nサーバー「${serverName ? serverName : '不明なサーバー'}」において、誕生日を祝う機能が無効にされたため、誕生日を祝うことができませんでした。\nサーバー管理者に再設定を依頼してください。\n\n※なお、あなたのこのメッセージをもって、このサーバーに関連付けされたあなたの誕生日情報は削除されます。サーバー管理者が再設定したら、あなた自身も再度設定してください。`,
+					);
+				} catch (err) {
+					Sentry.setTag('Error Point', 'notifyUserBirthdayCelebrationDisabled');
+					Sentry.captureException(err);
+				}
 
 				// ユーザーDBからの削除手続きを行う。
 				model[key].serverIDs = model[key].serverIDs.filter((serverID) => {
@@ -64,33 +68,32 @@ async function birthdayCheck(client) {
 					if (model[key].serverIDs.length === 0) {
 						await model[key].deleteOne();
 					}
-					return;
 				} catch (err) {
 					Sentry.setTag('Error Point', 'unregisteredBirthdayFromUnknownServer');
 					Sentry.captureException(err);
 				}
-			}
-
-			//誕生日を祝う
-			client.channels.cache.get(serverInfo.channelID).send({
-				content: `<@${birthdayPeopleID}>`,
-				embeds: [
-					{
-						title: 'お誕生日おめでとうございます！',
-						description: `今日は、<@${birthdayPeopleID}>さんのお誕生日です！`,
-						color: 0xff00ff,
-						thumbnail: {
-							url: 'attachment://happy_birthday.png',
+			} else {
+				//誕生日を祝う
+				client.channels.cache.get(serverInfo.channelID).send({
+					content: `<@${birthdayPeopleID}>`,
+					embeds: [
+						{
+							title: 'お誕生日おめでとうございます！',
+							description: `今日は、<@${birthdayPeopleID}>さんのお誕生日です！`,
+							color: 0xff00ff,
+							thumbnail: {
+								url: 'attachment://happy_birthday.png',
+							},
 						},
-					},
-				],
-				files: [
-					{
-						attachment: './images/jinbe_ome.png',
-						name: 'happy_birthday.png',
-					},
-				],
-			});
+					],
+					files: [
+						{
+							attachment: './images/jinbe_ome.png',
+							name: 'happy_birthday.png',
+						},
+					],
+				});
+			}
 		}
 
 		//status更新
