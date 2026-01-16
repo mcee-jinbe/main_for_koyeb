@@ -1,6 +1,6 @@
 {
 	"name": "jinbe-main_for_koyeb",
-	"version": "3.4.2",
+	"version": "3.4.3",
 	"description": "```\r npm i @types/node date-fns-timezone discord.js fs mongoose node-cron node-fetch dotenv express\r ```\r ## 各パッケージの使用用途\r - `@types/node`　：node.jsを書きやすくするやつらしい\r - `date-fns-timezone`　：日本時間の月・日を取得するため\r - `discord.js`　：Discord BOTに接続し、操作するため\r - `fs` :「commands」フォルダを読み取るため\r - `mongoose` ：MongoDBの操作を簡単に行うため\r - `node-cron` ：毎日決まった時間に処理を行うため\r - `node-fetch` :URLチェックのリクエストを送るため\r - `dotenv` :環境変数を取得するため\r - `express` :ステータスチェック用のwebサーバーを立ち上げるため。",
 	"main": "index.js",
 	"scripts": {
