@@ -46,7 +46,7 @@ async function birthdayCheck(client) {
 			// サーバー設定で誕生日祝いが無効になっている場合、またはサーバー情報が取得できなかった場合
 			if (!serverInfo || !serverInfo.status) {
 				try {
-					const celebratedUser = await client.users.fetch(ownerId);
+					const celebratedUser = await client.users.fetch(birthdayPeopleID);
 					const serverName = client.guilds.cache.get(celebrateServerID)?.name;
 
 					await celebratedUser.send(
