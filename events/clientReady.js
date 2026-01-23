@@ -39,6 +39,7 @@ async function birthdayCheck(client) {
 		// めでたい人の情報を取得して定義
 		const celebrateServerIDs = model[key].serverIDs;
 		const birthdayPeopleID = model[key]._id;
+		let dataDeleted = false;
 
 		for (const celebrateServerID of celebrateServerIDs) {
 			const serverInfo = await serverDB.findById(celebrateServerID);
@@ -67,6 +68,8 @@ async function birthdayCheck(client) {
 					// serverIDsが何もなければデータ削除
 					if (model[key].serverIDs.length === 0) {
 						await model[key].deleteOne();
+						dataDeleted = true;
+						break; // 内側のループを抜ける
 					}
 				} catch (err) {
 					Sentry.setTag('Error Point', 'unregisteredBirthdayFromUnknownServer');
@@ -95,6 +98,9 @@ async function birthdayCheck(client) {
 				});
 			}
 		}
+
+		// データが削除された場合は、status更新をスキップ
+		if (dataDeleted) continue;
 
 		//status更新
 		model[key].finished = true;
