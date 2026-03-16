@@ -41,7 +41,7 @@ module.exports = {
         - \`/jinbe\`：\`/omikuji\`と同じ内容です。\n
         - \`/omikuji [サーバー内の他のユーザーに知られずにおみくじを引く場合は「非公開にする」を選択]\`：おみくじを引こう！\n
         - \`/ping\`：BOTとの通信状況を表示します。\n
-        - \`/server_settings\`：このサーバーで誕生日をお祝いする機能を有効にするか設定できます。
+				- \`/server_setting\`：このサーバーで誕生日をお祝いする機能を有効にするか設定できます。
         __※管理者権限が必須です！__\n`;
 				send(title, desc);
 			} else if (type === 'chatCommand') {
