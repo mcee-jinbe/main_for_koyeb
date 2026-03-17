@@ -1,10 +1,4 @@
-const {
-	InteractionType,
-	MessageFlags,
-	EmbedBuilder,
-	ApplicationCommandType,
-} = require('discord.js');
-const fs = require('fs');
+const { InteractionType, MessageFlags, EmbedBuilder } = require('discord.js');
 const Sentry = require('@sentry/node');
 const userDB = require('../models/user_db.js');
 // for using sentry
@@ -20,33 +14,25 @@ module.exports = async (client, interaction) => {
 			});
 		} else {
 			if (interaction?.type === InteractionType.ApplicationCommand) {
-				fs.readdir('./commands', (err, files) => {
-					if (err) Sentry.captureException(err);
-					files.forEach(async (f) => {
-						const props = require(`../commands/${f}`);
-						const propsJson = props.data.toJSON();
+				const command = client.commandHandlers?.get(interaction.commandName);
+				if (!command || typeof command.run !== 'function') return;
 
-						// propsJsonがundefinedだった場合は、スラッシュコマンドとしてタイプ1に設定
-						if (propsJson === undefined) {
-							propsJson.type = ApplicationCommandType.ChatInput;
-						}
-
-						if (
-							interaction.commandName === propsJson.name &&
-							interaction.commandType === propsJson.type
-						) {
-							try {
-								return props.run(client, interaction);
-							} catch (err) {
-								await interaction?.reply({
-									content: `❌ 何らかのエラーが発生しました。`,
-									flags: MessageFlags.Ephemeral,
-								});
-								throw err;
-							}
-						}
-					});
-				});
+				try {
+					await command.run(client, interaction);
+				} catch (err) {
+					if (interaction.deferred) {
+						await interaction.editReply({
+							content: '❌ 何らかのエラーが発生しました。',
+							components: [],
+						});
+					} else if (!interaction.replied) {
+						await interaction.reply({
+							content: '❌ 何らかのエラーが発生しました。',
+							flags: MessageFlags.Ephemeral,
+						});
+					}
+					throw err;
+				}
 			}
 
 			if (interaction?.type === InteractionType.MessageComponent) {
