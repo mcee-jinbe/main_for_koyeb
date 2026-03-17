@@ -7,50 +7,67 @@ const {
 } = require('discord.js');
 const fetch = (...args) =>
 	import('node-fetch').then(({ default: fetch }) => fetch(...args));
-require('dotenv').config({ quiet: true });
 const cooldown = new Map();
 const Sentry = require('@sentry/node');
 const serverDB = require('../models/server_db');
 // for using sentry
 require('../instrument');
 
-const urlCheckAPIKey = process.env.url_check_api;
+// Sleep関数の定義
+async function sleep(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 //URLチェックの動作を指定
 async function getSafe(urls, message) {
 	try {
-		const params = new URLSearchParams({
-			key: urlCheckAPIKey,
-		});
+		for (const url of urls) {
+			const requestURL = `https://safeweb.norton.com/safeweb/sites/v1/details?url=${encodeURIComponent(url)}&insert=0`;
 
-		urls.forEach((url) => {
-			params.append('url', url);
-		});
+			const res = await fetch(requestURL);
+			const responseData = await res.json();
 
-		const requestURL = `https://safebrowsing.googleapis.com/v5/urls:find?${params}`;
+			let status = null;
+			if (responseData.rating === 'b') {
+				status = '危険な';
+			} else if (responseData.rating === 'w') {
+				status = '注意が必要な';
+			} else if (responseData.rating === 'r' || responseData.rating === 'g') {
+				status = 'safe';
+			} else if (responseData.rating === 'u') {
+				status = '未評価の';
+			} else {
+				status = '不明な';
+			}
 
-		const res = await fetch(requestURL, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		});
-		const data = await res.json();
+			// 安全でないURLを検知したら即座に警告して処理を終了
+			if (status !== 'safe') {
+				const isCritical = status === '危険な' || status === '注意が必要な';
+				const embed = new EmbedBuilder()
+					.setTitle(`⚠⚠⚠${status}URLを検知しました！⚠⚠⚠`)
+					.setDescription(
+						`<@${message.author.id}> が投稿した内容には、__${status}URLが含まれる可能性が高いです__\n\n__**${
+							isCritical
+								? '絶対に、アクセスしないでください!'
+								: '注意してアクセスしてください!'
+						}**__`,
+					)
+					.setColor(isCritical ? 0xff0000 : 0xffff00)
+					.setFooter({
+						text: '※アクセスする際は、自己責任でお願いいたします。また、短縮URLの場合、実際のURLと異なる評価がされる可能性がありますので、ご注意ください。※',
+					});
 
-		if (data.threats && data.threats.length > 0) {
-			const embed = new EmbedBuilder()
-				.setTitle('⚠⚠⚠危険なURLを検知しました！⚠⚠⚠')
-				.setDescription(
-					`<@${message.author.id}> が投稿した内容には、__危険なURLが含まれる可能性が高いです__\n\n__**絶対に、アクセスしないでください!**__`,
-				)
-				.setColor(0xff0000)
-				.setFooter({
-					text: 'アクセスする際は、自己責任でお願いいたします。',
+				return message.reply({
+					embeds: [embed],
 				});
-			message.reply({
-				embeds: [embed],
-			});
+			}
+
+			// APIのレート制限を考慮して、リクエスト間に少し待機時間を設ける
+			await sleep(2500);
 		}
+
+		// 全てのURLが安全な場合はリアクションを追加
+		await message.react('✅');
 	} catch (err) {
 		Sentry.setTag('Error Point', 'urlCheck');
 		Sentry.captureException(err);
@@ -90,10 +107,11 @@ module.exports = async (client, message) => {
 		}
 
 		//危険なURLに警告
-		const urls = String(message.content).match(
-			/https?:\/\/[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#\u3000-\u30FE\u4E00-\u9FA0\uFF01-\uFFE3]+/g,
-		);
-		if (urls) {
+		const urls = (String(message.content).match(/https?:\/\/[^\s<>"`]+/g) || [])
+			.map((url) => url.replace(/[.,!?;:'"\)\]\}、。！？」』）］｝]+$/u, ''))
+			.filter(Boolean);
+		console.log(urls);
+		if (urls.length) {
 			getSafe(urls, message);
 		}
 
