@@ -110,7 +110,6 @@ module.exports = async (client, message) => {
 		const urls = (String(message.content).match(/https?:\/\/[^\s<>"`]+/g) || [])
 			.map((url) => url.replace(/[.,!?;:'"\)\]\}、。！？」』）］｝]+$/u, ''))
 			.filter(Boolean);
-		console.log(urls);
 		if (urls.length) {
 			getSafe(urls, message);
 		}
