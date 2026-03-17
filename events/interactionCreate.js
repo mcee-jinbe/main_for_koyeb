@@ -24,12 +24,12 @@ module.exports = async (client, interaction) => {
 						await interaction.editReply({
 							content: '❌ 何らかのエラーが発生しました。',
 							components: [],
-						});
+						}).catch(() => {});
 					} else if (!interaction.replied) {
 						await interaction.reply({
 							content: '❌ 何らかのエラーが発生しました。',
 							flags: MessageFlags.Ephemeral,
-						});
+						}).catch(() => {});
 					}
 					throw err;
 				}
