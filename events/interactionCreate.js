@@ -21,15 +21,19 @@ module.exports = async (client, interaction) => {
 					await command.run(client, interaction);
 				} catch (err) {
 					if (interaction.deferred) {
-						await interaction.editReply({
-							content: '❌ 何らかのエラーが発生しました。',
-							components: [],
-						}).catch(() => {});
+						await interaction
+							.editReply({
+								content: '❌ 何らかのエラーが発生しました。',
+								components: [],
+							})
+							.catch(() => {});
 					} else if (!interaction.replied) {
-						await interaction.reply({
-							content: '❌ 何らかのエラーが発生しました。',
-							flags: MessageFlags.Ephemeral,
-						}).catch(() => {});
+						await interaction
+							.reply({
+								content: '❌ 何らかのエラーが発生しました。',
+								flags: MessageFlags.Ephemeral,
+							})
+							.catch(() => {});
 					}
 					throw err;
 				}
