@@ -27,7 +27,23 @@ async function getSafe(urls, message) {
 			const requestURL = `https://safeweb.norton.com/safeweb/sites/v1/details?url=${encodeURIComponent(url)}&insert=0`;
 
 			const res = await fetch(requestURL);
-			const responseData = await res.json();
+
+			// Norton safe webのAPIのステータスを取得し、エラーハンドリング
+			if (!res.ok) {
+				Sentry.setTag('Error Point', 'NortonSafeWebAPI');
+				Sentry.captureException(
+					new Error(
+						`Norton Safe Web API returned status ${res.status} for URL: ${url}`,
+					),
+				);
+			}
+			let responseData;
+			try {
+				responseData = await res.json();
+			} catch (err) {
+				Sentry.setTag('Error Point', 'NortonSafeWebAPIParseToJSON');
+				Sentry.captureException(err);
+			}
 
 			let status = null;
 			if (responseData.rating === 'b') {
