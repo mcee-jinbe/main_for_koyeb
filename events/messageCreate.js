@@ -35,14 +35,15 @@ async function getSafe(urls, message) {
 			} else if (responseData.rating === 'r' || responseData.rating === 'g') {
 				status = 'safe';
 			} else if (responseData.rating === 'u') {
-				status = '未評価の';
+				status = '安全性が不明な';
 			} else {
-				status = '不明な';
+				status = '安全性が不明な';
 			}
 
 			// 安全でないURLを検知したら即座に警告して処理を終了
 			if (status !== 'safe') {
-				const isCritical = status === '危険な' || status === '注意が必要な';
+        const isCritical = status === '危険な' || status === '注意が必要な';
+        const isUnknown = status === '安全性が不明な';
 				const embed = new EmbedBuilder()
 					.setTitle(`⚠⚠⚠${status}URLを検知しました！⚠⚠⚠`)
 					.setDescription(
@@ -52,7 +53,7 @@ async function getSafe(urls, message) {
 								: '注意してアクセスしてください!'
 						}**__`,
 					)
-					.setColor(isCritical ? 0xff0000 : 0xffff00)
+					.setColor(isCritical ? 0xff0000 : isUnknown ? 0xffff00 : 0x717375)
 					.setFooter({
 						text: '※アクセスする際は、自己責任でお願いいたします。また、短縮URLの場合、実際のURLと異なる評価がされる可能性がありますので、ご注意ください。※',
 					});
