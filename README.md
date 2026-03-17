@@ -35,6 +35,9 @@ botOwner=
 # sentryの接続情報
 sentry_dsn=
 
+# URLの安全性をチェックする際に、1メッセージあたりに検査するURL数
+url_limit=10
+
 # mongoDBの接続情報
 mongodb_token=
 ```

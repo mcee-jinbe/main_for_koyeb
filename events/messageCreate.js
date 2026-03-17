@@ -7,11 +7,13 @@ const {
 } = require('discord.js');
 const fetch = (...args) =>
 	import('node-fetch').then(({ default: fetch }) => fetch(...args));
+require('dotenv').config({ quiet: true });
 const cooldown = new Map();
 const Sentry = require('@sentry/node');
 const serverDB = require('../models/server_db');
 // for using sentry
 require('../instrument');
+const urlLimit = parseInt(process.env.url_limit) || 10;
 
 // Sleep関数の定義
 async function sleep(ms) {
@@ -112,7 +114,7 @@ module.exports = async (client, message) => {
 			.map((url) => url.replace(/[.,!?;:'"\)\]\}、。！？」』）］｝]+$/u, ''))
 			.filter(Boolean);
 		if (urls.length) {
-			getSafe(urls, message);
+			getSafe(urls.slice(0, urlLimit), message);
 		}
 
 		//メッセージ展開
