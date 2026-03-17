@@ -36,6 +36,7 @@ async function getSafe(urls, message) {
 						`Norton Safe Web API returned status ${res.status} for URL: ${url}`,
 					),
 				);
+				continue; // APIリクエストに失敗した場合は、そのURLの処理をスキップして次のURLへ
 			}
 			let responseData;
 			try {
@@ -43,6 +44,7 @@ async function getSafe(urls, message) {
 			} catch (err) {
 				Sentry.setTag('Error Point', 'NortonSafeWebAPIParseToJSON');
 				Sentry.captureException(err);
+				continue; // JSONのパースに失敗した場合は、そのURLの処理をスキップして次のURLへ
 			}
 
 			let status = null;
