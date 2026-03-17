@@ -2,7 +2,12 @@
 require('./instrument');
 
 const fs = require('fs');
-const { Client, GatewayIntentBits } = require('discord.js');
+const path = require('path');
+const {
+	Client,
+	GatewayIntentBits,
+	ApplicationCommandType,
+} = require('discord.js');
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -32,33 +37,37 @@ app.listen(PORT, () => {
 
 //コマンドをBOTに適応させる準備
 client.commands = [];
-fs.readdir('./commands', (err, files) => {
-	if (err) Sentry.captureException(err);
-	files.forEach((f) => {
-		try {
-			if (f.endsWith('.js')) {
-				const props = require(`./commands/${f}`);
-				const propsJson = props.data.toJSON();
-				client.commands.push(propsJson);
-				console.log(`コマンドの読み込みが完了: ${propsJson.name}`);
-			}
-		} catch (err) {
-			Sentry.captureException(err);
+client.commandHandlers = new Map();
+try {
+	const commandFiles = fs.readdirSync(path.join(__dirname, 'commands'));
+	for (const file of commandFiles) {
+		if (!file.endsWith('.js')) continue;
+		const props = require(`./commands/${file}`);
+		const propsJson = props.data.toJSON();
+		if (!propsJson.type) {
+			propsJson.type = ApplicationCommandType.ChatInput;
 		}
-	});
-});
+		client.commands.push(propsJson);
+		client.commandHandlers.set(propsJson.name, props);
+		console.log(`コマンドの読み込みが完了: ${propsJson.name}`);
+	}
+} catch (err) {
+	Sentry.captureException(err);
+}
 
 //events読み込み
-fs.readdir('./events', (_err, files) => {
-	files.forEach((file) => {
-		if (!file.endsWith('.js')) return;
+try {
+	const eventFiles = fs.readdirSync(path.join(__dirname, 'events'));
+	for (const file of eventFiles) {
+		if (!file.endsWith('.js')) continue;
 		const event = require(`./events/${file}`);
 		const eventName = file.split('.')[0];
 		console.log(`クライアントイベントの読み込みが完了: ${eventName}`);
 		client.on(eventName, event.bind(null, client));
-		delete require.cache[require.resolve(`./events/${file}`)];
-	});
-});
+	}
+} catch (err) {
+	Sentry.captureException(err);
+}
 
 //mongooseについて
 mongoose

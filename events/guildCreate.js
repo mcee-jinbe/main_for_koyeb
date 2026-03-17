@@ -48,9 +48,13 @@ module.exports = async (client, guild) => {
 				type: AuditLogEvent.BotAdd,
 				limit: 1,
 			});
-			const inviterInfo = fetchedLogs.entries.first().executor;
-			const inviterId = inviterInfo.id;
-			dmUser = await client.users.fetch(inviterId);
+			const latestEntry = fetchedLogs.entries.first();
+			const inviterId = latestEntry?.executor?.id;
+			if (inviterId) {
+				dmUser = await client.users.fetch(inviterId);
+			} else {
+				dmUser = await client.users.fetch(guild.ownerId);
+			}
 		} else {
 			const ownerId = guild.ownerId;
 			dmUser = await client.users.fetch(ownerId);

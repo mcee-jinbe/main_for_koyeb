@@ -59,7 +59,7 @@ module.exports = {
 							const profile = await userDB.create({
 								_id: userId,
 								serverIDs: [interaction.guild.id],
-								user_name: interaction.user.name,
+								user_name: interaction.user.username,
 								birthday_month: newBirthdayMonth,
 								birthday_day: newBirthdayDay,
 								finished: false,

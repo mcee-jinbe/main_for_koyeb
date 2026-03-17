@@ -23,7 +23,7 @@ module.exports = {
 
 	run: (client, interaction) => {
 		try {
-			const secret = interaction.options.getString('secret');
+			const secret = interaction.options.getString('secret') === 'true';
 			const jankenChoice = new ActionRowBuilder().addComponents(
 				new ButtonBuilder()
 					.setCustomId('pa')

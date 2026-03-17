@@ -13,54 +13,86 @@ const Sentry = require('@sentry/node');
 const serverDB = require('../models/server_db');
 // for using sentry
 require('../instrument');
+const urlLimit = parseInt(process.env.url_limit) || 10;
 
-const urlCheckAPIKey = process.env.url_check_api;
+// Sleep関数の定義
+function sleep(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 //URLチェックの動作を指定
-function getSafe(urls, message) {
-	const requestURL = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${urlCheckAPIKey}`;
+async function getSafe(urls, message) {
+	try {
+		for (const url of urls) {
+			const requestURL = `https://safeweb.norton.com/safeweb/sites/v1/details?url=${encodeURIComponent(url)}&insert=0`;
 
-	const data = {
-		client: {
-			clientId: 'jinbe',
-			clientVersion: '1.5.2',
-		},
-		threatInfo: {
-			threatTypes: ['MALWARE', 'SOCIAL_ENGINEERING'],
-			platformTypes: ['WINDOWS'],
-			threatEntryTypes: ['URL'],
-			threatEntries: urls.map((f) => {
-				return { url: f };
-			}),
-		},
-	};
+			const res = await fetch(requestURL);
 
-	fetch(requestURL, {
-		method: 'POST', // or 'PUT'
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(data),
-	})
-		.then((response) => response.json())
-		.then((data) => {
-			if (data.matches) {
-				message.reply({
-					embeds: [
-						{
-							title: '⚠⚠⚠危険なURLを検知しました！⚠⚠⚠',
-							description: `<@${message.author.id}> が投稿した内容には、__危険なURLが含まれる可能性が高いです__\n\n__**絶対に、アクセスしないでください!**__`,
-							color: 0xff0000,
-							footer: {
-								text: 'アクセスする際は、自己責任でお願いいたします。',
-							},
-						},
-					],
-				});
-			} else {
-				return;
+			// Norton safe webのAPIのステータスを取得し、エラーハンドリング
+			if (!res.ok) {
+				Sentry.setTag('Error Point', 'NortonSafeWebAPI');
+				Sentry.captureException(
+					new Error(
+						`Norton Safe Web API returned status ${res.status} for URL: ${url}`,
+					),
+				);
+				continue; // APIリクエストに失敗した場合は、そのURLの処理をスキップして次のURLへ
 			}
-		});
+			let responseData;
+			try {
+				responseData = await res.json();
+			} catch (err) {
+				Sentry.setTag('Error Point', 'NortonSafeWebAPIParseToJSON');
+				Sentry.captureException(err);
+				continue; // JSONのパースに失敗した場合は、そのURLの処理をスキップして次のURLへ
+			}
+
+			let status = null;
+			if (responseData.rating === 'b') {
+				status = '危険な';
+			} else if (responseData.rating === 'w') {
+				status = '注意が必要な';
+			} else if (responseData.rating === 'r' || responseData.rating === 'g') {
+				status = 'safe';
+			} else if (responseData.rating === 'u') {
+				status = '安全性が不明な';
+			} else {
+				status = '安全性が不明な';
+			}
+
+			// 安全でないURLを検知したら即座に警告して処理を終了
+			if (status !== 'safe') {
+				const isCritical = status === '危険な' || status === '注意が必要な';
+				const isUnknown = status === '安全性が不明な';
+				const embed = new EmbedBuilder()
+					.setTitle(`⚠⚠⚠${status}URLを検知しました！⚠⚠⚠`)
+					.setDescription(
+						`<@${message.author.id}> が投稿した内容には、__${status}URLが含まれる可能性が高いです__\n\n__**${
+							isCritical
+								? '絶対に、アクセスしないでください!'
+								: '注意してアクセスしてください!'
+						}**__`,
+					)
+					.setColor(isCritical ? 0xff0000 : isUnknown ? 0xffff00 : 0x717375)
+					.setFooter({
+						text: '※アクセスする際は、自己責任でお願いいたします。また、短縮URLの場合、実際のURLと異なる評価がされる可能性がありますので、ご注意ください。※',
+					});
+
+				return message.reply({
+					embeds: [embed],
+				});
+			}
+
+			// APIのレート制限を考慮して、リクエスト間に少し待機時間を設ける
+			await sleep(2500);
+		}
+
+		// 全てのURLが安全な場合はリアクションを追加
+		await message.react('✅');
+	} catch (err) {
+		Sentry.setTag('Error Point', 'urlCheck');
+		Sentry.captureException(err);
+	}
 }
 
 // 特定のキーと値に一致するエントリを抽出する関数
@@ -77,6 +109,7 @@ function filterMapByKeyValue(map, key, value) {
 module.exports = async (client, message) => {
 	try {
 		if (message.author.bot) return;
+		if (!message.guild) return;
 
 		const myPermissions = message.guild.members.me
 			.permissionsIn(message.channel)
@@ -95,11 +128,11 @@ module.exports = async (client, message) => {
 		}
 
 		//危険なURLに警告
-		const urls = String(message.content).match(
-			/https?:\/\/[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#\u3000-\u30FE\u4E00-\u9FA0\uFF01-\uFFE3]+/g,
-		);
-		if (urls) {
-			getSafe(urls, message);
+		const urls = (String(message.content).match(/https?:\/\/[^\s<>"`]+/g) || [])
+			.map((url) => url.replace(/[.,!?;:'"\])}、。！？」』）］｝]+$/u, ''))
+			.filter(Boolean);
+		if (urls.length) {
+			getSafe(urls.slice(0, urlLimit), message);
 		}
 
 		//メッセージ展開
