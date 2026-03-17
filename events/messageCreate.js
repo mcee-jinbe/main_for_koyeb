@@ -17,50 +17,44 @@ require('../instrument');
 const urlCheckAPIKey = process.env.url_check_api;
 
 //URLチェックの動作を指定
-function getSafe(urls, message) {
-	const requestURL = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${urlCheckAPIKey}`;
-
-	const data = {
-		client: {
-			clientId: 'jinbe',
-			clientVersion: '1.5.2',
-		},
-		threatInfo: {
-			threatTypes: ['MALWARE', 'SOCIAL_ENGINEERING'],
-			platformTypes: ['WINDOWS'],
-			threatEntryTypes: ['URL'],
-			threatEntries: urls.map((f) => {
-				return { url: f };
-			}),
-		},
-	};
-
-	fetch(requestURL, {
-		method: 'POST', // or 'PUT'
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(data),
-	})
-		.then((response) => response.json())
-		.then((data) => {
-			if (data.matches) {
-				message.reply({
-					embeds: [
-						{
-							title: '⚠⚠⚠危険なURLを検知しました！⚠⚠⚠',
-							description: `<@${message.author.id}> が投稿した内容には、__危険なURLが含まれる可能性が高いです__\n\n__**絶対に、アクセスしないでください!**__`,
-							color: 0xff0000,
-							footer: {
-								text: 'アクセスする際は、自己責任でお願いいたします。',
-							},
-						},
-					],
-				});
-			} else {
-				return;
-			}
+async function getSafe(urls, message) {
+	try {
+		const params = new URLSearchParams({
+			key: urlCheckAPIKey,
 		});
+
+		urls.forEach((url) => {
+			params.append('url', url);
+		});
+
+		const requestURL = `https://safebrowsing.googleapis.com/v5/urls:find?${params}`;
+
+		const res = await fetch(requestURL, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		});
+		const data = await res.json();
+
+		if (data.threats && data.threats.length > 0) {
+			const embed = new EmbedBuilder()
+				.setTitle('⚠⚠⚠危険なURLを検知しました！⚠⚠⚠')
+				.setDescription(
+					`<@${message.author.id}> が投稿した内容には、__危険なURLが含まれる可能性が高いです__\n\n__**絶対に、アクセスしないでください!**__`,
+				)
+				.setColor(0xff0000)
+				.setFooter({
+					text: 'アクセスする際は、自己責任でお願いいたします。',
+				});
+			message.reply({
+				embeds: [embed],
+			});
+		}
+	} catch (err) {
+		Sentry.setTag('Error Point', 'urlCheck');
+		Sentry.captureException(err);
+	}
 }
 
 // 特定のキーと値に一致するエントリを抽出する関数
