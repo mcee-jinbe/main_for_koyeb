@@ -77,6 +77,7 @@ function filterMapByKeyValue(map, key, value) {
 module.exports = async (client, message) => {
 	try {
 		if (message.author.bot) return;
+		if (!message.guild) return;
 
 		const myPermissions = message.guild.members.me
 			.permissionsIn(message.channel)
