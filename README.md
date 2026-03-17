@@ -29,17 +29,14 @@ bot_token=
 readyNotificationChannelID=
 errorNotificationChannelID=
 
+# discord botの管理者のユーザーID
+botOwner=
+
 # sentryの接続情報
 sentry_dsn=
 
-# URLの安全性を調べるためのAPIのtoken
-url_check_api=
-
 # mongoDBの接続情報
 mongodb_token=
-
-# 許可されたサーバーのID(これらのサーバーのみURLチェックが動作する)
-allowedServers='["ID1", "ID2"]'
 ```
 
 ---
@@ -56,4 +53,4 @@ allowedServers='["ID1", "ID2"]'
 
 ## 危険なURLをブロック
 
-参考サイト：　[Discordに危険なURLが送られたら自動で削除](https://qiita.com/narikakun/items/794d9cf57bf6dd2eba46)
+参考コード：　https://github.com/hosshey7240/TakasumiBOTv2-createdTaka005/blob/main/module/function/slashcommand/safeweb.js
