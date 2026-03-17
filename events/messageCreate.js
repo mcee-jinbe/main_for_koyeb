@@ -16,7 +16,7 @@ require('../instrument');
 const urlLimit = parseInt(process.env.url_limit) || 10;
 
 // Sleep関数の定義
-async function sleep(ms) {
+function sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -44,8 +44,8 @@ async function getSafe(urls, message) {
 
 			// 安全でないURLを検知したら即座に警告して処理を終了
 			if (status !== 'safe') {
-        const isCritical = status === '危険な' || status === '注意が必要な';
-        const isUnknown = status === '安全性が不明な';
+				const isCritical = status === '危険な' || status === '注意が必要な';
+				const isUnknown = status === '安全性が不明な';
 				const embed = new EmbedBuilder()
 					.setTitle(`⚠⚠⚠${status}URLを検知しました！⚠⚠⚠`)
 					.setDescription(
@@ -111,7 +111,7 @@ module.exports = async (client, message) => {
 
 		//危険なURLに警告
 		const urls = (String(message.content).match(/https?:\/\/[^\s<>"`]+/g) || [])
-			.map((url) => url.replace(/[.,!?;:'"\)\]\}、。！？」』）］｝]+$/u, ''))
+			.map((url) => url.replace(/[.,!?;:'"\])}、。！？」』）］｝]+$/u, ''))
 			.filter(Boolean);
 		if (urls.length) {
 			getSafe(urls.slice(0, urlLimit), message);
