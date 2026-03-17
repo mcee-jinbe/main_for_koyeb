@@ -87,7 +87,14 @@ async function birthdayCheck(client) {
 				}
 			} else {
 				//誕生日を祝う
-				client.channels.cache.get(serverInfo.channelID).send({
+				const celebrateChannel = await client.channels
+					.fetch(serverInfo.channelID)
+					.catch(() => null);
+				if (!celebrateChannel || typeof celebrateChannel.send !== 'function') {
+					continue;
+				}
+
+				celebrateChannel.send({
 					content: `<@${birthdayPeopleID}>`,
 					embeds: [
 						{
@@ -282,11 +289,14 @@ module.exports = async (client) => {
 		);
 	}, 10000);
 
-	client.channels.cache
-		.get(readyNotificationChannelID)
-		.send(
+	const readyChannel = await client.channels
+		.fetch(readyNotificationChannelID)
+		.catch(() => null);
+	if (readyChannel && typeof readyChannel.send === 'function') {
+		readyChannel.send(
 			`${
 				os.type().includes('Windows') ? '開発環境' : 'koyeb.com'
 			}で起動しました！`,
 		);
+	}
 };
