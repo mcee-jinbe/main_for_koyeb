@@ -90,7 +90,7 @@ async function getSafe(urls, message) {
 		// 全てのURLが安全な場合はリアクションを追加
 		const safeReaction = await message.react('✅');
 		setTimeout(() => {
-			safeReaction.remove().catch((_err) => {
+			safeReaction.users.remove(message.client.user.id).catch((_err) => {
 				// 削除できなくても無視
 			});
 		}, 5000);
