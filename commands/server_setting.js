@@ -217,9 +217,9 @@ module.exports = {
 				}
 
 				const birthdayCelebrateStatus =
-					server.birthday_celebrate?.status ?? server.status ?? false;
+					server.birthday_celebrate?.status === true || server.status === true;
 				const birthdayCelebrateChannelID =
-					server.birthday_celebrate?.channelID ?? server.channelID ?? null;
+					server.birthday_celebrate?.channelID || server.channelID;
 
 				let status, channel;
 				if (birthdayCelebrateStatus) {

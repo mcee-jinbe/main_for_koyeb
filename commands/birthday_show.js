@@ -40,7 +40,7 @@ module.exports = {
 			}
 
 			const birthdayCelebrateStatus =
-				server.birthday_celebrate?.status ?? server.status ?? false;
+				server.birthday_celebrate?.status === true || server.status === true;
 
 			if (!birthdayCelebrateStatus) {
 				return interaction.reply({

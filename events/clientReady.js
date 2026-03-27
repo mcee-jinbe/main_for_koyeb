@@ -44,11 +44,10 @@ async function birthdayCheck(client) {
 		for (const celebrateServerID of celebrateServerIDs) {
 			const serverInfo = await serverDB.findById(celebrateServerID);
 			const birthdayCelebrateStatus =
-				serverInfo?.birthday_celebrate?.status ?? serverInfo?.status ?? false;
+				serverInfo?.birthday_celebrate?.status === true ||
+				serverInfo?.status === true;
 			const birthdayCelebrateChannelID =
-				serverInfo?.birthday_celebrate?.channelID ??
-				serverInfo?.channelID ??
-				null;
+				serverInfo?.birthday_celebrate?.channelID || serverInfo?.channelID;
 
 			// サーバー設定で誕生日祝いが無効になっている場合、またはサーバー情報が取得できなかった場合
 			if (!serverInfo || !birthdayCelebrateStatus) {
