@@ -43,9 +43,15 @@ async function birthdayCheck(client) {
 
 		for (const celebrateServerID of celebrateServerIDs) {
 			const serverInfo = await serverDB.findById(celebrateServerID);
+			const birthdayCelebrateStatus =
+				serverInfo?.birthday_celebrate?.status ?? serverInfo?.status ?? false;
+			const birthdayCelebrateChannelID =
+				serverInfo?.birthday_celebrate?.channelID ??
+				serverInfo?.channelID ??
+				null;
 
 			// サーバー設定で誕生日祝いが無効になっている場合、またはサーバー情報が取得できなかった場合
-			if (!serverInfo || !serverInfo.status) {
+			if (!serverInfo || !birthdayCelebrateStatus) {
 				try {
 					const celebratedUser = await client.users.fetch(birthdayPeopleID);
 					const serverName = client.guilds.cache.get(celebrateServerID)?.name;
@@ -88,7 +94,7 @@ async function birthdayCheck(client) {
 			} else {
 				//誕生日を祝う
 				const celebrateChannel = await client.channels
-					.fetch(serverInfo.channelID)
+					.fetch(birthdayCelebrateChannelID)
 					.catch(() => null);
 				if (!celebrateChannel || typeof celebrateChannel.send !== 'function') {
 					continue;
@@ -163,8 +169,10 @@ module.exports = async (client) => {
 			try {
 				await serverDB.create({
 					_id: guildId,
-					channelID: null,
-					status: false,
+					birthday_celebrate: {
+						channelID: null,
+						status: false,
+					},
 					message_expand: true,
 				});
 				console.log(

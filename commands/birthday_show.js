@@ -39,7 +39,10 @@ module.exports = {
 				});
 			}
 
-			if (!server.status) {
+			const birthdayCelebrateStatus =
+				server.birthday_celebrate?.status ?? server.status ?? false;
+
+			if (!birthdayCelebrateStatus) {
 				return interaction.reply({
 					content:
 						'申し訳ございません。このサーバーでは誕生日を祝う機能が利用できません。\nあなたがサーバーの管理者である場合は、`/server_setting`コマンドから設定を有効にできます。',

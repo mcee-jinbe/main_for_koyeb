@@ -52,6 +52,35 @@ module.exports = {
 				),
 		)
 		.addSubcommand((subcommand) =>
+			subcommand
+				.setName('url_check')
+				.setDescription('URLチェック機能の設定をします。')
+				.addStringOption((option) =>
+					option
+						.setName('status')
+						.setDescription(
+							'URLの安全性チェック機能を有効にするか無効にするか選択してください。',
+						)
+						.setRequired(true)
+						.addChoices(
+							{ name: '有効にする', value: 'true' },
+							{ name: '無効にする', value: 'false' },
+						),
+				)
+				.addStringOption((option) =>
+					option
+						.setName('warn_unknown_status_message')
+						.setDescription(
+							'URLの安全性が不明な場合に警告メッセージを送信する機能を有効にするか無効にするか選択してください。',
+						)
+						.setRequired(true)
+						.addChoices(
+							{ name: '有効にする', value: 'true' },
+							{ name: '無効にする', value: 'false' },
+						),
+				),
+		)
+		.addSubcommand((subcommand) =>
 			subcommand.setName('show').setDescription('設定を閲覧します.'),
 		),
 
@@ -108,10 +137,21 @@ module.exports = {
 						}
 					}
 
-					server.channelID = st;
-					server.status = status;
+					server.birthday_celebrate = {
+						channelID: st,
+						status,
+					};
 					try {
-						await server.save();
+						await serverDB.updateOne(
+							{ _id: interaction.guild.id },
+							{
+								$set: { birthday_celebrate: server.birthday_celebrate },
+								$unset: {
+									status: '',
+									channelID: '',
+								},
+							},
+						);
 						return interaction.editReply({
 							embeds: [
 								{
@@ -159,6 +199,42 @@ module.exports = {
 						});
 					}
 				}
+			} else if (subcommand === 'url_check') {
+				const status = interaction.options.getString('status') === 'true';
+				const warnUnknownStatusMessage =
+					interaction.options.getString('warn_unknown_status_message') ===
+					'true';
+				const server = await serverDB.findById(interaction.guild.id);
+
+				if (!server) {
+					return interaction.editReply({
+						content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
+					});
+				} else {
+					server.url_check = {
+						status: status,
+						warnUnknownStatusMessage: warnUnknownStatusMessage,
+					};
+					try {
+						await server.save();
+						return interaction.editReply({
+							embeds: [
+								{
+									title: `送信されたURLの安全性チェック機能を以下の様に更新しました！`,
+									description: `- URLチェック機能: ${status ? '有効' : '無効'}\n- URLの安全性が不明な場合に警告メッセージを送る機能: ${warnUnknownStatusMessage ? '有効' : '無効'}`,
+									color: 0x10ff00,
+								},
+							],
+						});
+					} catch (err) {
+						Sentry.setTag('Error Point', 'urlCheckSaveDB');
+						Sentry.captureException(err);
+						return interaction.editReply({
+							content:
+								'申し訳ございません。内部エラーが発生しました。\n開発者が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nサーバー設定の更新時にエラーが発生しました。\nコンソールを確認してください。',
+						});
+					}
+				}
 			} else if (subcommand === 'show') {
 				const server = await serverDB.findById(interaction.guild.id);
 				if (!server) {
@@ -167,11 +243,16 @@ module.exports = {
 					});
 				}
 
+				const birthdayCelebrateStatus =
+					server.birthday_celebrate?.status ?? server.status ?? false;
+				const birthdayCelebrateChannelID =
+					server.birthday_celebrate?.channelID ?? server.channelID ?? null;
+
 				let status, channel;
-				if (server.status) {
+				if (birthdayCelebrateStatus) {
 					status = '有効(true)';
 					channel = interaction.guild.channels.cache.find(
-						(ch) => ch.id === server.channelID,
+						(ch) => ch.id === birthdayCelebrateChannelID,
 					);
 					if (!channel) {
 						channel = '`見つかりませんでした！`';
@@ -187,6 +268,12 @@ module.exports = {
 							title: `${interaction.guild.name}の設定`,
 							description: `- 誕生日を祝う機能： ${status}\n- 誕生日を祝うチャンネル: ${channel}\n\n- メッセージ展開機能: ${
 								server.message_expand ? '有効(true)' : '無効(false)'
+							}\n\n- URLチェック機能: ${
+								server.url_check?.status ? '有効(true)' : '無効(false)'
+							}\n- URLの安全性が不明な場合に警告メッセージを送る機能: ${
+								server.url_check?.warnUnknownStatusMessage
+									? '有効(true)'
+									: '無効(false)'
 							}`,
 							color: 0x00ffff,
 						},
