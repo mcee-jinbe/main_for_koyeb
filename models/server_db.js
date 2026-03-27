@@ -8,6 +8,7 @@ const profileSchema = new mongoose.Schema(
 			channelID: { type: String, default: null }, //誕生日を祝うチャンネルID(桁数の都合上Stringで管理する)
 		},
 		message_expand: { type: Boolean, default: true }, //メッセージ展開機能の有効/無効
+		url_check: { type: Boolean, default: true }, //URLチェック機能の有効/無効
 	},
 	{
 		versionKey: false,

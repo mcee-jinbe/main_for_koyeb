@@ -52,6 +52,23 @@ module.exports = {
 				),
 		)
 		.addSubcommand((subcommand) =>
+			subcommand
+				.setName('url_check')
+				.setDescription('URLチェック機能の設定をします。')
+				.addStringOption((option) =>
+					option
+						.setName('true_or_false')
+						.setDescription(
+							'URLの安全性チェック機能を有効にするか無効にするか選択してください。',
+						)
+						.setRequired(true)
+						.addChoices(
+							{ name: '有効にする', value: 'true' },
+							{ name: '無効にする', value: 'false' },
+						),
+				),
+		)
+		.addSubcommand((subcommand) =>
 			subcommand.setName('show').setDescription('設定を閲覧します.'),
 		),
 
@@ -154,6 +171,36 @@ module.exports = {
 						});
 					} catch (err) {
 						Sentry.setTag('Error Point', 'messageExpandSaveDB');
+						Sentry.captureException(err);
+						return interaction.editReply({
+							content:
+								'申し訳ございません。内部エラーが発生しました。\n開発者が対応しますので、しばらくお待ちください。\n\n----業務連絡---\nサーバー設定の更新時にエラーが発生しました。\nコンソールを確認してください。',
+						});
+					}
+				}
+			} else if (subcommand === 'url_check') {
+				const status =
+					interaction.options.getString('true_or_false') === 'true';
+				const server = await serverDB.findById(interaction.guild.id);
+
+				if (!server) {
+					return interaction.editReply({
+						content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
+					});
+				} else {
+					server.url_check = status;
+					try {
+						await server.save();
+						return interaction.editReply({
+							embeds: [
+								{
+									title: `送信されたURLの安全性チェック機能を${status ? '有効' : '無効'}にしました！`,
+									color: 0x10ff00,
+								},
+							],
+						});
+					} catch (err) {
+						Sentry.setTag('Error Point', 'urlCheckSaveDB');
 						Sentry.captureException(err);
 						return interaction.editReply({
 							content:

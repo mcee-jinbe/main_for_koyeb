@@ -134,6 +134,9 @@ module.exports = async (client, message) => {
 		}
 
 		//危険なURLに警告
+		const server = await serverDB.findById(message.guild.id);
+		// サーバー設定でURLチェックが有効化されているか確認
+		if (!server || !server.url_check) return; // サーバー設定が存在しない、またはURLチェックが無効の場合はURLチェックを行わない
 		const urls = (String(message.content).match(/https?:\/\/[^\s<>"`]+/g) || [])
 			.map((url) => url.replace(/[.,!?;:'"\])}、。！？」』）］｝]+$/u, ''))
 			.filter(Boolean);
@@ -142,6 +145,8 @@ module.exports = async (client, message) => {
 		}
 
 		//メッセージ展開
+		// サーバー設定で有効化されているか確認
+		if (!server || !server.message_expand) return; // サーバー設定が存在しない、またはメッセージ展開が無効の場合は終了
 		const messageURLRegex =
 			/https?:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g;
 		const matches = messageURLRegex.exec(message.content);
@@ -150,10 +155,6 @@ module.exports = async (client, message) => {
 
 			// セキュリティチェック: 抽出されたguildIdが現在のguildIdと一致するかを確認
 			if (guildId !== message.guild.id) return; // 異なるサーバーのメッセージは展開しない
-
-			// サーバー設定で有効化されているか確認
-			const server = await serverDB.findById(message.guild.id);
-			if (!server || !server.message_expand) return; // サーバー設定が存在しない、またはメッセージ展開が無効の場合は終了
 
 			try {
 				const channel = await client.channels.fetch(channelId);
