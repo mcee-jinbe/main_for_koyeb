@@ -17,8 +17,10 @@ module.exports = async (client, guild) => {
 		// データの新規作成
 		await serverDB.create({
 			_id: guild.id,
-			channelID: null,
-			status: false,
+			birthday_celebrate: {
+				channelID: null,
+				status: false,
+			},
 			message_expand: true,
 		});
 	} catch (err) {

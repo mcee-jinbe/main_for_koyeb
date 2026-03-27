@@ -108,8 +108,10 @@ module.exports = {
 						}
 					}
 
-					server.channelID = st;
-					server.status = status;
+					server.birthday_celebrate = {
+						channelID: st,
+						status,
+					};
 					try {
 						await server.save();
 						return interaction.editReply({
@@ -167,11 +169,16 @@ module.exports = {
 					});
 				}
 
+				const birthdayCelebrateStatus =
+					server.birthday_celebrate?.status ?? server.status ?? false;
+				const birthdayCelebrateChannelID =
+					server.birthday_celebrate?.channelID ?? server.channelID ?? null;
+
 				let status, channel;
-				if (server.status) {
+				if (birthdayCelebrateStatus) {
 					status = '有効(true)';
 					channel = interaction.guild.channels.cache.find(
-						(ch) => ch.id === server.channelID,
+						(ch) => ch.id === birthdayCelebrateChannelID,
 					);
 					if (!channel) {
 						channel = '`見つかりませんでした！`';
