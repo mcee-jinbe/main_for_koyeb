@@ -22,6 +22,10 @@ module.exports = async (client, guild) => {
 				status: false,
 			},
 			message_expand: true,
+			url_check: {
+				status: true,
+				warnUnknownStatusMessage: false,
+			},
 		});
 	} catch (err) {
 		Sentry.setTag('Error Point', 'createNewServerDataAtGuildCreate');

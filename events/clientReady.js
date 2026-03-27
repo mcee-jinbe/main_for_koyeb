@@ -170,6 +170,10 @@ module.exports = async (client) => {
 						status: false,
 					},
 					message_expand: true,
+					url_check: {
+						status: true,
+						warnUnknownStatusMessage: false,
+					},
 				});
 				console.log(
 					'シャットダウン中に招待されたサーバーのデータを作成しました。',
