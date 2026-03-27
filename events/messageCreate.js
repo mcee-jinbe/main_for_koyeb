@@ -135,128 +135,132 @@ module.exports = async (client, message) => {
 		//危険なURLに警告
 		const server = await serverDB.findById(message.guild.id);
 		// サーバー設定でURLチェックが有効化されているか確認
-		if (!server || !server.url_check) return; // サーバー設定が存在しない、またはURLチェックが無効の場合はURLチェックを行わない
-		const urls = (String(message.content).match(/https?:\/\/[^\s<>"`]+/g) || [])
-			.map((url) => url.replace(/[.,!?;:'"\])}、。！？」』）］｝]+$/u, ''))
-			.filter(Boolean);
-		if (urls.length) {
-			getSafe(urls.slice(0, urlLimit), message);
+		if (server && server.url_check) {
+			const urls = (
+				String(message.content).match(/https?:\/\/[^\s<>"`]+/g) || []
+			)
+				.map((url) => url.replace(/[.,!?;:'"\])}、。！？」』）］｝]+$/u, ''))
+				.filter(Boolean);
+			if (urls.length) {
+				getSafe(urls.slice(0, urlLimit), message);
+			}
 		}
 
 		//メッセージ展開
 		// サーバー設定で有効化されているか確認
-		if (!server || !server.message_expand) return; // サーバー設定が存在しない、またはメッセージ展開が無効の場合は終了
-		const messageURLRegex =
-			/https?:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g;
-		const matches = messageURLRegex.exec(message.content);
-		if (matches) {
-			const [url, guildId, channelId, messageId] = matches;
+		if (server && server.message_expand) {
+			const messageURLRegex =
+				/https?:\/\/discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g;
+			const matches = messageURLRegex.exec(message.content);
+			if (matches) {
+				const [url, guildId, channelId, messageId] = matches;
 
-			// セキュリティチェック: 抽出されたguildIdが現在のguildIdと一致するかを確認
-			if (guildId !== message.guild.id) return; // 異なるサーバーのメッセージは展開しない
+				// セキュリティチェック: 抽出されたguildIdが現在のguildIdと一致するかを確認
+				if (guildId !== message.guild.id) return; // 異なるサーバーのメッセージは展開しない
 
-			try {
-				const channel = await client.channels.fetch(channelId);
-				const fetchedMessage = await channel.messages.fetch(messageId);
+				try {
+					const channel = await client.channels.fetch(channelId);
+					const fetchedMessage = await channel.messages.fetch(messageId);
 
-				// button生成
-				const guideButton = new ActionRowBuilder().addComponents(
-					new ButtonBuilder()
-						.setLabel('メッセージを見る')
-						.setURL(fetchedMessage.url)
-						.setStyle(ButtonStyle.Link),
-					new ButtonBuilder()
-						.setCustomId('cancel')
-						.setEmoji('🗑️')
-						.setStyle(ButtonStyle.Secondary),
-				);
-				const notificationButton = new ActionRowBuilder();
-
-				const embed = new EmbedBuilder()
-					.setURL(fetchedMessage.url)
-					.setDescription(
-						fetchedMessage.content ? fetchedMessage.content : '\u200B', //contentに何もなければゼロ幅スペースを入力
-					)
-					.setAuthor({
-						name: fetchedMessage.author.tag,
-						iconURL: fetchedMessage.author.displayAvatarURL(),
-					})
-					.setColor(0x4d4df7)
-					.setTimestamp(new Date(fetchedMessage.createdTimestamp));
-
-				// 添付ファイル関連処理
-				const imageEmbed = [];
-				if (fetchedMessage.attachments.size > 0) {
-					// 画像添付ファイル処理
-					const attachedImages = filterMapByKeyValue(
-						fetchedMessage.attachments,
-						'contentType',
-						'image/',
-					);
-					if (attachedImages.size >= 2) {
-						attachedImages.forEach((attachedImage) => {
-							const attachmentField = {
-								url: fetchedMessage.url,
-								image: {
-									url: attachedImage.url,
-								},
-							};
-							imageEmbed.push(attachmentField);
-						});
-					}
-					if (attachedImages.size > 4) {
-						notificationButton.addComponents(
-							new ButtonBuilder()
-								.setCustomId('dummy0')
-								.setEmoji('⚠️')
-								.setLabel('元メッセージに5枚以上の画像あり')
-								.setDisabled(true)
-								.setStyle(ButtonStyle.Secondary),
-						);
-					}
-
-					// 画像以外の添付ファイル処理
-					if (fetchedMessage.attachments.size !== attachedImages.size) {
-						notificationButton.addComponents(
-							new ButtonBuilder()
-								.setCustomId('dummy1')
-								.setEmoji('⚠️')
-								.setLabel('元メッセージに画像以外の添付ファイルあり')
-								.setDisabled(true)
-								.setStyle(ButtonStyle.Secondary),
-						);
-					}
-				}
-
-				// 埋め込みがある場合
-				if (fetchedMessage.embeds.length) {
-					notificationButton.addComponents(
+					// button生成
+					const guideButton = new ActionRowBuilder().addComponents(
 						new ButtonBuilder()
-							.setCustomId('dummy2')
-							.setEmoji('⚠️')
-							.setLabel('元メッセージに埋め込みあり')
-							.setDisabled(true)
+							.setLabel('メッセージを見る')
+							.setURL(fetchedMessage.url)
+							.setStyle(ButtonStyle.Link),
+						new ButtonBuilder()
+							.setCustomId('cancel')
+							.setEmoji('🗑️')
 							.setStyle(ButtonStyle.Secondary),
 					);
-				}
+					const notificationButton = new ActionRowBuilder();
 
-				message.channel.send({
-					embeds: [embed].concat(imageEmbed),
-					components: notificationButton.components.length
-						? [guideButton, notificationButton]
-						: [guideButton],
-				});
+					const embed = new EmbedBuilder()
+						.setURL(fetchedMessage.url)
+						.setDescription(
+							fetchedMessage.content ? fetchedMessage.content : '\u200B', //contentに何もなければゼロ幅スペースを入力
+						)
+						.setAuthor({
+							name: fetchedMessage.author.tag,
+							iconURL: fetchedMessage.author.displayAvatarURL(),
+						})
+						.setColor(0x4d4df7)
+						.setTimestamp(new Date(fetchedMessage.createdTimestamp));
 
-				//メッセージリンクだけが投稿された場合の処理
-				if (url === message.content) {
-					message.delete().catch((_err) => {
-						// 削除できなくても無視
+					// 添付ファイル関連処理
+					const imageEmbed = [];
+					if (fetchedMessage.attachments.size > 0) {
+						// 画像添付ファイル処理
+						const attachedImages = filterMapByKeyValue(
+							fetchedMessage.attachments,
+							'contentType',
+							'image/',
+						);
+						if (attachedImages.size >= 2) {
+							attachedImages.forEach((attachedImage) => {
+								const attachmentField = {
+									url: fetchedMessage.url,
+									image: {
+										url: attachedImage.url,
+									},
+								};
+								imageEmbed.push(attachmentField);
+							});
+						}
+						if (attachedImages.size > 4) {
+							notificationButton.addComponents(
+								new ButtonBuilder()
+									.setCustomId('dummy0')
+									.setEmoji('⚠️')
+									.setLabel('元メッセージに5枚以上の画像あり')
+									.setDisabled(true)
+									.setStyle(ButtonStyle.Secondary),
+							);
+						}
+
+						// 画像以外の添付ファイル処理
+						if (fetchedMessage.attachments.size !== attachedImages.size) {
+							notificationButton.addComponents(
+								new ButtonBuilder()
+									.setCustomId('dummy1')
+									.setEmoji('⚠️')
+									.setLabel('元メッセージに画像以外の添付ファイルあり')
+									.setDisabled(true)
+									.setStyle(ButtonStyle.Secondary),
+							);
+						}
+					}
+
+					// 埋め込みがある場合
+					if (fetchedMessage.embeds.length) {
+						notificationButton.addComponents(
+							new ButtonBuilder()
+								.setCustomId('dummy2')
+								.setEmoji('⚠️')
+								.setLabel('元メッセージに埋め込みあり')
+								.setDisabled(true)
+								.setStyle(ButtonStyle.Secondary),
+						);
+					}
+
+					message.channel.send({
+						embeds: [embed].concat(imageEmbed),
+						components: notificationButton.components.length
+							? [guideButton, notificationButton]
+							: [guideButton],
 					});
+
+					//メッセージリンクだけが投稿された場合の処理
+					if (url === message.content) {
+						message.delete().catch((_err) => {
+							// 削除できなくても無視
+						});
+					}
+				} catch (err) {
+					Sentry.setTag('Error Point', 'messageExpansion');
+					Sentry.captureException(err);
+					return;
 				}
-			} catch (err) {
-				Sentry.setTag('Error Point', 'messageExpansion');
-				Sentry.captureException(err);
-				return;
 			}
 		}
 
