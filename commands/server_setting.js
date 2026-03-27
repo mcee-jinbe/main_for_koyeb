@@ -57,9 +57,21 @@ module.exports = {
 				.setDescription('URLチェック機能の設定をします。')
 				.addStringOption((option) =>
 					option
-						.setName('true_or_false')
+						.setName('status')
 						.setDescription(
 							'URLの安全性チェック機能を有効にするか無効にするか選択してください。',
+						)
+						.setRequired(true)
+						.addChoices(
+							{ name: '有効にする', value: 'true' },
+							{ name: '無効にする', value: 'false' },
+						),
+				)
+				.addStringOption((option) =>
+					option
+						.setName('warn_unknown_status_message')
+						.setDescription(
+							'URLの安全性が不明な場合に警告メッセージを送信する機能を有効にするか無効にするか選択してください。',
 						)
 						.setRequired(true)
 						.addChoices(
@@ -188,8 +200,10 @@ module.exports = {
 					}
 				}
 			} else if (subcommand === 'url_check') {
-				const status =
-					interaction.options.getString('true_or_false') === 'true';
+				const status = interaction.options.getString('status') === 'true';
+				const warnUnknownStatusMessage =
+					interaction.options.getString('warn_unknown_status_message') ===
+					'true';
 				const server = await serverDB.findById(interaction.guild.id);
 
 				if (!server) {
@@ -197,13 +211,17 @@ module.exports = {
 						content: `申し訳ございません。本BOTの新規サーバー登録が正常に行われなかった可能性があります。\n一度サーバーからkickして、[このURL](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=274878024832&integration_type=0&scope=bot+applications.commands)から再招待をお願い致します。`,
 					});
 				} else {
-					server.url_check = status;
+					server.url_check = {
+						status: status,
+						warnUnknownStatusMessage: warnUnknownStatusMessage,
+					};
 					try {
 						await server.save();
 						return interaction.editReply({
 							embeds: [
 								{
-									title: `送信されたURLの安全性チェック機能を${status ? '有効' : '無効'}にしました！`,
+									title: `送信されたURLの安全性チェック機能を以下の様に更新しました！`,
+									description: `- URLチェック機能: ${status ? '有効' : '無効'}\n- URLの安全性が不明な場合に警告メッセージを送る機能: ${warnUnknownStatusMessage ? '有効' : '無効'}`,
 									color: 0x10ff00,
 								},
 							],
@@ -251,7 +269,11 @@ module.exports = {
 							description: `- 誕生日を祝う機能： ${status}\n- 誕生日を祝うチャンネル: ${channel}\n\n- メッセージ展開機能: ${
 								server.message_expand ? '有効(true)' : '無効(false)'
 							}\n\n- URLチェック機能: ${
-								server.url_check ? '有効(true)' : '無効(false)'
+								server.url_check?.status ? '有効(true)' : '無効(false)'
+							}\n- URLの安全性が不明な場合に警告メッセージを送る機能: ${
+								server.url_check?.warnUnknownStatusMessage
+									? '有効(true)'
+									: '無効(false)'
 							}`,
 							color: 0x00ffff,
 						},

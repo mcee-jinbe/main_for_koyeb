@@ -21,7 +21,7 @@ function sleep(ms) {
 }
 
 //URLチェックの動作を指定
-async function getSafe(urls, message) {
+async function getSafe(urls, message, server) {
 	try {
 		for (const url of urls) {
 			const requestURL = `https://safeweb.norton.com/safeweb/sites/v1/details?url=${encodeURIComponent(url)}&insert=0`;
@@ -64,6 +64,13 @@ async function getSafe(urls, message) {
 			if (status !== 'safe') {
 				const isCritical = status === '危険な' || status === '注意が必要な';
 				const isUnknown = status === '安全性が不明な';
+
+				// 安全性が不明な場合で、warnUnknownStatusMessageがfalseなら警告を送らない
+				if (isUnknown && !server?.url_check?.warnUnknownStatusMessage) {
+					await sleep(2500);
+					continue;
+				}
+
 				const embed = new EmbedBuilder()
 					.setTitle(`⚠⚠⚠${status}URLを検知しました！⚠⚠⚠`)
 					.setDescription(
@@ -141,8 +148,8 @@ module.exports = async (client, message) => {
 			const server = await serverDB.findById(message.guild.id);
 
 			// URLチェック
-			if (server && server.url_check) {
-				getSafe(urls.slice(0, urlLimit), message);
+			if (server && server?.url_check?.status) {
+				getSafe(urls.slice(0, urlLimit), message, server);
 			}
 
 			// Discordのメッセージリンクなら展開
