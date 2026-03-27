@@ -95,12 +95,15 @@ async function getSafe(urls, message, server) {
 		}
 
 		// 全てのURLが安全な場合はリアクションを追加
-		const safeReaction = await message.react('✅');
-		setTimeout(() => {
-			safeReaction.users.remove(message.client.user.id).catch((_err) => {
-				// 削除できなくても無視
-			});
-		}, 5000);
+		try {
+			const safeReaction = await message.react('✅');
+			setTimeout(() => {
+				safeReaction.users.remove(message.client.user.id);
+			}, 5000);
+		} catch (_err) {
+			// リアクションの追加/削除に失敗しても無視
+			void _err;
+		}
 	} catch (err) {
 		Sentry.setTag('Error Point', 'urlCheck');
 		Sentry.captureException(err);
