@@ -39,8 +39,7 @@ module.exports = {
 				});
 			}
 
-			const birthdayCelebrateStatus =
-				server.birthday_celebrate?.status ?? server.status ?? false;
+			const birthdayCelebrateStatus = server.birthday_celebrate.status;
 
 			if (!birthdayCelebrateStatus) {
 				return interaction.reply({
