@@ -241,6 +241,8 @@ module.exports = {
 							title: `${interaction.guild.name}の設定`,
 							description: `- 誕生日を祝う機能： ${status}\n- 誕生日を祝うチャンネル: ${channel}\n\n- メッセージ展開機能: ${
 								server.message_expand ? '有効(true)' : '無効(false)'
+							}\n\n- URLチェック機能: ${
+								server.url_check ? '有効(true)' : '無効(false)'
 							}`,
 							color: 0x00ffff,
 						},
