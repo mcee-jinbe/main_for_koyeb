@@ -94,7 +94,6 @@ async function getSafe(urls, message) {
 				// 削除できなくても無視
 			});
 		}, 5000);
-
 	} catch (err) {
 		Sentry.setTag('Error Point', 'urlCheck');
 		Sentry.captureException(err);
