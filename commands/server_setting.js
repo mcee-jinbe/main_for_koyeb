@@ -130,7 +130,16 @@ module.exports = {
 						status,
 					};
 					try {
-						await server.save();
+						await serverDB.updateOne(
+							{ _id: interaction.guild.id },
+							{
+								$set: { birthday_celebrate: server.birthday_celebrate },
+								$unset: {
+									status: '',
+									channelID: '',
+								},
+							},
+						);
 						return interaction.editReply({
 							embeds: [
 								{
@@ -217,9 +226,9 @@ module.exports = {
 				}
 
 				const birthdayCelebrateStatus =
-					server.birthday_celebrate?.status === true || server.status === true;
+					server.birthday_celebrate?.status ?? server.status ?? false;
 				const birthdayCelebrateChannelID =
-					server.birthday_celebrate?.channelID || server.channelID;
+					server.birthday_celebrate?.channelID ?? server.channelID ?? null;
 
 				let status, channel;
 				if (birthdayCelebrateStatus) {

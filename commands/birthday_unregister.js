@@ -52,7 +52,7 @@ module.exports = {
 			}
 
 			const birthdayCelebrateStatus =
-				server.birthday_celebrate?.status === true || server.status === true;
+				server.birthday_celebrate?.status ?? server.status ?? false;
 
 			if (!birthdayCelebrateStatus) {
 				return interaction.editReply({
