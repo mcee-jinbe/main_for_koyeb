@@ -3,6 +3,9 @@
 	"version": "3.5.5",
 	"description": "",
 	"main": "index.js",
+	"engines": {
+		"node": ">=24"
+	},
 	"scripts": {
 		"main": "node index.js && npm run sentry:sourcemaps",
 		"sentry:sourcemaps": "sentry-cli sourcemaps inject --org planet-bot-project --project jinbe-dev ./ && sentry-cli sourcemaps upload --org planet-bot-project --project jinbe-dev ./",
