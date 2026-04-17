@@ -1,5 +1,5 @@
 {
-	"name": "jinbe-main_for_koyeb",
+	"name": "jinbe",
 	"version": "3.5.5",
 	"description": "",
 	"main": "index.js",
@@ -27,11 +27,11 @@
 	},
 	"homepage": "https://github.com/HoshimiTech/JINBE#readme",
 	"dependencies": {
-		"@sentry/node": "^10.48.0",
-		"@sentry/profiling-node": "^10.48.0",
+		"@sentry/node": "^10.49.0",
+		"@sentry/profiling-node": "^10.49.0",
 		"date-fns-timezone": "^0.1.4",
-		"discord.js": "^14.26.2",
-		"dotenv": "^17.4.1",
+		"discord.js": "^14.26.3",
+		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
 		"mongoose": "^9.4.1",
 		"node-cron": "^4.2.1",
@@ -42,7 +42,7 @@
 		"eslint": "^10.2.0",
 		"eslint-config-prettier": "^10.1.8",
 		"fs": "^0.0.1-security",
-		"globals": "^17.4.0",
-		"prettier": "^3.8.2"
+		"globals": "^17.5.0",
+		"prettier": "^3.8.3"
 	}
 }
