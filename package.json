@@ -7,7 +7,7 @@
 		"node": ">=24"
 	},
 	"scripts": {
-		"main": "node index.js && npm run sentry:sourcemaps",
+		"main": "npm run sentry:sourcemaps && node index.js",
 		"sentry:sourcemaps": "sentry-cli sourcemaps inject --org hoshimitech --project jinbe-dev ./ && sentry-cli sourcemaps upload --org hoshimitech --project jinbe-dev ./",
 		"buildTest": "docker image build --tag jinbe-dev:latest . && docker run --name jinbe-dev --rm jinbe-dev:latest",
 		"lint": "eslint .",
