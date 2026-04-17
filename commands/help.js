@@ -81,7 +81,7 @@ module.exports = {
 					new ButtonBuilder()
 						.setStyle(ButtonStyle.Link)
 						.setLabel('このBOTのコードを見る')
-						.setURL('https://github.com/mcee-jinbe/main_for_koyeb'),
+						.setURL('https://github.com/HoshimiTech/JINBE'),
 				);
 
 				return interaction.editReply({
